@@ -200,7 +200,80 @@ body { font-family: "Google Sans", Arial, sans-serif; }
   </section>
 </main>
 
+<!-- Profile modal -->
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black/20 hidden z-50">
+  <div class="bg-white rounded-lg p-6 w-72 max-w-full shadow-lg flex flex-col gap-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h2 id="modalTitle" class="text-lg font-semibold text-gray-900">Edit Profile Icon</h2>
+    <label class="flex flex-col gap-1 text-sm text-gray-700">Letter (A-Z)
+      <input id="inputLetter" type="text" maxlength="1" class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" pattern="[A-Za-z]" title="Enter a single letter A-Z"/>
+    </label>
+    <label class="flex flex-col gap-1 text-sm text-gray-700">Background Color
+      <input id="inputColor" type="color" class="w-16 h-8 p-0 border-0 cursor-pointer" title="Choose background color"/>
+    </label>
+    <div class="flex justify-end gap-3 mt-4">
+      <button id="cancelBtn" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Cancel</button>
+      <button id="saveBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// Profile icon
+const profileBtn = document.getElementById("profileBtn");
+const profileLetter = document.getElementById("profileLetter");
+const modal = document.getElementById("modal");
+const inputLetter = document.getElementById("inputLetter");
+const inputColor = document.getElementById("inputColor");
+const cancelBtn = document.getElementById("cancelBtn");
+const saveBtn = document.getElementById("saveBtn");
+
+function getRandomPastelColor() {
+  const hue = Math.floor(Math.random()*360);
+  return `hsl(${hue},70%,80%)`;
+}
+
+function rgbToHex(rgb) {
+  if(!rgb) return "#aabbcc";
+  const result = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if(!result) return "#aabbcc";
+  return "#"+[1,2,3].map(n => {
+    const hex = parseInt(result[n],10).toString(16);
+    return hex.length===1?"0"+hex:hex;
+  }).join('');
+}
+
+function loadProfile() {
+  const savedLetter = localStorage.getItem("profileLetter");
+  const savedColor = localStorage.getItem("profileColor");
+  profileLetter.textContent = savedLetter ? savedLetter : "A";
+  profileBtn.style.backgroundColor = savedColor ? savedColor : getRandomPastelColor();
+  if(!savedColor) localStorage.setItem("profileColor", profileBtn.style.backgroundColor);
+}
+
+loadProfile();
+
+profileBtn.addEventListener("click", () => {
+  inputLetter.value = profileLetter.textContent;
+  inputColor.value = rgbToHex(profileBtn.style.backgroundColor);
+  modal.classList.remove("hidden");
+  inputLetter.focus();
+});
+
+cancelBtn.addEventListener("click", ()=>modal.classList.add("hidden"));
+
+saveBtn.addEventListener("click", ()=>{
+  const letter = inputLetter.value.trim().toUpperCase();
+  const color = inputColor.value;
+  if(!letter.match(/^[A-Z]$/)){ alert("Please enter a single letter A-Z."); inputLetter.focus(); return; }
+  profileLetter.textContent = letter;
+  profileBtn.style.backgroundColor = color;
+  localStorage.setItem("profileLetter", letter);
+  localStorage.setItem("profileColor", color);
+  modal.classList.add("hidden");
+});
+
+modal.addEventListener("click",(e)=>{ if(e.target===modal) modal.classList.add("hidden"); });
+
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
