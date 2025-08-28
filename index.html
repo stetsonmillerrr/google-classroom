@@ -1,153 +1,48 @@
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <title>Google Classroom Clone with Editable Profile Icon and Collapsible Enrolled</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    body {
-      font-family: "Google Sans", Arial, sans-serif;
-    }
-    .skeleton {
-      background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-    }
-    @keyframes loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-  </style>
-</head>
-<body class="bg-[#f8fafc] min-h-screen flex">
-  <!-- Sidebar -->
-  <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10">
-    <header class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
-      <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Google_Classroom_icon.svg/20px-Google_Classroom_icon.svg.png" class="w-5 h-5"/>
-      <span class="text-gray-800 text-sm font-normal select-none">Classroom</span>
-    </header>
-    <nav class="flex flex-col mt-4 px-2 space-y-1">
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#">
-        <i class="fas fa-home text-sm"></i> Home
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
-        <i class="far fa-calendar-alt text-sm"></i> Calendar
-      </a>
-      <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
-        <i class="fas fa-graduation-cap text-sm"></i> Enrolled
-        <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200"></i>
-      </button>
-      <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1 hidden">
-        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span>
-          US History: 25 - 26
-        </a>
-        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span>
-          English 2 FALL 2025
-          <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 3</span>
-        </a>
-        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span>
-          Science 9 P6
-        </a>
-        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
-          4th Health
-        </a>
-        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
-          World History
-          <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
-        </a>
+<section
+  aria-label="Classroom cards"
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+>
+  <!-- 10 cards -->
+  <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+    <div class="flex justify-between items-start mb-4">
+      <div class="space-y-2 w-3/4">
+        <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+        <div class="h-3 bg-gray-300 rounded w-1/2"></div>
       </div>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
-        <i class="far fa-folder text-sm"></i> Archived classes
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
-        <i class="fas fa-cog text-sm"></i> Setting
-        <span class="text-xs font-normal ml-auto">›</span>
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Main content -->
-  <main class="flex-1 p-6 overflow-auto">
-    <header class="flex items-center justify-end gap-6 mb-6">
-      <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
-        <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
+      <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+    </div>
+    <hr class="border-gray-200 mb-3" />
+    <div class="flex justify-between items-center text-gray-400 text-xs">
+      <div class="flex gap-2">
+        <input class="cursor-not-allowed" disabled type="checkbox" />
+        <input class="cursor-not-allowed" disabled type="checkbox" />
+      </div>
+      <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-ellipsis-v"></i>
       </button>
-      <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
-        <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24">
-          <circle cx="4.5" cy="4.5" r="2.5"/>
-          <circle cx="12" cy="4.5" r="2.5"/>
-          <circle cx="19.5" cy="4.5" r="2.5"/>
-          <circle cx="4.5" cy="12" r="2.5"/>
-          <circle cx="12" cy="12" r="2.5"/>
-          <circle cx="19.5" cy="12" r="2.5"/>
-          <circle cx="4.5" cy="19.5" r="2.5"/>
-          <circle cx="12" cy="19.5" r="2.5"/>
-          <circle cx="19.5" cy="19.5" r="2.5"/>
-        </svg>
+    </div>
+  </article>
+
+  <!-- duplicate 9 more times -->
+  <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+    <div class="flex justify-between items-start mb-4">
+      <div class="space-y-2 w-3/4">
+        <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+        <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+      </div>
+      <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+    </div>
+    <hr class="border-gray-200 mb-3" />
+    <div class="flex justify-between items-center text-gray-400 text-xs">
+      <div class="flex gap-2">
+        <input class="cursor-not-allowed" disabled type="checkbox" />
+        <input class="cursor-not-allowed" disabled type="checkbox" />
+      </div>
+      <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-ellipsis-v"></i>
       </button>
-      <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" style="background-color: #aabbcc;">
-        <span id="profileLetter" class="text-sm leading-none">A</span>
-      </button>
-    </header>
+    </div>
+  </article>
 
-    <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- 10 static skeleton cards -->
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px] skeleton"></article>
-    </section>
-
-    <button aria-label="Help" class="fixed bottom-4 right-4 text-gray-600 hover:text-gray-900 text-xs flex items-center gap-1">
-      <i class="fas fa-question-circle"></i> ?
-    </button>
-  </main>
-
-  <script>
-    const enrolledBtn = document.getElementById("enrolledBtn");
-    const enrolledList = document.getElementById("enrolledList");
-    const enrolledChevron = document.getElementById("enrolledChevron");
-
-    // Hide enrolled list on page load
-    enrolledList.style.display = "none";
-    enrolledBtn.setAttribute("aria-expanded", "false");
-    enrolledChevron.style.transform = "rotate(-90deg)";
-
-    // Toggle enrolled list
-    enrolledBtn.addEventListener("click", () => {
-      const isExpanded = enrolledBtn.getAttribute("aria-expanded") === "true";
-      if (isExpanded) {
-        enrolledList.style.display = "none";
-        enrolledBtn.setAttribute("aria-expanded", "false");
-        enrolledChevron.style.transform = "rotate(-90deg)";
-      } else {
-        enrolledList.style.display = "flex";
-        enrolledBtn.setAttribute("aria-expanded", "true");
-        enrolledChevron.style.transform = "rotate(0deg)";
-      }
-    });
-  </script>
-</body>
-</html>
+  <!-- repeat 8 more times, so total 10 cards -->
+</section>
