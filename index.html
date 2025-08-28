@@ -1,438 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Google Classroom Clone — Loading</title>
-
-  <!-- Tailwind CDN -->
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Google Classroom Clone</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Material Symbols for icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet"/>
   <style>
-    /* Base font */
     body {
-      font-family: Inter, 'Google Sans', Arial, sans-serif;
-      background: #f8fafc;
+      font-family: 'Google Sans', Arial, sans-serif;
     }
-
-    /* Material symbol helper */
-    .material-symbols-outlined {
-      font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24;
-      line-height: 1;
-    }
-
-    /* shimmer skeleton */
-    .skeleton {
-      background: linear-gradient(90deg, #e9eef6 25%, #f6f8fb 50%, #e9eef6 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s linear infinite;
-    }
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* semi-shimmer overlay for icons (so icons remain visible but look "loading") */
-    .icon-shimmer {
+    /* shimmer loading effect */
+    .loading {
       position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
+      background-color: #e5e7eb;
     }
-    .icon-shimmer::after {
+    .loading::after {
       content: "";
       position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.0) 100%);
-      mix-blend-mode: screen;
-      animation: shimmer 1.4s linear infinite;
-      opacity: 0.55;
+      top: 0;
+      left: -100%;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: shimmer 1.5s infinite;
     }
-
-    /* Sidebar slide behavior */
-    .sidebar {
-      transition: transform 0.28s cubic-bezier(.2,.8,.2,1), opacity 0.2s;
-      will-change: transform;
-    }
-    .sidebar-hidden {
-      transform: translateX(-100%);
-    }
-
-    /* mobile overlay */
-    .overlay {
-      background: rgba(15, 23, 42, 0.5);
-      transition: opacity 0.2s;
-    }
-
-    /* card colored header bar like Classroom (but we show shimmer content below) */
-    .card-header {
-      height: 56px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 10px 12px;
-      color: white;
-    }
-
-    /* responsive adjustments */
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; height: 100%; z-index: 50; left: 0; top: 0; }
-      main.content-area { margin-left: 0 !important; }
+    @keyframes shimmer {
+      100% { left: 100%; }
     }
   </style>
 </head>
-<body class="min-h-screen">
-
-  <!-- SIDEBAR -->
-  <div id="mobileOverlay" class="hidden md:hidden fixed inset-0 overlay opacity-0 pointer-events-none"></div>
-
-  <aside id="sidebar" class="sidebar w-64 bg-white border-r border-gray-200 h-screen fixed md:relative md:translate-x-0 left-0 top-0 z-40">
-    <!-- Header -->
-    <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
-      <button id="menuToggle" aria-label="Menu" class="text-gray-700 text-xl md:hidden">
-        <span class="material-symbols-outlined">menu</span>
+<body class="bg-[#f8fafc] h-screen flex overflow-hidden">
+  
+  <!-- Sidebar -->
+  <aside id="sidebar" class="flex flex-col w-64 bg-[#f8fafc] border-r border-gray-200 h-full overflow-y-auto transition-transform duration-300 ease-in-out">
+    <header class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
+      <button id="menuBtn" aria-label="Menu" class="text-gray-700 text-xl">
+        <i class="fas fa-bars"></i>
       </button>
-
-      <!-- Classroom icon -->
-      <img src="https://ssl.gstatic.com/classroom/ic_product_classroom_40.png" alt="Classroom" class="w-6 h-6" />
-
-      <span class="text-gray-800 text-sm font-normal select-none">Classroom</span>
-    </div>
-
-    <!-- Nav -->
+      <img class="w-5 h-5" src="https://storage.googleapis.com/a1aa/image/64114f77-2b53-43ec-f263-5226aef5874a.jpg" alt="Classroom Icon"/>
+      <span class="text-gray-800 text-sm">Classroom</span>
+    </header>
     <nav class="flex flex-col mt-4 px-2 space-y-1">
-      <!-- Home -->
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#">
-        <span class="material-symbols-outlined">home</span>
-        <span>Home</span>
-      </a>
-
-      <!-- Calendar -->
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100" href="#">
-        <span class="material-symbols-outlined">calendar_today</span>
-        <span>Calendar</span>
-      </a>
-
-      <!-- Enrolled header -->
-      <button class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 w-full">
-        <span class="material-symbols-outlined">school</span>
-        <span>Enrolled</span>
-        <span class="material-symbols-outlined ml-auto">expand_more</span>
-      </button>
-
-      <!-- To-do -->
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100" href="#">
-        <span class="material-symbols-outlined">checklist</span>
-        <span>To-do</span>
-      </a>
-
-      <!-- Separator -->
-      <div class="mt-2 border-t border-gray-100"></div>
-
-      <!-- Actual class links (loaded state) -->
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 select-none" href="#">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium" href="#"><i class="fas fa-home text-sm"></i>Home</a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm" href="#"><i class="far fa-calendar-alt text-sm"></i>Calendar</a>
+      <button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm w-full"><i class="fas fa-graduation-cap text-sm"></i>Enrolled<i class="fas fa-chevron-down ml-auto text-xs"></i></button>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm" href="#"><i class="far fa-list-alt text-sm"></i>To-do</a>
+      
+      <!-- Example loaded class items -->
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100" href="#">
         <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span>
-        <div class="flex flex-col leading-tight">
-          <span class="text-xs font-normal text-gray-800">US History: 25 - 26</span>
-        </div>
+        <span class="text-xs">US History: 25 - 26</span>
       </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 select-none" href="#">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100" href="#">
         <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span>
         <div class="flex flex-col leading-tight">
-          <span class="text-xs font-normal text-gray-800">English 2 FALL 2025</span>
-          <span class="text-[9px] text-gray-400 -mt-0.5">Period 3</span>
+          <span class="text-xs">English 2 FALL 2025</span>
+          <span class="text-[9px] text-gray-400">Period 3</span>
         </div>
       </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 select-none" href="#">
-        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span>
-        <div class="flex flex-col leading-tight">
-          <span class="text-xs font-normal text-gray-800">Science 9 P6</span>
-        </div>
-      </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 select-none" href="#">
-        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
-        <div class="flex flex-col leading-tight">
-          <span class="text-xs font-normal text-gray-800">4th Health</span>
-        </div>
-      </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 select-none" href="#">
-        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
-        <div class="flex flex-col leading-tight">
-          <span class="text-xs font-normal text-gray-800">World History</span>
-          <span class="text-[9px] text-gray-400 -mt-0.5">Period 2</span>
-        </div>
-      </a>
-
-      <!-- Archived & Settings -->
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" href="#">
-        <span class="material-symbols-outlined">archive</span>
-        <span>Archived classes</span>
-      </a>
-
-      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" href="#">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Settings</span>
-        <span class="ml-auto text-xs text-gray-400">›</span>
-      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100" href="#"><i class="far fa-folder text-sm"></i>Archived classes</a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100" href="#"><i class="fas fa-cog text-sm"></i>Settings<span class="ml-auto">›</span></a>
     </nav>
   </aside>
-
-  <!-- MAIN CONTENT -->
-  <div class="md:ml-64 content-area min-h-screen">
-
-    <!-- Topbar -->
-    <header class="flex items-center justify-between px-4 py-3 bg-white shadow-sm border-b border-gray-100">
-      <div class="flex items-center gap-3">
-        <!-- visible menu for desktop -->
-        <button id="menuToggleDesktop" class="hidden md:inline-flex p-1 rounded hover:bg-gray-100">
-          <span class="material-symbols-outlined text-gray-700">menu</span>
-        </button>
-        <h1 class="text-green-700 text-lg font-medium hidden md:block">Classroom</h1>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <!-- Add button (icon visible, shimmer overlay) -->
-        <button class="relative w-8 h-8 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-gray-600">add</span>
-          <span class="absolute inset-0 rounded-full skeleton opacity-60" aria-hidden="true"></span>
-        </button>
-
-        <!-- Apps -->
-        <button class="relative w-8 h-8 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-gray-600">apps</span>
-          <span class="absolute inset-0 rounded-full skeleton opacity-60" aria-hidden="true"></span>
-        </button>
-
-        <!-- Notifications -->
-        <button class="relative w-8 h-8 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-gray-600">notifications</span>
-          <span class="absolute inset-0 rounded-full skeleton opacity-60" aria-hidden="true"></span>
-        </button>
-
-        <!-- Profile (loading circle) -->
-        <div class="w-8 h-8 rounded-full overflow-hidden relative">
-          <div class="absolute inset-0 skeleton rounded-full"></div>
-        </div>
-      </div>
+  
+  <!-- Main content -->
+  <main class="flex-1 flex flex-col h-full overflow-y-auto">
+    <!-- Top bar -->
+    <header class="flex items-center justify-end gap-6 px-6 py-3 border-b border-gray-200 sticky top-0 bg-white z-10">
+      <button aria-label="Create" class="loading rounded-full w-8 h-8 flex items-center justify-center"></button>
+      <button aria-label="Apps" class="loading rounded-full w-8 h-8 flex items-center justify-center"></button>
+      <div class="loading w-8 h-8 rounded-full"></div>
     </header>
-
-    <!-- Content grid: one card per class like sidebar, but loading -->
-    <main class="p-6">
-      <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
-        <!-- Card: US History -->
-        <article class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-          <!-- colored header bar (keeps Classroom look) -->
-          <div class="card-header" style="background:#4E8BEA;">
-            <!-- show skeleton placeholders for title/teacher -->
-            <div class="space-y-2 w-3/4">
-              <div class="skeleton h-3 rounded w-2/3"></div>
-              <div class="skeleton h-3 rounded w-1/2"></div>
-            </div>
+    
+    <!-- Classroom cards -->
+    <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+      <!-- 6 placeholder cards -->
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="loading h-3 rounded w-2/3"></div>
+            <div class="loading h-3 rounded w-1/2"></div>
           </div>
-
-          <!-- body -->
-          <div class="p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full skeleton"></div>
-              <div>
-                <div class="skeleton h-3 rounded w-32 mb-2"></div>
-                <div class="skeleton h-2 rounded w-20"></div>
-              </div>
-            </div>
-
-            <!-- action icons visible -->
-            <div class="flex items-center gap-3 text-gray-500">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="material-symbols-outlined">assignment</span>
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
+          <div class="loading rounded-full w-12 h-12"></div>
+        </div>
+        <hr class="border-gray-200 mb-3"/>
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex gap-2">
+            <div class="loading w-4 h-4 rounded"></div>
+            <div class="loading w-4 h-4 rounded"></div>
           </div>
-        </article>
-
-        <!-- Card: English 2 FALL 2025 -->
-        <article class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-          <div class="card-header" style="background:#2FA360;">
-            <div class="space-y-2 w-3/4">
-              <div class="skeleton h-3 rounded w-2/3"></div>
-              <div class="skeleton h-3 rounded w-1/2"></div>
-            </div>
+          <div class="loading w-4 h-4 rounded"></div>
+        </div>
+      </article>
+      <!-- repeat -->
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="loading h-3 rounded w-2/3"></div>
+            <div class="loading h-3 rounded w-1/2"></div>
           </div>
-
-          <div class="p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full skeleton"></div>
-              <div>
-                <div class="skeleton h-3 rounded w-32 mb-2"></div>
-                <div class="skeleton h-2 rounded w-20"></div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3 text-gray-500">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="material-symbols-outlined">assignment</span>
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
+          <div class="loading rounded-full w-12 h-12"></div>
+        </div>
+        <hr class="border-gray-200 mb-3"/>
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex gap-2">
+            <div class="loading w-4 h-4 rounded"></div>
+            <div class="loading w-4 h-4 rounded"></div>
           </div>
-        </article>
-
-        <!-- Card: Science 9 P6 -->
-        <article class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-          <div class="card-header" style="background:#E6534F;">
-            <div class="space-y-2 w-3/4">
-              <div class="skeleton h-3 rounded w-2/3"></div>
-              <div class="skeleton h-3 rounded w-1/2"></div>
-            </div>
+          <div class="loading w-4 h-4 rounded"></div>
+        </div>
+      </article>
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="loading h-3 rounded w-2/3"></div>
+            <div class="loading h-3 rounded w-1/2"></div>
           </div>
-
-          <div class="p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full skeleton"></div>
-              <div>
-                <div class="skeleton h-3 rounded w-32 mb-2"></div>
-                <div class="skeleton h-2 rounded w-20"></div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3 text-gray-500">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="material-symbols-outlined">assignment</span>
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
+          <div class="loading rounded-full w-12 h-12"></div>
+        </div>
+        <hr class="border-gray-200 mb-3"/>
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex gap-2">
+            <div class="loading w-4 h-4 rounded"></div>
+            <div class="loading w-4 h-4 rounded"></div>
           </div>
-        </article>
-
-        <!-- Card: 4th Health -->
-        <article class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-          <div class="card-header" style="background:#8C5CF6;">
-            <div class="space-y-2 w-3/4">
-              <div class="skeleton h-3 rounded w-2/3"></div>
-              <div class="skeleton h-3 rounded w-1/2"></div>
-            </div>
-          </div>
-
-          <div class="p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full skeleton"></div>
-              <div>
-                <div class="skeleton h-3 rounded w-32 mb-2"></div>
-                <div class="skeleton h-2 rounded w-20"></div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3 text-gray-500">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="material-symbols-outlined">assignment</span>
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
-          </div>
-        </article>
-
-        <!-- Card: World History -->
-        <article class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
-          <div class="card-header" style="background:#F1B63A;">
-            <div class="space-y-2 w-3/4">
-              <div class="skeleton h-3 rounded w-2/3"></div>
-              <div class="skeleton h-3 rounded w-1/2"></div>
-            </div>
-          </div>
-
-          <div class="p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full skeleton"></div>
-              <div>
-                <div class="skeleton h-3 rounded w-32 mb-2"></div>
-                <div class="skeleton h-2 rounded w-20"></div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3 text-gray-500">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="material-symbols-outlined">assignment</span>
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
-          </div>
-        </article>
-
-      </section>
-
-      <!-- Floating help icon -->
-      <button aria-label="Help" class="fixed bottom-4 right-4 text-gray-600 hover:text-gray-900 bg-white rounded-md px-2 py-1 shadow-sm flex items-center gap-1">
-        <span class="material-symbols-outlined">help</span>
-        ?
-      </button>
-    </main>
-  </div>
-
-  <!-- JS: sidebar toggle + overlay handling -->
+          <div class="loading w-4 h-4 rounded"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+  
+  <!-- Sidebar toggle -->
   <script>
-    const sidebar = document.getElementById('sidebar');
-    const menuToggle = document.getElementById('menuToggle');
-    const menuToggleDesktop = document.getElementById('menuToggleDesktop');
-    const mobileOverlay = document.getElementById('mobileOverlay');
-
-    function openSidebarMobile() {
-      sidebar.classList.remove('sidebar-hidden');
-      // show overlay
-      mobileOverlay.classList.remove('hidden');
-      setTimeout(() => {
-        mobileOverlay.classList.remove('opacity-0');
-        mobileOverlay.classList.add('opacity-100');
-        mobileOverlay.classList.remove('pointer-events-none');
-      }, 10);
-    }
-
-    function closeSidebarMobile() {
-      sidebar.classList.add('sidebar-hidden');
-      mobileOverlay.classList.add('opacity-0');
-      mobileOverlay.classList.add('pointer-events-none');
-      setTimeout(() => mobileOverlay.classList.add('hidden'), 200);
-    }
-
-    // initial state for small screens: hidden
-    if (window.innerWidth < 768) {
-      sidebar.classList.add('sidebar-hidden');
-    }
-
-    // mobile toggle (hamburger inside sidebar header)
-    menuToggle?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (sidebar.classList.contains('sidebar-hidden')) {
-        openSidebarMobile();
-      } else {
-        closeSidebarMobile();
-      }
-    });
-
-    // desktop toggle (optional) — keeps same behavior but not hide on desktop by default
-    menuToggleDesktop?.addEventListener('click', () => {
-      sidebar.classList.toggle('sidebar-hidden');
-    });
-
-    // clicking overlay closes the sidebar
-    mobileOverlay?.addEventListener('click', closeSidebarMobile);
-
-    // handle window resize: keep desktop sidebar visible
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768) {
-        sidebar.classList.remove('sidebar-hidden');
-        mobileOverlay.classList.add('hidden');
-      } else {
-        // keep it hidden on mobile (until toggled)
-        sidebar.classList.add('sidebar-hidden');
-      }
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("-translate-x-64");
     });
   </script>
 </body>
