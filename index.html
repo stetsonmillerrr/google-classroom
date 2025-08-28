@@ -116,6 +116,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 
   <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <!-- Five cards repeated (unchanged content) -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -133,7 +134,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-    <!-- Repeat same 4 more cards (unchanged) -->
+    <!-- Repeat 4 more identical cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
@@ -184,6 +185,19 @@ function openIframe(linkEl, url){
 
   // Move clicked element to top
   enrolledList.prepend(linkEl);
+
+  // Save order to localStorage
+  const ids = Array.from(enrolledList.children).map(a => a.id);
+  localStorage.setItem("enrolledOrder", JSON.stringify(ids));
+}
+
+// Restore order from localStorage
+const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder") || "[]");
+if(savedOrder.length){
+  savedOrder.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) enrolledList.appendChild(el);
+  });
 }
 
 // US History
@@ -197,8 +211,9 @@ document.getElementById("usHistoryLink").addEventListener("click", e => {
 // English → new tab
 document.getElementById("englishLink").addEventListener("click", e => {
   window.open("https://www.julios.games/home", "_blank");
-  // Move clicked to top even though new tab
   enrolledList.prepend(e.currentTarget);
+  const ids = Array.from(enrolledList.children).map(a => a.id);
+  localStorage.setItem("enrolledOrder", JSON.stringify(ids));
 });
 
 // Science
@@ -216,7 +231,7 @@ document.getElementById("worldHistoryLink").addEventListener("click", e => {
   openIframe(e.currentTarget, "https://wfdxcajxzt.lawsonengineers.co.uk/");
 });
 
-// ESC closes iframe
+// ESC closes iframe always
 document.addEventListener("keydown", e=>{
   if(e.key==="Escape"){
     iframeOverlay.style.display="none";
