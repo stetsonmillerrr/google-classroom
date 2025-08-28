@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Google Classroom Clone</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
@@ -53,13 +54,23 @@
         <i class="fas fa-graduation-cap text-sm"></i> Enrolled
         <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200"></i>
       </button>
-      <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1">
+      <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1 hidden">
         <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 cursor-pointer">
           <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span> US History: 25 - 26
         </a>
         <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 cursor-pointer">
           <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span> English 2 FALL 2025
           <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 3</span>
+        </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 cursor-pointer">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span> Science 9 P6
+        </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 cursor-pointer">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span> 4th Health
+        </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 cursor-pointer">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span> World History
+          <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
         </a>
       </div>
       <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
@@ -102,15 +113,14 @@
 
     <!-- Classroom Cards Container -->
     <section id="classroomCards" aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- 6 Skeleton cards -->
-      ${Array(6).fill(`
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height: 180px">
+      <!-- Skeleton cards -->
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
         <div class="flex justify-between items-start mb-4">
           <div class="space-y-2 w-3/4">
             <div class="h-3 w-2/3 rounded skeleton"></div>
             <div class="h-3 w-1/2 rounded skeleton"></div>
           </div>
-          <div aria-hidden="true" class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
         </div>
         <hr class="border-gray-200 mb-3" />
         <div class="flex justify-between items-center text-gray-400 text-xs">
@@ -121,131 +131,147 @@
           <div class="w-5 h-4 skeleton rounded"></div>
         </div>
       </article>
-      `).join('')}
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 w-2/3 rounded skeleton"></div>
+            <div class="h-3 w-1/2 rounded skeleton"></div>
+          </div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+        </div>
+        <hr class="border-gray-200 mb-3" />
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <div class="w-4 h-4 rounded skeleton"></div>
+            <div class="w-4 h-4 rounded skeleton"></div>
+          </div>
+          <div class="w-5 h-4 skeleton rounded"></div>
+        </div>
+      </article>
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 w-2/3 rounded skeleton"></div>
+            <div class="h-3 w-1/2 rounded skeleton"></div>
+          </div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+        </div>
+        <hr class="border-gray-200 mb-3" />
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <div class="w-4 h-4 rounded skeleton"></div>
+            <div class="w-4 h-4 rounded skeleton"></div>
+          </div>
+          <div class="w-5 h-4 skeleton rounded"></div>
+        </div>
+      </article>
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 w-2/3 rounded skeleton"></div>
+            <div class="h-3 w-1/2 rounded skeleton"></div>
+          </div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+        </div>
+        <hr class="border-gray-200 mb-3" />
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <div class="w-4 h-4 rounded skeleton"></div>
+            <div class="w-4 h-4 rounded skeleton"></div>
+          </div>
+          <div class="w-5 h-4 skeleton rounded"></div>
+        </div>
+      </article>
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 w-2/3 rounded skeleton"></div>
+            <div class="h-3 w-1/2 rounded skeleton"></div>
+          </div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+        </div>
+        <hr class="border-gray-200 mb-3" />
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <div class="w-4 h-4 rounded skeleton"></div>
+            <div class="w-4 h-4 rounded skeleton"></div>
+          </div>
+          <div class="w-5 h-4 skeleton rounded"></div>
+        </div>
+      </article>
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 w-2/3 rounded skeleton"></div>
+            <div class="h-3 w-1/2 rounded skeleton"></div>
+          </div>
+          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
+        </div>
+        <hr class="border-gray-200 mb-3" />
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <div class="w-4 h-4 rounded skeleton"></div>
+            <div class="w-4 h-4 rounded skeleton"></div>
+          </div>
+          <div class="w-5 h-4 skeleton rounded"></div>
+        </div>
+      </article>
     </section>
-
-    <button aria-label="Help" class="fixed bottom-4 right-4 text-gray-600 hover:text-gray-900 text-xs flex items-center gap-1">
-      <i class="fas fa-question-circle"></i> ?
-    </button>
   </main>
 
-  <!-- Profile modal -->
-  <div id="modal" class="fixed inset-0 flex items-center justify-center modal-bg hidden z-50">
-    <div class="bg-white rounded-lg p-6 w-72 max-w-full shadow-lg flex flex-col gap-4">
-      <h2 class="text-lg font-semibold text-gray-900">Edit Profile Icon</h2>
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Letter (A-Z)
-        <input id="inputLetter" type="text" maxlength="1"
-          class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          pattern="[A-Za-z]" title="Enter a single letter A-Z" />
-      </label>
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Background Color
-        <input id="inputColor" type="color" class="w-16 h-8 p-0 border-0 cursor-pointer" />
-      </label>
-      <div class="flex justify-end gap-3 mt-4">
-        <button id="cancelBtn" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Cancel</button>
-        <button id="saveBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold">Save</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Profile Icon
-    function getRandomPastelColor() { const hue = Math.floor(Math.random() * 360); return \`hsl(\${hue},70%,80%)\`; }
-    const profileBtn = document.getElementById("profileBtn");
-    const profileLetter = document.getElementById("profileLetter");
-    const modal = document.getElementById("modal");
-    const inputLetter = document.getElementById("inputLetter");
-    const inputColor = document.getElementById("inputColor");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const saveBtn = document.getElementById("saveBtn");
     const enrolledBtn = document.getElementById("enrolledBtn");
     const enrolledList = document.getElementById("enrolledList");
     const enrolledChevron = document.getElementById("enrolledChevron");
+    const profileBtn = document.getElementById("profileBtn");
+    const profileLetter = document.getElementById("profileLetter");
     const classroomCards = document.getElementById("classroomCards");
 
-    // Load profile
-    function loadProfile() {
-      const savedLetter = localStorage.getItem("profileLetter");
-      const savedColor = localStorage.getItem("profileColor");
-      profileLetter.textContent = savedLetter ? savedLetter.toUpperCase() : "A";
-      profileBtn.style.backgroundColor = savedColor || getRandomPastelColor();
-      if(!savedColor) localStorage.setItem("profileColor", profileBtn.style.backgroundColor);
-    }
-    loadProfile();
-
-    // Profile modal
-    profileBtn.addEventListener("click", ()=>{
-      inputLetter.value = profileLetter.textContent;
-      inputColor.value = rgbToHex(profileBtn.style.backgroundColor);
-      modal.classList.remove("hidden");
-      inputLetter.focus();
-    });
-    cancelBtn.addEventListener("click", ()=>modal.classList.add("hidden"));
-    saveBtn.addEventListener("click", ()=>{
-      const letter = inputLetter.value.trim().toUpperCase();
-      const color = inputColor.value;
-      if(!letter.match(/^[A-Z]$/)){alert("Please enter a single letter A-Z."); return;}
-      profileLetter.textContent = letter;
-      profileBtn.style.backgroundColor = color;
-      localStorage.setItem("profileLetter", letter);
-      localStorage.setItem("profileColor", color);
-      modal.classList.add("hidden");
-    });
-    modal.addEventListener("click",(e)=>{if(e.target===modal) modal.classList.add("hidden");});
-    function rgbToHex(rgb){
-      if(!rgb) return "#aabbcc";
-      const result = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+).*\)$/);
-      if(!result) return "#aabbcc";
-      return "#" + [1,2,3].map(n => (+result[n]).toString(16).padStart(2,"0")).join("");
-    }
-
     // Enrolled toggle
-    function toggleEnrolled(){
-      const isExpanded = enrolledBtn.getAttribute("aria-expanded")==="true";
-      enrolledList.style.display = isExpanded ? "none" : "flex";
-      enrolledBtn.setAttribute("aria-expanded", String(!isExpanded));
-      enrolledChevron.style.transform = isExpanded ? "rotate(-90deg)" : "rotate(0deg)";
-    }
-    enrolledBtn.addEventListener("click", toggleEnrolled);
-    toggleEnrolled(); // ensure hidden on page load
+    enrolledBtn.addEventListener("click", () => {
+      const isExpanded = enrolledBtn.getAttribute("aria-expanded") === "true";
+      enrolledBtn.setAttribute("aria-expanded", !isExpanded);
+      enrolledList.classList.toggle("hidden");
+      enrolledChevron.style.transform = !isExpanded ? "rotate(0deg)" : "rotate(-90deg)";
+    });
 
-    // Simulate loading cards
-    function loadClassroomCards(){
-      classroomCards.innerHTML="";
-      const classes=[
-        {title:"US History: 25 - 26", color:"#f9d9c5", letter:"U", period:""},
-        {title:"English 2 FALL 2025", color:"#cce0ff", letter:"E", period:"Period 3"},
-        {title:"Science 9 P6", color:"#e0e0e0", letter:"S", period:""},
-        {title:"4th Health", color:"#cce0ff", letter:"4", period:""},
-        {title:"World History", color:"#f9d9c5", letter:"W", period:"Period 2"},
-        {title:"Art 101", color:"#d3f4ff", letter:"A", period:""}
-      ];
+    // Load real classroom cards after 2 seconds
+    const classes = [
+      {title:"US History: 25-26", color:"#f9d9c5", letter:"U", period:"Period 1"},
+      {title:"English 2 FALL 2025", color:"#cce0ff", letter:"E", period:"Period 3"},
+      {title:"Science 9 P6", color:"#e0e0e0", letter:"S", period:"Period 6"},
+      {title:"4th Health", color:"#cce0ff", letter:"4", period:"Period 4"},
+      {title:"World History", color:"#f9d9c5", letter:"W", period:"Period 2"},
+      {title:"Math 101", color:"#cce0ff", letter:"M", period:"Period 5"}
+    ];
+
+    setTimeout(()=>{
+      classroomCards.innerHTML = "";
       classes.forEach(cls=>{
-        const card=document.createElement("article");
-        card.className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between";
-        card.style.minHeight="180px";
-        card.innerHTML=\`
+        const card = document.createElement("article");
+        card.className = "bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]";
+        card.innerHTML = `
           <div class="flex justify-between items-start mb-4">
             <div class="space-y-2 w-3/4">
-              <h3 class="text-gray-800 font-medium">\${cls.title}</h3>
+              <div class="h-4 bg-gray-300 rounded w-full">${cls.title}</div>
+              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
             </div>
-            <div aria-hidden="true" class="rounded-full w-12 h-12 flex-shrink-0" style="background-color:\${cls.color}; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:bold; color:#4a4a4a;">
-              \${cls.letter}
+            <div class="rounded-full w-12 h-12 flex-shrink-0" style="background-color:${cls.color}; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+              ${cls.letter}
             </div>
           </div>
           <hr class="border-gray-200 mb-3" />
           <div class="flex justify-between items-center text-gray-400 text-xs">
-            <span>\${cls.period}</span>
+            <span>${cls.period}</span>
             <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
               <i class="fas fa-ellipsis-v"></i>
             </button>
-          </div>\`;
+          </div>
+        `;
         classroomCards.appendChild(card);
       });
-    }
-    setTimeout(loadClassroomCards,2000); // 2-second simulated load
+    },2000);
   </script>
+
 </body>
 </html>
