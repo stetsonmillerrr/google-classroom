@@ -111,9 +111,9 @@
       </button>
     </header>
 
-    <!-- Classroom Cards Container -->
+    <!-- Main content area: no classroom cards ever load -->
     <section id="classroomCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- 6 Skeleton cards -->
+      <!-- Optionally, static skeletons can remain -->
       <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
         <div class="flex justify-between items-start mb-4">
           <div class="space-y-2 w-3/4">
@@ -131,92 +131,7 @@
           <div class="w-5 h-4 skeleton rounded"></div>
         </div>
       </article>
-      <!-- Repeat skeletons 5 more times -->
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 w-2/3 rounded skeleton"></div>
-            <div class="h-3 w-1/2 rounded skeleton"></div>
-          </div>
-          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <div class="w-4 h-4 rounded skeleton"></div>
-            <div class="w-4 h-4 rounded skeleton"></div>
-          </div>
-          <div class="w-5 h-4 skeleton rounded"></div>
-        </div>
-      </article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 w-2/3 rounded skeleton"></div>
-            <div class="h-3 w-1/2 rounded skeleton"></div>
-          </div>
-          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <div class="w-4 h-4 rounded skeleton"></div>
-            <div class="w-4 h-4 rounded skeleton"></div>
-          </div>
-          <div class="w-5 h-4 skeleton rounded"></div>
-        </div>
-      </article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 w-2/3 rounded skeleton"></div>
-            <div class="h-3 w-1/2 rounded skeleton"></div>
-          </div>
-          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <div class="w-4 h-4 rounded skeleton"></div>
-            <div class="w-4 h-4 rounded skeleton"></div>
-          </div>
-          <div class="w-5 h-4 skeleton rounded"></div>
-        </div>
-      </article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 w-2/3 rounded skeleton"></div>
-            <div class="h-3 w-1/2 rounded skeleton"></div>
-          </div>
-          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <div class="w-4 h-4 rounded skeleton"></div>
-            <div class="w-4 h-4 rounded skeleton"></div>
-          </div>
-          <div class="w-5 h-4 skeleton rounded"></div>
-        </div>
-      </article>
-      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 w-2/3 rounded skeleton"></div>
-            <div class="h-3 w-1/2 rounded skeleton"></div>
-          </div>
-          <div class="rounded-full w-12 h-12 flex-shrink-0 skeleton"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <div class="w-4 h-4 rounded skeleton"></div>
-            <div class="w-4 h-4 rounded skeleton"></div>
-          </div>
-          <div class="w-5 h-4 skeleton rounded"></div>
-        </div>
-      </article>
+      <!-- Repeat skeletons 5 more times if desired -->
     </section>
 
   </main>
@@ -225,55 +140,17 @@
     const enrolledBtn = document.getElementById("enrolledBtn");
     const enrolledList = document.getElementById("enrolledList");
     const enrolledChevron = document.getElementById("enrolledChevron");
-    const classroomCards = document.getElementById("classroomCards");
 
-    // Hide enrolled list on load (collapsed)
+    // Hide enrolled list on page load
     enrolledList.classList.add("hidden");
     enrolledChevron.style.transform = "rotate(-90deg)";
 
-    // Toggle enrolled list
+    // Toggle enrolled list visibility
     enrolledBtn.addEventListener("click", () => {
       const isHidden = enrolledList.classList.contains("hidden");
       enrolledList.classList.toggle("hidden");
       enrolledChevron.style.transform = isHidden ? "rotate(0deg)" : "rotate(-90deg)";
     });
-
-    // Load real classroom cards after 2 seconds
-    const classes = [
-      {title:"US History: 25-26", color:"#f9d9c5", letter:"U", period:"Period 1"},
-      {title:"English 2 FALL 2025", color:"#cce0ff", letter:"E", period:"Period 3"},
-      {title:"Science 9 P6", color:"#e0e0e0", letter:"S", period:"Period 6"},
-      {title:"4th Health", color:"#cce0ff", letter:"4", period:"Period 4"},
-      {title:"World History", color:"#f9d9c5", letter:"W", period:"Period 2"},
-      {title:"Math 101", color:"#cce0ff", letter:"M", period:"Period 5"}
-    ];
-
-    setTimeout(()=>{
-      classroomCards.innerHTML = "";
-      classes.forEach(cls=>{
-        const card = document.createElement("article");
-        card.className = "bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]";
-        card.innerHTML = `
-          <div class="flex justify-between items-start mb-4">
-            <div class="space-y-2 w-3/4">
-              <div class="h-4 bg-gray-300 rounded w-full">${cls.title}</div>
-              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-            </div>
-            <div class="rounded-full w-12 h-12 flex-shrink-0 flex items-center justify-center font-bold" style="background-color:${cls.color};">
-              ${cls.letter}
-            </div>
-          </div>
-          <hr class="border-gray-200 mb-3" />
-          <div class="flex justify-between items-center text-gray-400 text-xs">
-            <span>${cls.period}</span>
-            <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
-              <i class="fas fa-ellipsis-v"></i>
-            </button>
-          </div>
-        `;
-        classroomCards.appendChild(card);
-      });
-    }, 2000);
   </script>
 
 </body>
