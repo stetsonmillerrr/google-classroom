@@ -17,7 +17,6 @@
     body {
       font-family: "Google Sans", Arial, sans-serif;
     }
-    /* Loading animation */
     .animate-pulse {
       animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
@@ -29,7 +28,7 @@
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
   <!-- Sidebar -->
-  <aside class="flex flex-col w-64 bg-white border-r border-gray-200">
+  <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10">
     <header class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
       <button aria-label="Menu" class="text-gray-700 text-xl">
         <i class="fas fa-bars"></i>
@@ -48,18 +47,42 @@
       <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
         <i class="far fa-calendar-alt text-sm"></i> Calendar
       </a>
-      <button id="enrolledBtn" aria-expanded="true" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
+      <!-- Enrolled button with toggle -->
+      <button
+        id="enrolledBtn"
+        aria-expanded="false"
+        class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full"
+        type="button"
+      >
         <i class="fas fa-graduation-cap text-sm"></i> Enrolled
         <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200"></i>
       </button>
-      <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1">
+      <!-- Enrolled list, hidden initially -->
+      <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display:none">
         <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
           <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span> US History
         </a>
         <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
           <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span> English
         </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span> Science
+        </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span> Health
+        </a>
+        <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span> World History
+        </a>
       </div>
+      <!-- Other nav items below -->
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
+        <i class="far fa-folder text-sm"></i> Archived classes
+      </a>
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#">
+        <i class="fas fa-cog text-sm"></i> Setting
+        <span class="text-xs font-normal ml-auto">›</span>
+      </a>
     </nav>
   </aside>
 
@@ -84,6 +107,7 @@
           <circle cx="19.5" cy="19.5" r="2.5" />
         </svg>
       </button>
+      <!-- Editable Profile Icon -->
       <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" style="background-color: #aabbcc;">
         <span id="profileLetter" class="text-sm leading-none">A</span>
       </button>
@@ -91,7 +115,7 @@
 
     <!-- Classroom Loading Cards -->
     <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- 10 loading cards -->
+      <!-- Loading card template -->
       <template id="loadingCardTemplate">
         <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between animate-pulse" style="min-height: 180px">
           <div class="flex justify-between items-start mb-4">
@@ -116,13 +140,87 @@
     </section>
   </main>
 
+  <!-- Modal for editing profile icon -->
+  <div id="modal" class="fixed inset-0 flex items-center justify-center modal-bg hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-72 max-w-full shadow-lg flex flex-col gap-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle" class="text-lg font-semibold text-gray-900">Edit Profile Icon</h2>
+      <label class="flex flex-col gap-1 text-sm text-gray-700">
+        Letter (A-Z)
+        <input id="inputLetter" type="text" maxlength="1" class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" pattern="[A-Za-z]" title="Enter a single letter A-Z" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm text-gray-700">
+        Background Color
+        <input id="inputColor" type="color" class="w-16 h-8 p-0 border-0 cursor-pointer" title="Choose background color" />
+      </label>
+      <div class="flex justify-end gap-3 mt-4">
+        <button id="cancelBtn" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800">Cancel</button>
+        <button id="saveBtn" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Insert 10 loading cards dynamically
+    // Profile icon logic
+    const profileBtn = document.getElementById("profileBtn");
+    const profileLetter = document.getElementById("profileLetter");
+    const modal = document.getElementById("modal");
+    const inputLetter = document.getElementById("inputLetter");
+    const inputColor = document.getElementById("inputColor");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    function getRandomPastelColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsl(${hue}, 70%, 80%)`;
+    }
+
+    function loadProfile() {
+      const savedLetter = localStorage.getItem("profileLetter");
+      const savedColor = localStorage.getItem("profileColor");
+      profileLetter.textContent = savedLetter || "A";
+      profileBtn.style.backgroundColor = savedColor || getRandomPastelColor();
+    }
+    loadProfile();
+
+    profileBtn.addEventListener("click", () => {
+      inputLetter.value = profileLetter.textContent;
+      inputColor.value = rgbToHex(profileBtn.style.backgroundColor);
+      modal.classList.remove("hidden");
+      inputLetter.focus();
+    });
+    cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+    saveBtn.addEventListener("click", () => {
+      const letter = inputLetter.value.trim().toUpperCase();
+      if (!letter.match(/^[A-Z]$/)) { alert("Enter A-Z"); return; }
+      profileLetter.textContent = letter;
+      profileBtn.style.backgroundColor = inputColor.value;
+      localStorage.setItem("profileLetter", letter);
+      localStorage.setItem("profileColor", inputColor.value);
+      modal.classList.add("hidden");
+    });
+    modal.addEventListener("click", e => { if(e.target===modal) modal.classList.add("hidden"); });
+    function rgbToHex(rgb) {
+      const result = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if(!result) return "#aabbcc";
+      return "#" + [1,2,3].map(n => parseInt(result[n]).toString(16).padStart(2,"0")).join("");
+    }
+
+    // Enrolled toggle
+    const enrolledBtn = document.getElementById("enrolledBtn");
+    const enrolledList = document.getElementById("enrolledList");
+    const enrolledChevron = document.getElementById("enrolledChevron");
+    function toggleEnrolled() {
+      const expanded = enrolledBtn.getAttribute("aria-expanded") === "true";
+      enrolledList.style.display = expanded ? "none" : "flex";
+      enrolledBtn.setAttribute("aria-expanded", !expanded);
+      enrolledChevron.style.transform = expanded ? "rotate(-90deg)" : "rotate(0deg)";
+    }
+    enrolledBtn.addEventListener("click", toggleEnrolled);
+
+    // Load 5 loading cards
     const template = document.getElementById('loadingCardTemplate');
     const section = document.querySelector('section[aria-label="Classroom cards"]');
-    for (let i = 0; i < 10; i++) {
-      section.appendChild(template.content.cloneNode(true));
-    }
+    for (let i = 0; i < 5; i++) section.appendChild(template.content.cloneNode(true));
   </script>
 </body>
 </html>
