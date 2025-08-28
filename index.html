@@ -9,22 +9,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet" />
 <style>
 body { font-family: "Google Sans", Arial, sans-serif; }
+
+/* shimmer animation */
 @keyframes shimmer {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
+
+/* skeleton base style */
 .skeleton {
   position: relative;
   overflow: hidden;
   background-color: #e0e0e0;
 }
+
+/* shimmer overlay */
 .skeleton::after {
   content: '';
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 2.5s infinite; /* slower shimmer */
 }
+
+/* Different speeds for more natural effect */
+.skeleton.slow::after { animation-duration: 3s; }
+.skeleton.medium::after { animation-duration: 2.5s; }
+.skeleton.fast::after { animation-duration: 2s; }
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -100,19 +111,19 @@ body { font-family: "Google Sans", Arial, sans-serif; }
       <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between">
         <div class="flex justify-between items-start mb-4">
           <div class="space-y-2 w-3/4">
-            <div class="h-4 skeleton rounded w-full"></div>
-            <div class="h-3 skeleton rounded w-5/6"></div>
-            <div class="h-3 skeleton rounded w-2/3"></div>
+            <div class="h-4 skeleton slow rounded w-full"></div>
+            <div class="h-3 skeleton medium rounded w-5/6"></div>
+            <div class="h-3 skeleton fast rounded w-2/3"></div>
           </div>
-          <div class="rounded-full w-12 h-12 skeleton flex-shrink-0"></div>
+          <div class="rounded-full w-12 h-12 skeleton medium flex-shrink-0"></div>
         </div>
         <hr class="border-gray-200 mb-3" />
         <div class="flex justify-between items-center text-gray-400 text-xs">
           <div class="flex gap-2">
-            <div class="w-4 h-4 skeleton rounded"></div>
-            <div class="w-4 h-4 skeleton rounded"></div>
+            <div class="w-4 h-4 skeleton slow rounded"></div>
+            <div class="w-4 h-4 skeleton medium rounded"></div>
           </div>
-          <div class="w-4 h-4 skeleton rounded"></div>
+          <div class="w-4 h-4 skeleton fast rounded"></div>
         </div>
       </article>
     </template>
