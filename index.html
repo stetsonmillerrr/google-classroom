@@ -37,7 +37,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 <body class="bg-[#f8fafc] min-h-screen flex">
 
 <!-- Sidebar -->
-<aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10">
+<aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10" style="background: #f8fafc url('https://placehold.co/200x600/ffffff/ffffff?text=') no-repeat top left">
   <header class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
     <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
     <img alt="Google Classroom icon" class="w-5 h-5"
@@ -47,19 +47,35 @@ body { font-family: "Google Sans", Arial, sans-serif; }
   <nav class="flex flex-col mt-4 px-2 space-y-1">
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
+
+    <!-- Enrolled button with toggle -->
     <button id="enrolledBtn" aria-expanded="false"
       class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200"></i>
     </button>
+
+    <!-- Full Enrolled list, hidden by default -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display:none">
       <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span> US History
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span> US History: 25 - 26
       </a>
       <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span> English 2
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span> English 2 FALL 2025
+        <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 3</span>
+      </a>
+      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span> Science 9 P6
+      </a>
+      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span> 4th Health
+      </a>
+      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer" href="#">
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span> World History
+        <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
       </a>
     </div>
+
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting <span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
@@ -86,6 +102,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <circle cx="19.5" cy="19.5" r="2.5"/>
       </svg>
     </button>
+
     <!-- Editable Profile Icon -->
     <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to edit profile icon" style="background-color: #aabbcc;">
       <span id="profileLetter" class="text-sm leading-none">A</span>
@@ -111,8 +128,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button aria-label="More options" class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-
-    <!-- Duplicate 4 more cards -->
+    <!-- duplicate 4 more cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height:180px">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -130,7 +146,6 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button aria-label="More options" class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height:180px">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -148,7 +163,6 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button aria-label="More options" class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height:180px">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -166,7 +180,6 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button aria-label="More options" class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between" style="min-height:180px">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -205,11 +218,6 @@ enrolledBtn.addEventListener("click", () => {
     enrolledChevron.style.transform = "rotate(0deg)";
   }
 });
-
-// Profile modal
-const profileBtn = document.getElementById("profileBtn");
-const profileLetter = document.getElementById("profileLetter");
 </script>
-
 </body>
 </html>
