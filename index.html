@@ -80,11 +80,11 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         English 2 FALL 2025
         <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 3</span>
       </a>
-      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
+      <a id="scienceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span>
         Science 9 P6
       </a>
-      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
+      <a id="healthLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
         4th Health
       </a>
@@ -116,7 +116,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 
   <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- 5 realistic loading cards exactly as in your original code -->
+    <!-- Five realistic cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -134,7 +134,11 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-    <!-- Repeat the remaining 4 cards exactly like the original, omitted for brevity -->
+    <!-- repeat 4 more identical cards -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
   </section>
 </main>
 
@@ -174,19 +178,35 @@ if(savedColor) profileBtn.style.backgroundColor = savedColor;
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeEl = iframeOverlay.querySelector("iframe");
 
+// US History
 document.getElementById("usHistoryLink").addEventListener("click", () => {
   enrolledList.style.display="none";
   enrolledBtn.setAttribute("aria-expanded","false");
   enrolledChevron.style.transform="rotate(-90deg)";
-  iframeEl.src = "https://duck.quackprep.com"; // original US History URL
+  iframeEl.src = "https://example.com";
   iframeOverlay.style.display="block";
 });
 
+// English 2 FALL 2025 → new tab
 document.getElementById("englishLink").addEventListener("click", () => {
+  window.open("https://www.julios.games/home", "_blank");
+});
+
+// Science 9 P6 → iframe
+document.getElementById("scienceLink").addEventListener("click", () => {
   enrolledList.style.display="none";
   enrolledBtn.setAttribute("aria-expanded","false");
   enrolledChevron.style.transform="rotate(-90deg)";
-  iframeEl.src = "https://www.julios.games/home"; // new URL
+  iframeEl.src = "https://intrinsic.observer/";
+  iframeOverlay.style.display="block";
+});
+
+// 4th Health → iframe
+document.getElementById("healthLink").addEventListener("click", () => {
+  enrolledList.style.display="none";
+  enrolledBtn.setAttribute("aria-expanded","false");
+  enrolledChevron.style.transform="rotate(-90deg)";
+  iframeEl.src = "https://gn-math.github.io/";
   iframeOverlay.style.display="block";
 });
 
