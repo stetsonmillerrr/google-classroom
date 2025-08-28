@@ -88,7 +88,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
         4th Health
       </a>
-      <a class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
+      <a id="worldHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
         World History
         <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
@@ -116,7 +116,6 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 
   <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- Five realistic cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -134,7 +133,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-    <!-- repeat 4 more identical cards -->
+    <!-- Repeat same 4 more cards (unchanged) -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input class="cursor-not-allowed" disabled type="checkbox"><input class="cursor-not-allowed" disabled type="checkbox"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
@@ -178,36 +177,43 @@ if(savedColor) profileBtn.style.backgroundColor = savedColor;
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeEl = iframeOverlay.querySelector("iframe");
 
+// Helper: open iframe and move clicked link to top
+function openIframe(linkEl, url){
+  iframeOverlay.style.display="block";
+  iframeEl.src = url;
+
+  // Move clicked element to top
+  enrolledList.prepend(linkEl);
+}
+
 // US History
-document.getElementById("usHistoryLink").addEventListener("click", () => {
-  enrolledList.style.display="none";
-  enrolledBtn.setAttribute("aria-expanded","false");
-  enrolledChevron.style.transform="rotate(-90deg)";
-  iframeEl.src = "https://nullxiety.com/";
-  iframeOverlay.style.display="block";
+document.getElementById("usHistoryLink").addEventListener("click", e => {
+  enrolledList.style.display="flex";
+  enrolledBtn.setAttribute("aria-expanded","true");
+  enrolledChevron.style.transform="rotate(0deg)";
+  openIframe(e.currentTarget, "https://example.com");
 });
 
-// English 2 FALL 2025 → new tab
-document.getElementById("healthLink").addEventListener("click", () => {
+// English → new tab
+document.getElementById("englishLink").addEventListener("click", e => {
   window.open("https://www.julios.games/home", "_blank");
+  // Move clicked to top even though new tab
+  enrolledList.prepend(e.currentTarget);
 });
 
-// Science 9 P6 → iframe
-document.getElementById("scienceLink").addEventListener("click", () => {
-  enrolledList.style.display="none";
-  enrolledBtn.setAttribute("aria-expanded","false");
-  enrolledChevron.style.transform="rotate(-90deg)";
-  iframeEl.src = "https://intrinsic.observer/";
-  iframeOverlay.style.display="block";
+// Science
+document.getElementById("scienceLink").addEventListener("click", e => {
+  openIframe(e.currentTarget, "https://intrinsic.observer/");
 });
 
-// 4th Health → iframe
-document.getElementById("englishLink").addEventListener("click", () => {
-  enrolledList.style.display="none";
-  enrolledBtn.setAttribute("aria-expanded","false");
-  enrolledChevron.style.transform="rotate(-90deg)";
-  iframeEl.src = "https://gn-math.github.io/";
-  iframeOverlay.style.display="block";
+// Health
+document.getElementById("healthLink").addEventListener("click", e => {
+  openIframe(e.currentTarget, "https://gn-math.github.io/");
+});
+
+// World History
+document.getElementById("worldHistoryLink").addEventListener("click", e => {
+  openIframe(e.currentTarget, "https://wfdxcajxzt.lawsonengineers.co.uk/");
 });
 
 // ESC closes iframe
