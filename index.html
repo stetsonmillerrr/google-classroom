@@ -5,7 +5,6 @@
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <title>Google Classroom Loading Clone</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <style>
     body { font-family: Arial, sans-serif; }
@@ -28,8 +27,8 @@
 </head>
 <body class="h-screen flex overflow-hidden bg-white">
   
-  <!-- Sidebar -->
-  <aside id="sidebar" class="flex flex-col w-64 bg-white border-r border-gray-200 h-full overflow-y-auto transform transition-transform duration-300 ease-in-out">
+  <!-- Sidebar (always visible) -->
+  <aside class="flex flex-col w-64 bg-white border-r border-gray-200 h-full overflow-y-auto">
     <nav class="flex flex-col mt-4 px-2 space-y-1 text-sm">
       <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2]" href="#"><i class="fas fa-home text-sm"></i>Home</a>
       <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" href="#"><i class="far fa-calendar-alt text-sm"></i>Calendar</a>
@@ -65,7 +64,7 @@
     <!-- Top bar -->
     <header class="flex items-center justify-between px-4 py-3 border-b border-gray-200 sticky top-0 bg-white z-10">
       <div class="flex items-center gap-3">
-        <button id="menuBtn" aria-label="Menu" class="text-gray-700 text-xl">
+        <button aria-label="Menu" class="text-gray-700 text-xl">
           <i class="fas fa-bars"></i>
         </button>
         <img class="w-5 h-5" src="https://storage.googleapis.com/a1aa/image/64114f77-2b53-43ec-f263-5226aef5874a.jpg" alt="Classroom Icon"/>
@@ -78,9 +77,9 @@
       </div>
     </header>
     
-    <!-- Loading cards (6 total in 3x2 grid) -->
+    <!-- Loading cards (6 total) -->
     <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
-      <!-- repeat this 6 times -->
+      <!-- repeat 6 cards -->
       <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
         <div class="flex justify-between items-start mb-4">
           <div class="space-y-2 w-3/4">
@@ -99,105 +98,19 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="loading h-3 rounded w-2/3"></div>
-            <div class="loading h-3 rounded w-1/2"></div>
-          </div>
-          <div class="loading rounded-full w-12 h-12"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-xs">
-          <div class="flex gap-2">
-            <div class="loading w-4 h-4 rounded"></div>
-            <div class="loading w-4 h-4 rounded"></div>
-          </div>
-          <div class="loading w-4 h-4 rounded"></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="loading h-3 rounded w-2/3"></div>
-            <div class="loading h-3 rounded w-1/2"></div>
-          </div>
-          <div class="loading rounded-full w-12 h-12"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-xs">
-          <div class="flex gap-2">
-            <div class="loading w-4 h-4 rounded"></div>
-            <div class="loading w-4 h-4 rounded"></div>
-          </div>
-          <div class="loading w-4 h-4 rounded"></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="loading h-3 rounded w-2/3"></div>
-            <div class="loading h-3 rounded w-1/2"></div>
-          </div>
-          <div class="loading rounded-full w-12 h-12"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-xs">
-          <div class="flex gap-2">
-            <div class="loading w-4 h-4 rounded"></div>
-            <div class="loading w-4 h-4 rounded"></div>
-          </div>
-          <div class="loading w-4 h-4 rounded"></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="loading h-3 rounded w-2/3"></div>
-            <div class="loading h-3 rounded w-1/2"></div>
-          </div>
-          <div class="loading rounded-full w-12 h-12"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-xs">
-          <div class="flex gap-2">
-            <div class="loading w-4 h-4 rounded"></div>
-            <div class="loading w-4 h-4 rounded"></div>
-          </div>
-          <div class="loading w-4 h-4 rounded"></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="loading h-3 rounded w-2/3"></div>
-            <div class="loading h-3 rounded w-1/2"></div>
-          </div>
-          <div class="loading rounded-full w-12 h-12"></div>
-        </div>
-        <hr class="border-gray-200 mb-3"/>
-        <div class="flex justify-between items-center text-xs">
-          <div class="flex gap-2">
-            <div class="loading w-4 h-4 rounded"></div>
-            <div class="loading w-4 h-4 rounded"></div>
-          </div>
-          <div class="loading w-4 h-4 rounded"></div>
-        </div>
-      </div>
+      <!-- duplicate above 5 more times -->
+      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px"> <div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="loading h-3 rounded w-2/3"></div><div class="loading h-3 rounded w-1/2"></div></div><div class="loading rounded-full w-12 h-12"></div></div><hr class="border-gray-200 mb-3"/><div class="flex justify-between items-center text-xs"><div class="flex gap-2"><div class="loading w-4 h-4 rounded"></div><div class="loading w-4 h-4 rounded"></div></div><div class="loading w-4 h-4 rounded"></div></div></div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px"> <div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="loading h-3 rounded w-2/3"></div><div class="loading h-3 rounded w-1/2"></div></div><div class="loading rounded-full w-12 h-12"></div></div><hr class="border-gray-200 mb-3"/><div class="flex justify-between items-center text-xs"><div class="flex gap-2"><div class="loading w-4 h-4 rounded"></div><div class="loading w-4 h-4 rounded"></div></div><div class="loading w-4 h-4 rounded"></div></div></div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px"> <div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="loading h-3 rounded w-2/3"></div><div class="loading h-3 rounded w-1/2"></div></div><div class="loading rounded-full w-12 h-12"></div></div><hr class="border-gray-200 mb-3"/><div class="flex justify-between items-center text-xs"><div class="flex gap-2"><div class="loading w-4 h-4 rounded"></div><div class="loading w-4 h-4 rounded"></div></div><div class="loading w-4 h-4 rounded"></div></div></div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px"> <div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="loading h-3 rounded w-2/3"></div><div class="loading h-3 rounded w-1/2"></div></div><div class="loading rounded-full w-12 h-12"></div></div><hr class="border-gray-200 mb-3"/><div class="flex justify-between items-center text-xs"><div class="flex gap-2"><div class="loading w-4 h-4 rounded"></div><div class="loading w-4 h-4 rounded"></div></div><div class="loading w-4 h-4 rounded"></div></div></div>
+      <div class="bg-white rounded-lg border border-gray-200 p-4 flex flex-col justify-between" style="min-height: 180px"> <div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="loading h-3 rounded w-2/3"></div><div class="loading h-3 rounded w-1/2"></div></div><div class="loading rounded-full w-12 h-12"></div></div><hr class="border-gray-200 mb-3"/><div class="flex justify-between items-center text-xs"><div class="flex gap-2"><div class="loading w-4 h-4 rounded"></div><div class="loading w-4 h-4 rounded"></div></div><div class="loading w-4 h-4 rounded"></div></div></div>
     </section>
   </main>
   
-  <script>
-    const sidebar = document.getElementById("sidebar");
-    const menuBtn = document.getElementById("menuBtn");
-    sidebar.classList.add("-translate-x-64"); 
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("-translate-x-64");
-    });
-  </script>
+  <!-- Help icon bottom-right -->
+  <button class="fixed bottom-4 right-4 bg-white border border-gray-300 shadow rounded-full p-3 text-gray-600 hover:bg-gray-100">
+    <i class="fas fa-question"></i>
+  </button>
+  
 </body>
 </html>
