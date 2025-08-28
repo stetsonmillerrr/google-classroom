@@ -109,7 +109,6 @@ body { font-family: "Google Sans", Arial, sans-serif; }
     <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
       <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
     </button>
-    <!-- Editable Profile Icon -->
     <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to edit profile icon" style="background-color: #aabbcc;">
       <span id="profileLetter" class="text-sm leading-none">A</span>
     </button>
@@ -117,6 +116,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 
   <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <!-- Five cards exactly as original -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -134,7 +134,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-    <!-- Repeat all original cards exactly as in your code -->
+    <!-- Repeat the remaining 4 cards exactly as in your original code -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -206,8 +206,10 @@ body { font-family: "Google Sans", Arial, sans-serif; }
   </section>
 </main>
 
-<!-- iframe overlay -->
-<div id="iframeOverlay"><iframe src=""></iframe></div>
+<!-- iframe overlay with fullscreen support -->
+<div id="iframeOverlay">
+  <iframe src="" allowfullscreen allow="fullscreen" style="width:100%;height:100%;border:none;"></iframe>
+</div>
 
 <script>
 // Enrolled toggle
@@ -247,7 +249,7 @@ usLink.addEventListener("click", () => {
   enrolledChevron.style.transform="rotate(-90deg)";
   
   // Set iframe to a valid embeddable URL
-  iframeEl.src="https://example.com";
+  iframeEl.src="https://duck.quackprep.com"; // replace with your game URL
   iframeOverlay.style.display="block";
 });
 
