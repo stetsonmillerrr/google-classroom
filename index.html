@@ -1,138 +1,282 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Google Classroom Clone</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Material Icons -->
+
+  <!-- Material Symbols (Google Classroom-like icons) -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Google Sans fallback (not an official hosted font; keeps same look if available) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
   <style>
+    :root{
+      --bg:#f8fafc;
+    }
+
     .material-symbols-outlined {
       font-variation-settings:
         'FILL' 0,
         'wght' 400,
         'GRAD' 0,
         'opsz' 24;
+      font-size: 18px;
+      line-height: 1;
     }
+
+    body {
+      font-family: 'Inter', 'Google Sans', Arial, sans-serif;
+      background: var(--bg);
+    }
+
+    /* subtle card min-height like your sample */
+    .card-min { min-height: 180px; }
   </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="min-h-screen flex">
 
-  <!-- Top Navbar -->
-  <header class="flex items-center justify-between px-4 py-2 bg-white shadow-sm">
-    <div class="flex items-center space-x-3">
-      <button class="p-2 hover:bg-gray-100 rounded-full">
-        <span class="material-symbols-outlined text-gray-700">menu</span>
+  <!-- Sidebar -->
+  <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10"
+         style="background: var(--bg) url('https://placehold.co/200x600/ffffff/ffffff?text=') no-repeat top left;">
+    <header class="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
+      <button aria-label="Menu" class="text-gray-700 text-xl p-1">
+        <span class="material-symbols-outlined">menu</span>
       </button>
-      <span class="text-xl font-medium text-green-700">Classroom</span>
-    </div>
-    <div class="flex items-center space-x-4">
-      <button class="p-2 hover:bg-gray-100 rounded-full">
-        <span class="material-symbols-outlined text-gray-600">add</span>
+
+      <!-- Classroom small icon (kept placeholder image similar to your example) -->
+      <img alt="Classroom icon" class="w-5 h-5" height="20"
+           src="https://storage.googleapis.com/a1aa/image/64114f77-2b53-43ec-f263-5226aef5874a.jpg" width="20"/>
+
+      <span class="text-gray-800 text-sm font-normal select-none">Classroom</span>
+    </header>
+
+    <nav class="flex flex-col mt-4 px-2 space-y-1">
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none"
+         href="#">
+        <span class="material-symbols-outlined">home</span>
+        Home
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="material-symbols-outlined">calendar_today</span>
+        Calendar
+      </a>
+
+      <button aria-expanded="true"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full">
+        <span class="material-symbols-outlined">school</span>
+        Enrolled
+        <span class="material-symbols-outlined ml-auto text-xs">expand_more</span>
       </button>
-      <button class="p-2 hover:bg-gray-100 rounded-full">
-        <span class="material-symbols-outlined text-gray-600">apps</span>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="material-symbols-outlined">task_alt</span>
+        To-do
+      </a>
+
+      <!-- Enrolled classes list (colored circular badges like your example) -->
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-xs font-normal">US History: 25 - 26</span>
+        </div>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-xs font-normal">English 2 FALL 2025</span>
+          <span class="text-[9px] text-gray-400 font-normal -mt-0.5">Period 3</span>
+        </div>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-xs font-normal">Science 9 P6</span>
+        </div>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-xs font-normal">4th Health</span>
+        </div>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-xs font-normal">World History</span>
+          <span class="text-[9px] text-gray-400 font-normal -mt-0.5">Period 2</span>
+        </div>
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="material-symbols-outlined">folder</span>
+        Archived classes
+      </a>
+
+      <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none"
+         href="#">
+        <span class="material-symbols-outlined">settings</span>
+        Setting
+        <span class="text-xs font-normal ml-auto">›</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-6 overflow-auto">
+    <header class="flex items-center justify-end gap-4 mb-6">
+      <button aria-label="Create"
+              class="text-gray-700 text-2xl font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
+        <span class="material-symbols-outlined">add</span>
       </button>
-      <button class="w-8 h-8 rounded-full bg-gray-200"></button>
-    </div>
-  </header>
 
-  <!-- Main Layout -->
-  <div class="flex">
+      <button aria-label="Apps"
+              class="text-gray-700 text-xl font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
+        <span class="material-symbols-outlined">apps</span>
+      </button>
 
-    <!-- Sidebar -->
-    <aside class="w-64 min-h-screen bg-white border-r text-gray-700">
-      <nav class="p-2 space-y-1">
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-100 text-blue-700">
-          <span class="material-symbols-outlined">home</span>
-          <span>Home</span>
-        </a>
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
-          <span class="material-symbols-outlined">calendar_today</span>
-          <span>Calendar</span>
-        </a>
-        <div>
-          <p class="px-3 py-2 text-sm uppercase text-gray-500">Enrolled</p>
-          <ul class="space-y-1">
-            <li><a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">US History: 25 - 26</a></li>
-            <li><a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">English 2 FALL 2025 <span class="text-sm text-gray-500">(Period 3)</span></a></li>
-            <li><a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Science 9 P6</a></li>
-            <li><a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">4th Health</a></li>
-            <li><a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">World History <span class="text-sm text-gray-500">(Period 2)</span></a></li>
-          </ul>
-        </div>
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
-          <span class="material-symbols-outlined">inventory_2</span>
-          <span>Archived classes</span>
-        </a>
-        <a href="#" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100">
-          <span class="material-symbols-outlined">settings</span>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </aside>
+      <button aria-label="User profile" class="w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm overflow-hidden">
+        <img alt="User profile picture placeholder, circular" class="rounded-full w-full h-full object-cover"
+             src="https://storage.googleapis.com/a1aa/image/803ed8f9-4d4f-45a9-aa8a-0cdef575c955.jpg" width="32" height="32"/>
+      </button>
+    </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-6">
-      <div class="grid grid-cols-3 gap-6">
-        <!-- Class Cards (placeholders like Classroom) -->
-        <div class="bg-white rounded-xl shadow border p-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+    <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <!-- 6 cards as placeholders; repeating structure -->
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between card-min">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
           </div>
-          <div class="flex justify-between items-center mt-6">
-            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-            <span class="material-symbols-outlined text-gray-500">more_vert</span>
-          </div>
+          <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow border p-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        <hr class="border-gray-200 mb-3"/>
+
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
           </div>
-          <div class="flex justify-between items-center mt-6">
-            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-            <span class="material-symbols-outlined text-gray-500">more_vert</span>
+          <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between card-min">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
           </div>
+          <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow border p-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        <hr class="border-gray-200 mb-3"/>
+
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
           </div>
-          <div class="flex justify-between items-center mt-6">
-            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-            <span class="material-symbols-outlined text-gray-500">more_vert</span>
+          <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between card-min">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
           </div>
+          <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow border p-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        <hr class="border-gray-200 mb-3"/>
+
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
           </div>
-          <div class="flex justify-between items-center mt-6">
-            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-            <span class="material-symbols-outlined text-gray-500">more_vert</span>
+          <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between card-min">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
           </div>
+          <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow border p-4 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        <hr class="border-gray-200 mb-3"/>
+
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
           </div>
-          <div class="flex justify-between items-center mt-6">
-            <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-            <span class="material-symbols-outlined text-gray-500">more_vert</span>
-          </div>
+          <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
         </div>
-      </div>
-    </main>
-  </div>
+      </article>
+
+      <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between card-min">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+          </div>
+          <div aria-hidden="true" class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+        </div>
+
+        <hr class="border-gray-200 mb-3"/>
+
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+            <input class="cursor-not-allowed" disabled type="checkbox"/>
+          </div>
+          <button aria-label="More options" class="text-gray-400 hover:text-gray-600">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Help floating -->
+    <button aria-label="Help" class="fixed bottom-4 right-4 text-gray-600 hover:text-gray-900 text-xs flex items-center gap-1 bg-white rounded-md px-2 py-1 shadow-sm">
+      <span class="material-symbols-outlined">help</span>
+      ?
+    </button>
+  </main>
+
 </body>
 </html>
