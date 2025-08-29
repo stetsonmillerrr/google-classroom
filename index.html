@@ -46,6 +46,26 @@ body { font-family: "Google Sans", Arial, sans-serif; }
   height:100%;
   border: none;
 }
+
+/* draggable toggle button */
+#iframeToggleBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: #1967d2;
+  color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 1100;
+  font-size: 16px;
+  user-select: none;
+}
+#iframeToggleBtn:active { cursor: grabbing; }
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -92,6 +112,10 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
         World History
         <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
+      </a>
+      <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span>
+        Duck
       </a>
     </div>
 
@@ -147,6 +171,9 @@ body { font-family: "Google Sans", Arial, sans-serif; }
   <iframe src="" allowfullscreen allow="fullscreen"></iframe>
 </div>
 
+<!-- draggable toggle button -->
+<div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
+
 <script>
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
@@ -201,41 +228,60 @@ if(savedOrder.length){
 }
 
 // US History
-document.getElementById("usHistoryLink").addEventListener("click", e => {
-  enrolledList.style.display="flex";
-  enrolledBtn.setAttribute("aria-expanded","true");
-  enrolledChevron.style.transform="rotate(0deg)";
-  openIframe(e.currentTarget, "https://example.com");
-});
+document.getElementById("usHistoryLink").addEventListener("click", e => openIframe(e.currentTarget, "https://example.com"));
 
 // English → new tab
 document.getElementById("englishLink").addEventListener("click", e => {
   window.open("https://www.julios.games/home", "_blank");
   enrolledList.prepend(e.currentTarget);
-  const ids = Array.from(enrolledList.children).map(a => a.id);
-  localStorage.setItem("enrolledOrder", JSON.stringify(ids));
+  localStorage.setItem("enrolledOrder", JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 });
 
 // Science
-document.getElementById("scienceLink").addEventListener("click", e => {
-  openIframe(e.currentTarget, "https://intrinsic.observer/");
-});
+document.getElementById("scienceLink").addEventListener("click", e => openIframe(e.currentTarget, "https://intrinsic.observer/"));
 
 // Health
-document.getElementById("healthLink").addEventListener("click", e => {
-  openIframe(e.currentTarget, "https://gn-math.github.io/");
-});
+document.getElementById("healthLink").addEventListener("click", e => openIframe(e.currentTarget, "https://gn-math.github.io/"));
 
 // World History
-document.getElementById("worldHistoryLink").addEventListener("click", e => {
-  openIframe(e.currentTarget, "https://wfdxcajxzt.lawsonengineers.co.uk/");
-});
+document.getElementById("worldHistoryLink").addEventListener("click", e => openIframe(e.currentTarget, "https://wfdxcajxzt.lawsonengineers.co.uk/"));
+
+// Duck
+document.getElementById("duckLink").addEventListener("click", e => openIframe(e.currentTarget, "https://duck.quackprep.com/"));
 
 // ESC closes iframe always
 document.addEventListener("keydown", e=>{
   if(e.key==="Escape"){
     iframeOverlay.style.display="none";
     iframeEl.src="";
+  }
+});
+
+// Draggable toggle button
+const toggleBtn = document.getElementById("iframeToggleBtn");
+let isDragging = false;
+let offsetX, offsetY;
+
+toggleBtn.addEventListener("mousedown", e=>{
+  isDragging = true;
+  offsetX = e.clientX - toggleBtn.offsetLeft;
+  offsetY = e.clientY - toggleBtn.offsetTop;
+  e.preventDefault();
+});
+document.addEventListener("mouseup", ()=> isDragging = false);
+document.addEventListener("mousemove", e=>{
+  if(isDragging){
+    toggleBtn.style.left = `${e.clientX - offsetX}px`;
+    toggleBtn.style.top = `${e.clientY - offsetY}px`;
+  }
+});
+
+// Toggle iframe visibility
+toggleBtn.addEventListener("click", ()=>{
+  if(iframeOverlay.style.display === "block"){
+    iframeOverlay.style.display = "none";
+  } else if(iframeEl.src){
+    iframeOverlay.style.display = "block";
   }
 });
 </script>
