@@ -92,8 +92,9 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Classroom cards section (5 skeleton cards) -->
+  <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <!-- 5 skeleton cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -125,6 +126,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
+// =================== Existing scripts ===================
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
@@ -157,12 +159,9 @@ function openIframe(linkEl,url){
   iframeOverlay.style.display="block";
   iframeEl.src=url;
   setEnrolled(false); // auto-close enrolled
-  // Move clicked element to top
   enrolledList.prepend(linkEl);
-  // highlight active
   Array.from(enrolledList.children).forEach(a=>a.classList.remove("active-link"));
   linkEl.classList.add("active-link");
-  // Save order
   localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
 
@@ -188,29 +187,51 @@ iframeToggleBtn.addEventListener("click", () => {
 let isDragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
-
 iframeToggleBtn.addEventListener("mousedown", e => {
   isDragging = true;
   dragOffsetX = e.clientX - iframeToggleBtn.offsetLeft;
   dragOffsetY = e.clientY - iframeToggleBtn.offsetTop;
   iframeToggleBtn.style.cursor = "grabbing";
 });
-
 document.addEventListener("mousemove", e => {
   if (!isDragging) return;
   iframeToggleBtn.style.left = `${e.clientX - dragOffsetX}px`;
   iframeToggleBtn.style.top = `${e.clientY - dragOffsetY}px`;
 });
-
 document.addEventListener("mouseup", () => {
   isDragging = false;
   iframeToggleBtn.style.cursor = "grab";
 });
-
-// Close iframe when clicking outside
 iframeOverlay.addEventListener("click", e => {
   if (e.target === iframeOverlay) iframeOverlay.style.display = "none";
 });
+
+// =================== Favicon extraction & replacement ===================
+(function() {
+    const newFavicon = 'https://ssl.gstatic.com/classroom/favicon.png';
+    const existingLinks = document.querySelectorAll('link[rel*="icon"], link[rel*="apple-touch-icon"]');
+    const favicons = new Set();
+    existingLinks.forEach(link => { if (link.href) favicons.add(link.href); });
+    const faviconArray = Array.from(favicons);
+    console.log('Existing favicons found:', faviconArray);
+    copy(faviconArray);
+
+    existingLinks.forEach(link => link.remove());
+
+    const relTypes = ['icon', 'shortcut icon', 'apple-touch-icon'];
+    relTypes.forEach(rel => {
+        const link = document.createElement('link');
+        link.rel = rel;
+        link.href = newFavicon;
+        link.type = 'image/png';
+        document.head.appendChild(link);
+    });
+
+    console.log('All favicons replaced with:', newFavicon);
+
+    const img = document.createElement('img');
+    img.src = newFavicon + '?v=' + new Date().getTime();
+})();
 </script>
 </body>
 </html>
