@@ -3,74 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Google Classroom Clone Loading Cards</title>
+<title>Google Classroom Clone</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 <style>
-body { font-family: "Google Sans", Arial, sans-serif; }
+body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
 /* shimmer animation */
-@keyframes shimmer {
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-
-/* skeleton base style */
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-}
-.skeleton::after {
-  content: '';
-  position: absolute;
-  top:0; left:0; width:100%; height:100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 4s infinite;
-}
+@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+.skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
+.skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 
 /* iframe overlay */
-#iframeOverlay {
-  display: none;
-  position: fixed;
-  top:0; left:0; width:100%; height:100%;
-  z-index: 1000;
-  background: white;
-}
-#iframeOverlay iframe {
-  width:100%;
-  height:100%;
-  border: none;
-}
+#iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
+#iframeOverlay iframe{width:100%;height:100%;border:none;}
 
 /* draggable toggle button */
-#iframeToggleBtn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background: #1967d2;
-  color: white;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-  z-index: 1100;
-  font-size: 16px;
-  user-select: none;
-}
-#iframeToggleBtn:active { cursor: grabbing; }
+#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;}
+#iframeToggleBtn:active{cursor:grabbing;}
 
 /* Active link highlight */
-.active-link {
-  background-color: #d2e3fc;
-  color: #1967d2;
-}
-.sidebar-scale { transform: scale(1.05); transform-origin: top left; }
+.active-link{background-color:#d2e3fc;color:#1967d2;}
+.sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -95,32 +50,25 @@ body { font-family: "Google Sans", Arial, sans-serif; }
     <!-- Enrolled list -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display: none;">
       <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span>
-        Duck
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span> Duck
       </a>
       <a id="worldHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">B</span>
-        Bolt
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">B</span> Bolt
       </a>
       <a id="scienceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">R</span>
-        Radius
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">R</span> Radius
       </a>
       <a id="spaceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#add8e6] text-[#000] text-xs font-semibold">S</span>
-        Space
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#add8e6] text-[#000] text-xs font-semibold">S</span> Space
       </a>
       <a id="usHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">E</span>
-        Szvy Central
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">E</span> Szvy Central
       </a>
       <a id="englishLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">J</span>
-        Julio's Games
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">J</span> Julio's Games
       </a>
       <a id="healthLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">G</span>
-        gn-math
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">G</span> gn-math
       </a>
     </div>
 
@@ -138,14 +86,14 @@ body { font-family: "Google Sans", Arial, sans-serif; }
     <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
       <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
     </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to edit profile icon" style="background-color: #aabbcc;">
+    <!-- Profile pic editable -->
+    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
       <span id="profileLetter" class="text-sm leading-none">A</span>
     </button>
   </header>
 
-  <!-- Classroom cards section -->
+  <!-- Classroom cards section (5 skeleton cards as before) -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- 5 skeleton/loading cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
         <div class="space-y-2 w-3/4">
@@ -160,7 +108,7 @@ body { font-family: "Google Sans", Arial, sans-serif; }
         <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
       </div>
     </article>
-    <!-- Repeat 4 more -->
+    <!-- Repeat 4 more identical cards -->
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input disabled type="checkbox" class="cursor-not-allowed"><input disabled type="checkbox" class="cursor-not-allowed"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input disabled type="checkbox" class="cursor-not-allowed"><input disabled type="checkbox" class="cursor-not-allowed"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]"><div class="flex justify-between items-start mb-4"><div class="space-y-2 w-3/4"><div class="h-3 skeleton w-2/3"></div><div class="h-3 skeleton w-1/2"></div></div><div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div></div><hr class="border-gray-200 mb-3"><div class="flex justify-between items-center text-gray-400 text-xs"><div class="flex gap-2"><input disabled type="checkbox" class="cursor-not-allowed"><input disabled type="checkbox" class="cursor-not-allowed"></div><button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button></div></article>
@@ -181,115 +129,89 @@ body { font-family: "Google Sans", Arial, sans-serif; }
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
 const enrolledChevron = document.getElementById("enrolledChevron");
-enrolledBtn.addEventListener("click", () => {
-  const isExpanded = enrolledBtn.getAttribute("aria-expanded")==="true";
-  if(isExpanded){
-    enrolledList.style.display="none";
-    enrolledBtn.setAttribute("aria-expanded","false");
-    enrolledChevron.style.transform="rotate(-90deg)";
-  } else {
-    enrolledList.style.display="flex";
-    enrolledBtn.setAttribute("aria-expanded","true");
-    enrolledChevron.style.transform="rotate(0deg)";
-  }
-});
+function setEnrolled(open){enrolledList.style.display=open?"flex":"none";enrolledBtn.setAttribute("aria-expanded",open);enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";}
+enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
 
-// Profile Icon
+// Profile Icon logic
 const profileBtn = document.getElementById("profileBtn");
 const profileLetter = document.getElementById("profileLetter");
 const savedLetter = localStorage.getItem("profileLetter");
 const savedColor = localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent = savedLetter;
 if(savedColor) profileBtn.style.backgroundColor = savedColor;
+profileBtn.addEventListener("click",()=>{
+  const newLetter = prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
+  const newColor = prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  profileLetter.textContent=newLetter;
+  profileBtn.style.backgroundColor=newColor;
+  localStorage.setItem("profileLetter",newLetter);
+  localStorage.setItem("profileColor",newColor);
+});
 
 // iframe logic
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeEl = iframeOverlay.querySelector("iframe");
 
-// Open iframe helper
-function openIframe(linkEl, url){
+// Helper: open iframe and move clicked link to top
+function openIframe(linkEl,url){
   iframeOverlay.style.display="block";
-  iframeEl.src = url;
-
-  // collapse enrolled tab
-  enrolledList.style.display = "none";
-  enrolledBtn.setAttribute("aria-expanded","false");
-  enrolledChevron.style.transform="rotate(-90deg)";
-
-  // highlight active
-  document.querySelectorAll('#enrolledList a').forEach(a=>a.classList.remove('active-link'));
-  linkEl.classList.add('active-link');
-
+  iframeEl.src=url;
+  setEnrolled(false); // auto-close enrolled
   // Move clicked element to top
   enrolledList.prepend(linkEl);
-
+  // highlight active
+  Array.from(enrolledList.children).forEach(a=>a.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
   // Save order
-  const ids = Array.from(enrolledList.children).map(a => a.id);
-  localStorage.setItem("enrolledOrder", JSON.stringify(ids));
+  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
 
-// Restore order
-const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder") || "[]");
-if(savedOrder.length){
-  savedOrder.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) enrolledList.appendChild(el);
-  });
-}
+// Restore order from localStorage
+const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
+if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
 
-// Event listeners
-document.getElementById("duckLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://duck.quackprep.com/"));
-document.getElementById("worldHistoryLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
-document.getElementById("scienceLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
-document.getElementById("spaceLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://googleslides.global.ssl.fastly.net/a"));
-document.getElementById("usHistoryLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://edpuzzle.com.de/"));
-document.getElementById("englishLink").addEventListener("click", e=>{
-  window.open("https://www.julios.games/home","_blank");
-  enrolledList.prepend(e.currentTarget);
-  localStorage.setItem("enrolledOrder", JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
-});
-document.getElementById("healthLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://gn-math.github.io/"));
+// Links
+document.getElementById("usHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://edpuzzle.com.de/"));
+document.getElementById("englishLink").addEventListener("click",e=>{window.open("https://www.julios.games/home","_blank");enrolledList.prepend(e.currentTarget);localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));});
+document.getElementById("scienceLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
+document.getElementById("healthLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://gn-math.github.io/"));
+document.getElementById("worldHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
+document.getElementById("duckLink").addEventListener("
+// Duck link
+document.getElementById("duckLink").addEventListener("click", e => openIframe(e.currentTarget, "https://duckduckgo.com/"));
 
-// ESC closes iframe
-document.addEventListener("keydown", e=>{
-  if(e.key==="Escape"){
-    iframeOverlay.style.display="none";
-    iframeEl.src="";
-    document.querySelectorAll('#enrolledList a').forEach(a=>a.classList.remove('active-link'));
-  }
+// Toggle iframe overlay
+const iframeToggleBtn = document.getElementById("iframeToggleBtn");
+iframeToggleBtn.addEventListener("click", () => {
+  iframeOverlay.style.display = iframeOverlay.style.display === "none" ? "block" : "none";
 });
 
 // Draggable toggle button
-const toggleBtn = document.getElementById("iframeToggleBtn");
-let isDragging = false, offsetX, offsetY;
-toggleBtn.addEventListener("mousedown", e=>{
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+iframeToggleBtn.addEventListener("mousedown", e => {
   isDragging = true;
-  offsetX = e.clientX - toggleBtn.offsetLeft;
-  offsetY = e.clientY - toggleBtn.offsetTop;
-  e.preventDefault();
-});
-document.addEventListener("mouseup", ()=>isDragging=false);
-document.addEventListener("mousemove", e=>{
-  if(isDragging){
-    toggleBtn.style.left = `${e.clientX - offsetX}px`;
-    toggleBtn.style.top = `${e.clientY - offsetY}px`;
-  }
-});
-toggleBtn.addEventListener("click", ()=>{
-  if(iframeOverlay.style.display==="block"){
-    iframeOverlay.style.display="none";
-  } else if(iframeEl.src){
-    iframeOverlay.style.display="block";
-  }
+  dragOffsetX = e.clientX - iframeToggleBtn.offsetLeft;
+  dragOffsetY = e.clientY - iframeToggleBtn.offsetTop;
+  iframeToggleBtn.style.cursor = "grabbing";
 });
 
-// Pointer lock for 3D games
-iframeEl.addEventListener("load", ()=>{
-  iframeEl.contentWindow.document.addEventListener("click", ()=>{
-    if (iframeOverlay.style.display==="block"){
-      iframeEl.requestPointerLock?.();
-    }
-  });
+document.addEventListener("mousemove", e => {
+  if (!isDragging) return;
+  iframeToggleBtn.style.left = `${e.clientX - dragOffsetX}px`;
+  iframeToggleBtn.style.top = `${e.clientY - dragOffsetY}px`;
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  iframeToggleBtn.style.cursor = "grab";
+});
+
+// Close iframe when clicking outside
+iframeOverlay.addEventListener("click", e => {
+  if (e.target === iframeOverlay) iframeOverlay.style.display = "none";
 });
 </script>
 </body>
