@@ -92,26 +92,26 @@ body { font-family: "Google Sans", Arial, sans-serif; }
     <!-- Enrolled list, initially hidden -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display:none;">
       <a id="usHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">U</span>
-        US History: 25 - 26
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">N</span>
+        Nebula-X
       </a>
       <a id="englishLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">E</span>
-        English 2 FALL 2025
-        <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 3</span>
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">J</span>
+        Julio's
+        <span class="text-[8px] text-gray-400 font-normal ml-auto"></span>
       </a>
       <a id="scienceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">S</span>
-        Science 9 P6
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">R</span>
+        Radius
       </a>
       <a id="healthLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">4</span>
-        4th Health
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">G</span>
+        gn-math
       </a>
       <a id="worldHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">W</span>
-        World History
-        <span class="text-[8px] text-gray-400 font-normal ml-auto">Period 2</span>
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">B</span>
+        Bolt
+        <span class="text-[8px] text-gray-400 font-normal ml-auto"></span>
       </a>
       <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span>
@@ -228,7 +228,7 @@ if(savedOrder.length){
 }
 
 // US History
-document.getElementById("usHistoryLink").addEventListener("click", e => openIframe(e.currentTarget, "https://example.com"));
+document.getElementById("usHistoryLink").addEventListener("click", e => openIframe(e.currentTarget, "https://nebx.above.gay/"));
 
 // English → new tab
 document.getElementById("englishLink").addEventListener("click", e => {
