@@ -8,7 +8,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 
-<!-- Fixed favicon -->
+<!-- Favicon: Google Classroom -->
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
 
 <style>
@@ -38,20 +38,22 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
   <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
     <button aria-label="Menu" class="text-gray-700 text-2xl"><i class="fas fa-bars"></i></button>
-    <img alt="Google Classroom icon" class="w-6 h-6 ml-2" src="https://www.gstatic.com/classroom/ic_product_classroom_144.png">
+    <!-- Fixed Classroom icon -->
+    <img alt="Google Classroom icon" class="w-6 h-6 ml-2" src="https://ssl.gstatic.com/classroom/favicon.png">
     <span class="text-gray-800 text-base font-normal select-none ml-2">Classroom</span>
   </header>
   <nav class="flex flex-col mt-4 px-2 space-y-1">
+    <!-- Original nav links unchanged -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
 
-    <!-- Enrolled button -->
+    <!-- Enrolled toggle -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list -->
+    <!-- Enrolled list (unchanged) -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display: none;">
       <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span> Duck
@@ -81,9 +83,9 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </nav>
 </aside>
 
-<!-- Main content -->
+<!-- Main content (unchanged) -->
 <main class="flex-1 p-6 overflow-auto">
-  <!-- Classroom cards (omitted for brevity, same as original) -->
+  <!-- Classroom cards section... keep all original skeleton cards here -->
 </main>
 
 <!-- iframe overlay -->
@@ -95,7 +97,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// =================== Existing scripts ===================
+// =================== All original scripts ===================
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
@@ -122,6 +124,8 @@ profileBtn.addEventListener("click",()=>{
 // iframe logic
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeEl = iframeOverlay.querySelector("iframe");
+
+// Open iframe helper
 function openIframe(linkEl,url){
   iframeOverlay.style.display="block";
   iframeEl.src=url;
@@ -131,8 +135,11 @@ function openIframe(linkEl,url){
   linkEl.classList.add("active-link");
   localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
+
 const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
 if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
+
+// Links
 document.getElementById("usHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://edpuzzle.com.de/"));
 document.getElementById("englishLink").addEventListener("click",e=>{window.open("https://www.julios.games/home","_blank");enrolledList.prepend(e.currentTarget);localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));});
 document.getElementById("scienceLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
