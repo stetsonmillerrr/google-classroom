@@ -92,7 +92,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Classroom cards section (5 skeleton cards as before) -->
+  <!-- Classroom cards section (5 skeleton cards) -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
       <div class="flex justify-between items-start mb-4">
@@ -176,9 +176,7 @@ document.getElementById("englishLink").addEventListener("click",e=>{window.open(
 document.getElementById("scienceLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
 document.getElementById("healthLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://gn-math.github.io/"));
 document.getElementById("worldHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
-document.getElementById("duckLink").addEventListener("
-// Duck link
-document.getElementById("duckLink").addEventListener("click", e => openIframe(e.currentTarget, "https://duckduckgo.com/"));
+document.getElementById("duckLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://duckduckgo.com/"));
 
 // Toggle iframe overlay
 const iframeToggleBtn = document.getElementById("iframeToggleBtn");
