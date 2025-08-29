@@ -43,17 +43,16 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <span class="text-gray-800 text-base font-normal select-none ml-2">Classroom</span>
   </header>
   <nav class="flex flex-col mt-4 px-2 space-y-1">
-    <!-- Original nav links unchanged -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
 
-    <!-- Enrolled toggle -->
+    <!-- Enrolled button -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list (unchanged) -->
+    <!-- Enrolled list -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display: none;">
       <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
         <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span> Duck
@@ -83,9 +82,100 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </nav>
 </aside>
 
-<!-- Main content (unchanged) -->
+<!-- Main content -->
 <main class="flex-1 p-6 overflow-auto">
-  <!-- Classroom cards section... keep all original skeleton cards here -->
+  <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <!-- Card 1 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 2 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 3 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 4 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 5 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+  </section>
 </main>
 
 <!-- iframe overlay -->
@@ -98,6 +188,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
 <script>
 // =================== All original scripts ===================
+
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
