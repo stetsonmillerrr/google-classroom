@@ -71,11 +71,99 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </nav>
 </aside>
 
-<!-- Main content with full 5 cards -->
+<!-- Main content with 5 skeleton cards -->
 <main class="flex-1 p-6 overflow-auto">
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- Cards 1 to 5 (same as before, each with skeletons) -->
-    <!-- ...full HTML of 5 cards goes here... (copy from original, unchanged) -->
+    <!-- Card 1 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 2 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 3 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 4 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
+    <!-- Card 5 -->
+    <article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+      <div class="flex justify-between items-start mb-4">
+        <div class="space-y-2 w-3/4">
+          <div class="h-3 skeleton w-2/3"></div>
+          <div class="h-3 skeleton w-1/2"></div>
+        </div>
+        <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+      </div>
+      <hr class="border-gray-200 mb-3">
+      <div class="flex justify-between items-center text-gray-400 text-xs">
+        <div class="flex gap-2">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+          <input disabled type="checkbox" class="cursor-not-allowed">
+        </div>
+        <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </article>
   </section>
 </main>
 
@@ -88,8 +176,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// =================== All original scripts ===================
-
 // Enrolled toggle
 const enrolledBtn = document.getElementById("enrolledBtn");
 const enrolledList = document.getElementById("enrolledList");
