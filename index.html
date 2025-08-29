@@ -99,17 +99,12 @@ if(savedColor) profileBtn.style.backgroundColor = savedColor;
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeEl = iframeOverlay.querySelector("iframe");
 
-// Helper to open iframe + move to top + pointer lock
+// Open iframe helper
 function openIframe(linkEl, url){
   iframeEl.src = url;
   iframeOverlay.style.display = "block";
   enrolledList.prepend(linkEl);
-  localStorage.setItem("enrolledOrder", JSON.stringify(Array.from(enrolledList.children).map(a => a.id)));
-
-  // Try pointer lock after a tiny timeout in response to click
-  setTimeout(()=> {
-    try { iframeOverlay.requestPointerLock(); } catch(e){}
-  }, 50);
+  localStorage.setItem("enrolledOrder", JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
 
 // Restore order
@@ -124,6 +119,13 @@ document.getElementById("healthLink").addEventListener("click", e=>openIframe(e.
 document.getElementById("worldHistoryLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
 document.getElementById("duckLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://duck.quackprep.com/"));
 document.getElementById("spaceLink").addEventListener("click", e=>openIframe(e.currentTarget,"https://googleslides.global.ssl.fastly.net/a"));
+
+// Pointer lock when iframe is clicked
+iframeEl.addEventListener("click", ()=>{ 
+  if(!document.pointerLockElement){
+    iframeOverlay.requestPointerLock?.();
+  }
+});
 
 // ESC closes iframe + exit pointer lock
 document.addEventListener("keydown", e=>{
