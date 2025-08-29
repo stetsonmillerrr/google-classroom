@@ -86,9 +86,30 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Classroom cards section (all 5 cards) -->
+  <!-- Classroom cards section -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- Cards 1–5 same as previous example -->
+    <!-- Repeat 5 identical cards -->
+    <script>
+      for(let i=0;i<5;i++){
+        document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
+        <div class="flex justify-between items-start mb-4">
+          <div class="space-y-2 w-3/4">
+            <div class="h-3 skeleton w-2/3"></div>
+            <div class="h-3 skeleton w-1/2"></div>
+          </div>
+          <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+        </div>
+        <hr class="border-gray-200 mb-3">
+        <div class="flex justify-between items-center text-gray-400 text-xs">
+          <div class="flex gap-2">
+            <input disabled type="checkbox" class="cursor-not-allowed">
+            <input disabled type="checkbox" class="cursor-not-allowed">
+          </div>
+          <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+        </article>`);
+      }
+    </script>
   </section>
 </main>
 
@@ -101,8 +122,62 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// All original JS code for enrolled toggle, iframe, links, draggable button
-// (Same as in previous fully functional version)
+// Enrolled toggle
+const enrolledBtn = document.getElementById("enrolledBtn");
+const enrolledList = document.getElementById("enrolledList");
+const enrolledChevron = document.getElementById("enrolledChevron");
+function setEnrolled(open){enrolledList.style.display=open?"flex":"none";enrolledBtn.setAttribute("aria-expanded",open);enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";}
+enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
+
+// Profile Icon logic
+const profileBtn = document.getElementById("profileBtn");
+const profileLetter = document.getElementById("profileLetter");
+const savedLetter = localStorage.getItem("profileLetter");
+const savedColor = localStorage.getItem("profileColor");
+if(savedLetter) profileLetter.textContent = savedLetter;
+if(savedColor) profileBtn.style.backgroundColor = savedColor;
+profileBtn.addEventListener("click",()=>{
+  const newLetter = prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
+  const newColor = prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  profileLetter.textContent=newLetter;
+  profileBtn.style.backgroundColor=newColor;
+  localStorage.setItem("profileLetter",newLetter);
+  localStorage.setItem("profileColor",newColor);
+});
+
+// iframe logic
+const iframeOverlay = document.getElementById("iframeOverlay");
+const iframeEl = iframeOverlay.querySelector("iframe");
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block";
+  iframeEl.src=url;
+  setEnrolled(false);
+  enrolledList.prepend(linkEl);
+  Array.from(enrolledList.children).forEach(a=>a.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
+  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
+}
+// Restore order
+const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
+if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
+// Links
+document.getElementById("usHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://edpuzzle.com.de/"));
+document.getElementById("englishLink").addEventListener("click",e=>{window.open("https://www.julios.games/home","_blank");enrolledList.prepend(e.currentTarget);localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));});
+document.getElementById("scienceLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
+document.getElementById("healthLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://gn-math.github.io/"));
+document.getElementById("worldHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
+document.getElementById("duckLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://duck.quackprep.com/"));
+// Toggle iframe
+const iframeToggleBtn = document.getElementById("iframeToggleBtn");
+iframeToggleBtn.addEventListener("click", () => {
+  iframeOverlay.style.display = iframeOverlay.style.display === "none" ? "block" : "none";
+});
+// Draggable toggle button
+let isDragging = false, dragOffsetX=0, dragOffsetY=0;
+iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
+document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
+document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
+iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay) iframeOverlay.style.display="none"; });
 </script>
 </body>
 </html>
