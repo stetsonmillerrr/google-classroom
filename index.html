@@ -137,6 +137,7 @@ async function fetchTitle(url){
   return new URL(url).hostname;
 }
 function loadFavicon(link){
+  if(link.querySelector("img,span")) return; // ✅ Prevent duplicate favicon/letter
   const url=link.getAttribute("data-url");
   let domain; try{domain=new URL(url).hostname;}catch(e){return;}
   const sources=[
@@ -144,9 +145,6 @@ function loadFavicon(link){
     `https://www.google.com/s2/favicons?sz=32&domain_url=${url}`,
     `${url.replace(/\/$/,"")}/favicon.ico`
   ];
-  // Remove any existing favicon before adding new
-  link.querySelectorAll("img[alt='favicon'],span[alt='favicon']").forEach(el=>el.remove());
-
   const img=document.createElement("img");
   img.className="w-5 h-5 rounded"; img.alt="favicon";
   let index=0;
@@ -157,20 +155,13 @@ function loadFavicon(link){
       badge.className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-semibold";
       badge.style.backgroundColor=hashColor(domain);
       badge.style.color="#000";
-      badge.setAttribute("alt","favicon");
       link.prepend(badge);
       return;
     }
     img.src=sources[index++];
   }
   img.onerror=tryNext;
-  img.onload=()=>{ 
-    const invalidFavicons=[
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQC", // generic gray placeholder
-    ];
-    if(img.naturalWidth<=16 || invalidFavicons.includes(img.src)){ tryNext(); } 
-    else { link.prepend(img);} 
-  };
+  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.prepend(img);} };
   tryNext();
 }
 // -------------------- Elements --------------------
@@ -218,13 +209,12 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.getAttribute("data-url");
   link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-2","py-1","select-none","cursor-pointer");
 
-  // Load favicon
-  loadFavicon(link);
-
-  // Detect title
+  // Detect title first
   const title=await fetchTitle(url);
   link.textContent=" "+title; // space so favicon/letter doesn't stick
-  loadFavicon(link); // re-insert favicon in front
+
+  // Load favicon once
+  loadFavicon(link);
 
   link.addEventListener("click",e=>{
     e.preventDefault();
