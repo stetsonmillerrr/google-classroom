@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -161,7 +161,7 @@ if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
 profileBtn.addEventListener("click",()=>{const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;profileLetter.textContent=l;profileBtn.style.backgroundColor=c;localStorage.setItem("profileLetter",l);localStorage.setItem("profileColor",c);});
 
-// Category expand/collapse smooth
+// Category expand/collapse smooth with synced arrows
 document.querySelectorAll('.category-header').forEach(h=>{
   const list=h.nextElementSibling;
   const icon=h.querySelector('i');
@@ -169,6 +169,8 @@ document.querySelectorAll('.category-header').forEach(h=>{
     const open=list.classList.toggle('open');
     icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
   });
+  // Ensure initial sync
+  icon.style.transform=list.classList.contains('open')?"rotate(0deg)":"rotate(-90deg)";
 });
 
 // Iframe open
@@ -230,11 +232,17 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.dataset.url;
   link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
   smartFavicon(url,link);
+
   link.addEventListener("click",e=>{
     e.preventDefault();
     if(url.includes("julios.games")){
       window.open(url,"_blank");
-      if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
+      // Always ensure external link icon is present
+      if(!link.querySelector(".fa-external-link-alt")){
+        const icon=document.createElement("i");
+        icon.className="fas fa-external-link-alt ml-auto text-xs";
+        link.append(icon);
+      }
     } else {
       openIframe(link,url);
     }
