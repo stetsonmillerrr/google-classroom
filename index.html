@@ -8,7 +8,6 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
 
 <style>
@@ -23,7 +22,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.category-list{display:flex;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
+.category-list{display:none;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
 .enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 .favicon-img, .favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
@@ -31,7 +30,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
 
-<!-- Sidebar -->
 <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
   <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
     <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
@@ -42,24 +40,18 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
 
-    <!-- Enrolled toggle -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Categories list -->
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
-
-      <!-- Games category -->
       <div class="category">
         <div class="category-header">Games <i class="fas fa-chevron-down text-xs"></i></div>
         <div class="category-list">
           <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
         </div>
       </div>
-
-      <!-- Science category -->
       <div class="category">
         <div class="category-header">Science <i class="fas fa-chevron-down text-xs"></i></div>
         <div class="category-list">
@@ -67,8 +59,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
           <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item"></a>
         </div>
       </div>
-
-      <!-- History category -->
       <div class="category">
         <div class="category-header">History <i class="fas fa-chevron-down text-xs"></i></div>
         <div class="category-list">
@@ -76,8 +66,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
           <a id="usHistoryLink" data-url="https://edpuzzle.com.de/" class="enrolled-item"></a>
         </div>
       </div>
-
-      <!-- Other -->
       <div class="category">
         <div class="category-header">Other <i class="fas fa-chevron-down text-xs"></i></div>
         <div class="category-list">
@@ -85,7 +73,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
           <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
         </div>
       </div>
-
     </div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
@@ -93,9 +80,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </nav>
 </aside>
 
-<!-- Main content -->
 <main class="flex-1 p-6 overflow-auto">
-  <!-- Top bar -->
   <header class="flex items-center justify-end gap-6 mb-6">
     <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
       <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -108,7 +93,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Classroom cards -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
       for(let i=0;i<5;i++){
@@ -134,16 +118,12 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </section>
 </main>
 
-<!-- iframe overlay -->
 <div id="iframeOverlay">
   <iframe src="" allowfullscreen allow="fullscreen"></iframe>
 </div>
-
-<!-- draggable toggle button -->
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// Elements
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
 const enrolledChevron=document.getElementById("enrolledChevron");
@@ -153,7 +133,6 @@ const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
-// -------------------- Enrolled toggle --------------------
 function closeEnrolled(){ 
   enrolledList.style.display="none"; 
   enrolledBtn.setAttribute("aria-expanded",false); 
@@ -166,11 +145,13 @@ enrolledBtn.addEventListener("click",()=>{
   enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
 });
 
-// -------------------- Category dropdowns --------------------
-document.querySelectorAll('.category-header').forEach(header=>{
-  const list = header.nextElementSibling;
+// Category dropdowns
+document.querySelectorAll('.category').forEach(category=>{
+  const header = category.querySelector('.category-header');
+  const list = category.querySelector('.category-list');
   const arrow = header.querySelector('i');
-  arrow.style.transform = list.style.display==="flex" ? "rotate(0deg)":"rotate(-90deg)";
+  list.style.display = "none";
+  arrow.style.transform = "rotate(-90deg)";
   header.addEventListener('click',()=>{ 
     const open = list.style.display!=="none";
     list.style.display = open ? "none":"flex"; 
@@ -178,7 +159,7 @@ document.querySelectorAll('.category-header').forEach(header=>{
   });
 });
 
-// -------------------- Profile Icon --------------------
+// Profile
 const savedLetter=localStorage.getItem("profileLetter");
 const savedColor=localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent=savedLetter;
@@ -190,7 +171,7 @@ profileBtn.addEventListener("click",()=>{
   localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
 });
 
-// -------------------- Favicon loader --------------------
+// Favicon loader
 function loadFavicon(link){
   const url=link.dataset.url;
   let domain;
@@ -217,7 +198,7 @@ function loadFavicon(link){
   tryNext();
 }
 
-// -------------------- Fetch title --------------------
+// Fetch title
 async function fetchTitle(url){
   const cacheKey="title:"+url;
   const cached=localStorage.getItem(cacheKey);
@@ -227,16 +208,14 @@ async function fetchTitle(url){
   return new URL(url).hostname.replace(/^www\./,"");
 }
 
-// -------------------- Load enrolled items --------------------
+// Load enrolled items
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url = link.dataset.url;
   link.title = url.replace(/^https?:\/\//,"").replace(/\/$/,"");
   link.textContent=" ";
   loadFavicon(link);
-
   const title = await fetchTitle(url);
   link.append(" "+title.replace(/^https?:\/\//,"").replace(/\/$/,""));
-
   link.addEventListener("click",e=>{
     e.preventDefault();
     closeEnrolled();
@@ -245,10 +224,11 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   });
 });
 
-// -------------------- Iframe --------------------
+// Iframe
 function openIframe(linkEl,url){
   iframeOverlay.style.display="block"; iframeEl.src=url;
   iframeToggleBtn.style.display="flex";
+  closeEnrolled();
   const catList = linkEl.closest('.category-list');
   catList.prepend(linkEl);
   Array.from(catList.children).forEach(a=>a.classList.remove("active-link"));
@@ -257,16 +237,16 @@ function openIframe(linkEl,url){
 }
 iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; }});
 
-// -------------------- Toggle iframe button --------------------
+// Toggle iframe button
 iframeToggleBtn.addEventListener("click",()=>{ iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none"; });
 
-// -------------------- Draggable button --------------------
+// Draggable
 let isDragging=false, dragOffsetX=0, dragOffsetY=0;
 iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
 document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
 document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
 
-// -------------------- Hide enrolled if leaving tab --------------------
+// Hide enrolled if leaving tab
 window.addEventListener("blur", ()=>{ closeEnrolled(); });
 </script>
 </body>
