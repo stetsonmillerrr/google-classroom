@@ -50,7 +50,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
-      <!-- all categories and links restored -->
+      <!-- Categories fully restored -->
       <div class="category">
         <div class="category-header">Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
@@ -88,7 +88,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
       <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
     </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to login">
+    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
       <span id="profileLetter" class="text-sm leading-none"> </span>
     </button>
   </header>
@@ -111,14 +111,12 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </section>
 </main>
 
-<!-- IFRAME -->
 <div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <!-- LOGIN MODAL -->
-<div id="loginModal" class="flex">
+<div id="loginModal">
   <div class="modal-content">
-    <h2 class="text-lg font-semibold mb-2">Login</h2>
     <input type="text" id="usernameInput" placeholder="Username">
     <input type="password" id="passwordInput" placeholder="Password">
     <button id="loginBtn">Login</button>
@@ -126,64 +124,71 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </div>
 </div>
 
-<!-- WIKI MODAL (unchanged) -->
-<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
-  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <!-- modal content unchanged -->
-  </div>
-</div>
-
-<!-- CLASSMATES MODAL (unchanged) -->
-<div id="classmatesModal" class="fixed inset-0 z-[1500] hidden items-center justify-center">
-  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[80vh]">
-    <!-- modal content unchanged -->
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-// PROFILE LOGIN
-const profileBtnEl = document.getElementById('profileBtn');
-const profileLetterEl = document.getElementById('profileLetter');
-const loginModalEl = document.getElementById('loginModal');
-const loginBtnEl = document.getElementById('loginBtn');
-const closeLoginEl = document.getElementById('closeLogin');
+// --- PROFILE & LOGIN ---
+const profileBtnEl=document.getElementById('profileBtn');
+const profileLetterEl=document.getElementById('profileLetter');
+const loginModalEl=document.getElementById('loginModal');
+const loginBtnEl=document.getElementById('loginBtn');
+const closeLoginEl=document.getElementById('closeLogin');
 
-profileBtnEl.addEventListener('click', () => { loginModalEl.style.display = 'flex'; });
-closeLoginEl.addEventListener('click', () => { loginModalEl.style.display = 'none'; });
-loginBtnEl.addEventListener('click', () => {
-  const username = document.getElementById('usernameInput').value.trim();
-  const password = document.getElementById('passwordInput').value.trim();
+profileBtnEl.addEventListener('click',()=>{ loginModalEl.style.display='flex'; });
+closeLoginEl.addEventListener('click',()=>{ loginModalEl.style.display='none'; });
+loginBtnEl.addEventListener('click',()=>{
+  const username=document.getElementById('usernameInput').value.trim();
+  const password=document.getElementById('passwordInput').value.trim();
   if(!username||!password){alert('Enter username & password'); return;}
-  localStorage.setItem('loggedIn','true'); localStorage.setItem('username',username);
+  localStorage.setItem('loggedIn','true');
+  localStorage.setItem('username',username);
   loginModalEl.style.display='none';
   profileLetterEl.textContent=username.charAt(0).toUpperCase();
   profileBtnEl.style.backgroundColor='#1967d2';
 });
 if(localStorage.getItem('loggedIn')==='true'){
-  const username = localStorage.getItem('username');
+  const username=localStorage.getItem('username');
   profileLetterEl.textContent=username.charAt(0).toUpperCase();
   profileBtnEl.style.backgroundColor='#1967d2';
 }
 
-// ENROLLED TOGGLE
+// --- CATEGORY DROPDOWN ---
+document.querySelectorAll('.category-header').forEach(h=>{
+  const list=h.nextElementSibling;
+  const icon=h.querySelector('i');
+  list.classList.remove('open'); icon.style.transform='rotate(-90deg)';
+  h.addEventListener('click',()=>{
+    const open=list.classList.toggle('open');
+    icon.style.transform=open?'rotate(0deg)':'rotate(-90deg)';
+  });
+});
+
+// --- ENROLLED LINKS ---
+document.querySelectorAll('.enrolled-item').forEach(el=>{
+  const url=el.dataset.url;
+  el.textContent=' ' + new URL(url).hostname.replace(/^www\./,'');
+  el.addEventListener('click',()=>{ window.open(url,'_blank'); });
+});
+
+// --- ENROLLED TOGGLE ---
 const enrolledBtn=document.getElementById('enrolledBtn');
 const enrolledList=document.getElementById('enrolledList');
 const enrolledChevron=document.getElementById('enrolledChevron');
 enrolledBtn.addEventListener('click',()=>{
-  const isOpen=enrolledList.style.display==='flex'||enrolledList.style.display==='block';
+  const isOpen=enrolledList.style.display==='flex';
   enrolledList.style.display=isOpen?'none':'flex';
   enrolledChevron.style.transform=isOpen?'rotate(-90deg)':'rotate(0deg)';
 });
 
-// LINK CLICK HANDLER
-document.querySelectorAll('.enrolled-item').forEach(el=>{
-  const url=el.dataset.url;
-  el.textContent=url.replace(/^https?:\/\//,'').replace(/\/$/,'');
-  el.addEventListener('click',()=>{window.open(url,'_blank');});
-});
+// --- IFRAME & DRAG TOGGLE RESTORED ---
+const iframeOverlay=document.getElementById('iframeOverlay');
+const iframeEl=iframeOverlay.querySelector('iframe');
+const iframeToggleBtn=document.getElementById('iframeToggleBtn');
+
+iframeToggleBtn.addEventListener('click',()=>{ iframeOverlay.style.display=iframeOverlay.style.display==='none'?'block':'none'; });
+let isDragging=false,dx=0,dy=0;
+iframeToggleBtn.addEventListener('mousedown',e=>{ isDragging=true; dx=e.clientX-iframeToggleBtn.offsetLeft; dy=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor='grabbing'; });
+document.addEventListener('mousemove',e=>{ if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dx}px`; iframeToggleBtn.style.top=`${e.clientY-dy}px`; });
+document.addEventListener('mouseup',()=>{ isDragging=false; iframeToggleBtn.style.cursor='grab'; });
 </script>
 
 </body>
