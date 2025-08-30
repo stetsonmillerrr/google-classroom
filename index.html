@@ -60,15 +60,15 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
           <a id="browserLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a>
           <a id="spaceLink" data-url="https://erbytes.host2go.net/" class="enrolled-item"></a>
           <a id="randomLink" data-url="https://study.info.north-kazakhstan.su/" class="enrolled-item"></a>
-          <a id="utopia2Link" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
-          <a id="utopia3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
+          <a id="utopiLink" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
+          <a id="utopi3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
+          <a id="utopi5Link" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
+          <a id="utopi4Link" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
         </div>
       </div>
     </div>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
+    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Settings<span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
 </aside>
 
@@ -112,7 +112,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
   <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">🌐 Web Proxy 🌐</h2>
+      <h2 class="text-lg font-semibold text-gray-800">🌐 Web Proxy(s) 🌐</h2>
       <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
     </div>
     <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
@@ -372,6 +372,209 @@ async function fetchLinks() {
     container.appendChild(div);
   }
 }
+</script>
+  <!-- CLASSMATES MODAL -->
+<div id="classmatesModal" class="fixed inset-0 z-[1500] hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[80vh]">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">👩‍🎓 Classmates</h2>
+      <button id="closeClassmatesModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+
+    <!-- Add Classmate -->
+    <div class="flex gap-2 mb-4">
+      <input id="classmateInput" type="text" placeholder="Enter username" class="flex-1 border border-gray-300 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <button id="addClassmateBtn" class="bg-blue-600 text-white rounded-lg p-2 text-sm hover:bg-blue-700 transition-colors">Send Request</button>
+    </div>
+
+    <!-- Friend Requests -->
+    <div class="mb-4">
+      <h3 class="text-sm font-semibold text-gray-700 mb-2">Requests</h3>
+      <div id="classmateRequests" class="flex flex-col space-y-2 text-xs text-gray-700 overflow-y-auto max-h-24"></div>
+    </div>
+
+    <!-- Classmates List -->
+    <div class="flex-1 flex flex-col">
+      <h3 class="text-sm font-semibold text-gray-700 mb-2">Classmates</h3>
+      <div id="classmateList" class="flex-1 flex flex-col space-y-2 overflow-y-auto"></div>
+    </div>
+
+    <!-- Chat Box -->
+    <div id="chatBox" class="mt-4 hidden flex flex-col border-t pt-2">
+      <h4 id="chatTitle" class="font-medium text-gray-700 mb-2">Chat with </h4>
+      <div id="chatMessages" class="flex-1 overflow-y-auto space-y-1 text-sm mb-2 max-h-48"></div>
+      <div class="flex gap-2">
+        <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        <button id="sendChatBtn" class="bg-blue-600 text-white px-3 rounded hover:bg-blue-700 text-sm">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  // Use your existing Supabase client if you already defined it
+  const supabaseClient = supabase; // <- assumes you already have const supabase = ...
+
+  const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
+  localStorage.setItem('userId', userId);
+
+  const createBtn = document.querySelector('header button[aria-label="Create"]');
+  const classmatesModal = document.getElementById('classmatesModal');
+  const closeClassmatesModal = document.getElementById('closeClassmatesModal');
+  const classmateInput = document.getElementById('classmateInput');
+  const addClassmateBtn = document.getElementById('addClassmateBtn');
+  const classmateList = document.getElementById('classmateList');
+  const classmateRequests = document.getElementById('classmateRequests');
+  const chatBox = document.getElementById('chatBox');
+  const chatTitle = document.getElementById('chatTitle');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+  const sendChatBtn = document.getElementById('sendChatBtn');
+
+  let classmates = [];
+  let requests = [];
+  let currentChatUser = null;
+
+  function hashColor(str){
+    let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h);
+    const colors=["#d2e3fc","#cce0ff","#ffcce0","#e0f7fa","#c8e6c9"];
+    return colors[Math.abs(h)%colors.length];
+  }
+
+  createBtn.addEventListener('click', () => {
+    classmatesModal.classList.remove('hidden');
+    setTimeout(() => classmatesModal.querySelector('div.relative').classList.add('scale-100','opacity-100'), 10);
+    loadClassmates();
+  });
+
+  closeClassmatesModal.addEventListener('click', closeModal);
+  classmatesModal.querySelector('.absolute').addEventListener('click', closeModal);
+  function closeModal() {
+    classmatesModal.querySelector('div.relative').classList.remove('scale-100','opacity-0');
+    setTimeout(() => classmatesModal.classList.add('hidden'), 200);
+  }
+
+  async function loadClassmates() {
+    const { data: reqData } = await supabaseClient.from('friend_requests').select('*').eq('to_user', userId);
+    requests = reqData || [];
+
+    const { data: friends } = await supabaseClient.from('friends')
+      .select('*')
+      .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+    classmates = friends.map(f => f.user_id===userId ? f.friend_id : f.user_id);
+
+    renderClassmates();
+  }
+
+  function renderClassmates() {
+    classmateRequests.innerHTML = '';
+    requests.forEach(req => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100 transition-all';
+      div.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold" style="background:${hashColor(req.from_user)}">${req.from_user.charAt(0).toUpperCase()}</div>
+          <span>${req.from_user}</span>
+        </div>
+        <div class="flex gap-1">
+          <button class="acceptBtn bg-green-500 text-white px-2 py-0.5 rounded hover:bg-green-600 text-xs">✓</button>
+          <button class="declineBtn bg-red-500 text-white px-2 py-0.5 rounded hover:bg-red-600 text-xs">✕</button>
+        </div>
+      `;
+      classmateRequests.appendChild(div);
+
+      div.querySelector('.acceptBtn').addEventListener('click', async () => {
+        await supabaseClient.from('friends').insert([{ user_id: userId, friend_id: req.from_user }]);
+        await supabaseClient.from('friend_requests').delete().eq('id', req.id);
+        loadClassmates();
+      });
+
+      div.querySelector('.declineBtn').addEventListener('click', async () => {
+        await supabaseClient.from('friend_requests').delete().eq('id', req.id);
+        loadClassmates();
+      });
+    });
+
+    classmateList.innerHTML = '';
+    classmates.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-all';
+      div.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold" style="background:${hashColor(name)}">${name.charAt(0).toUpperCase()}</div>
+          <span>${name}</span>
+          <span class="ml-2 text-xs text-gray-400" id="status-${name}">⏺️</span>
+        </div>
+        <button class="messageBtn bg-gray-200 px-2 py-0.5 rounded hover:bg-gray-300 text-xs">💬</button>
+      `;
+      classmateList.appendChild(div);
+      div.querySelector('.messageBtn').addEventListener('click', () => openChat(name));
+      checkStatus(name);
+    });
+  }
+
+  addClassmateBtn.addEventListener('click', async () => {
+    const name = classmateInput.value.trim();
+    if(!name) return;
+    await supabaseClient.from('friend_requests').insert([{ from_user: userId, to_user: name }]);
+    classmateInput.value='';
+    loadClassmates();
+  });
+
+  function openChat(name) {
+    currentChatUser = name;
+    chatTitle.textContent = `Chat with ${name}`;
+    chatBox.classList.remove('hidden');
+    loadMessages();
+  }
+
+  async function loadMessages() {
+    const { data } = await supabaseClient.from('messages')
+      .select('*')
+      .or(`from_user.eq.${userId},to_user.eq.${userId}`)
+      .order('created_at', { ascending: true });
+
+    chatMessages.innerHTML = '';
+    data.forEach(msg => {
+      if((msg.from_user===userId && msg.to_user===currentChatUser) || (msg.from_user===currentChatUser && msg.to_user===userId)){
+        const div = document.createElement('div');
+        div.className = msg.from_user===userId ? 'text-right text-sm bg-blue-100 p-1 rounded' : 'text-left text-sm bg-gray-100 p-1 rounded';
+        div.textContent = msg.message;
+        chatMessages.appendChild(div);
+      }
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  sendChatBtn.addEventListener('click', async () => {
+    const text = chatInput.value.trim();
+    if(!text || !currentChatUser) return;
+    await supabaseClient.from('messages').insert([{ from_user: userId, to_user: currentChatUser, message: text }]);
+    chatInput.value='';
+    loadMessages();
+  });
+
+  supabaseClient.channel('public:messages')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+      if(payload.new.from_user===currentChatUser || payload.new.to_user===currentChatUser){
+        loadMessages();
+      }
+    })
+    .subscribe();
+
+  setInterval(async () => {
+    await supabaseClient.from('presence').upsert([{ user_id: userId, online: true }]);
+    classmates.forEach(checkStatus);
+  }, 5000);
+
+  async function checkStatus(name){
+    const { data } = await supabaseClient.from('presence').select('online').eq('user_id', name).single();
+    const el = document.getElementById(`status-${name}`);
+    if(el) el.textContent = data?.online ? '🟢' : '⚪';
+  }
+})();
 </script>
 </body>
 </html>
