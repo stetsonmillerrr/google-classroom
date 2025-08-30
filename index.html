@@ -22,6 +22,8 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
+.category-label { font-size: 0.75rem; font-weight: 600; color: #555; margin: 8px 0 4px 12px; }
+.category-separator { border-top: 1px solid #ddd; margin: 6px 0; }
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -43,15 +45,18 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list (aligned left with sidebar) -->
+    <!-- Enrolled list with categories -->
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
+      <div class="category-label">Games</div>
       <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
+      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
+      <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
+      <div class="category-separator"></div>
+      <div class="category-label">School</div>
       <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
       <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
       <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item"></a>
       <a id="usHistoryLink" data-url="https://edpuzzle.com.de/" class="enrolled-item"></a>
-      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
-      <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
     </div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
@@ -154,6 +159,7 @@ function loadFavicon(link){
       badge.className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-semibold";
       badge.style.backgroundColor=hashColor(domain);
       badge.style.color="#000";
+      link.querySelector("img, span")?.remove();
       link.prepend(badge);
       return;
     }
@@ -161,7 +167,7 @@ function loadFavicon(link){
   }
   img.onerror=tryNext;
   img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { 
-    link.querySelector("img, span")?.remove(); // ✅ ensure only ONE favicon/badge
+    link.querySelector("img, span")?.remove();
     link.prepend(img);
   }};
   tryNext();
@@ -196,33 +202,22 @@ function openIframe(linkEl,url){
   iframeOverlay.style.display="block";
   iframeEl.src=url;
   setEnrolled(false);
-  enrolledList.prepend(linkEl);
-  Array.from(enrolledList.children).forEach(a=>a.classList.remove("active-link"));
   linkEl.classList.add("active-link");
-  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
-
-// -------------------- Restore order --------------------
-const savedOrder=JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
-if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
 
 // -------------------- Enhance enrolled links --------------------
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.getAttribute("data-url");
   link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-3","py-2","select-none","cursor-pointer");
 
-  // Detect title first
   const title=await fetchTitle(url);
-  link.textContent=" "+title; // add space for favicon
-
-  // Load favicon only ONCE
+  link.textContent=" "+title;
   loadFavicon(link);
 
   link.addEventListener("click",e=>{
     e.preventDefault();
     if(link.id==="englishLink"){
       window.open(url,"_blank");
-      enrolledList.prepend(link);
     } else {
       openIframe(link,url);
     }
