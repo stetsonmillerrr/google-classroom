@@ -245,10 +245,21 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   if(url.includes("julios.games")){
     if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
   }
-  link.addEventListener("click",e=>{
+  link.addEventListener("click", e => {
     e.preventDefault();
-    if(url.includes("julios.games")){window.open(url,"_blank");} else {openIframe(link,url);}
-  });
+    const categoryList = link.parentElement; // the .category-list container
+    // Move clicked link to the top
+    categoryList.prepend(link);
+
+    // Save the new order in localStorage
+    const ids = Array.from(categoryList.querySelectorAll(".enrolled-item")).map(l => l.id);
+    localStorage.setItem(`order_${categoryList.parentElement.querySelector(".category-header").textContent}`, JSON.stringify(ids));
+
+    if(url.includes("julios.games")){
+        window.open(url,"_blank");
+    } else {
+        openIframe(link, url);
+    }
 });
 
 // Toggle iframe
