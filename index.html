@@ -43,8 +43,8 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list (auto favicon + title, aligned left) -->
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1 pl-3" style="display: none;">
+    <!-- Enrolled list (aligned left with sidebar) -->
+    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
       <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
       <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
       <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
@@ -161,7 +161,7 @@ function loadFavicon(link){
   }
   img.onerror=tryNext;
   img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { 
-    link.querySelector("img, span")?.remove(); // prevent duplicates
+    link.querySelector("img, span")?.remove(); // ✅ ensure only ONE favicon/badge
     link.prepend(img);
   }};
   tryNext();
@@ -211,13 +211,12 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.getAttribute("data-url");
   link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-3","py-2","select-none","cursor-pointer");
 
-  // Load favicon
-  loadFavicon(link);
-
-  // Detect title
+  // Detect title first
   const title=await fetchTitle(url);
-  link.textContent=" "+title; // keep space for favicon
-  loadFavicon(link); // re-insert favicon in front
+  link.textContent=" "+title; // add space for favicon
+
+  // Load favicon only ONCE
+  loadFavicon(link);
 
   link.addEventListener("click",e=>{
     e.preventDefault();
