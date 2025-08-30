@@ -144,6 +144,9 @@ function loadFavicon(link){
     `https://www.google.com/s2/favicons?sz=32&domain_url=${url}`,
     `${url.replace(/\/$/,"")}/favicon.ico`
   ];
+  // Remove any existing favicon before adding new
+  link.querySelectorAll("img[alt='favicon'],span[alt='favicon']").forEach(el=>el.remove());
+
   const img=document.createElement("img");
   img.className="w-5 h-5 rounded"; img.alt="favicon";
   let index=0;
@@ -154,13 +157,20 @@ function loadFavicon(link){
       badge.className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-semibold";
       badge.style.backgroundColor=hashColor(domain);
       badge.style.color="#000";
+      badge.setAttribute("alt","favicon");
       link.prepend(badge);
       return;
     }
     img.src=sources[index++];
   }
   img.onerror=tryNext;
-  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.prepend(img);} };
+  img.onload=()=>{ 
+    const invalidFavicons=[
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQC", // generic gray placeholder
+    ];
+    if(img.naturalWidth<=16 || invalidFavicons.includes(img.src)){ tryNext(); } 
+    else { link.prepend(img);} 
+  };
   tryNext();
 }
 // -------------------- Elements --------------------
