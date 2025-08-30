@@ -373,67 +373,98 @@ async function fetchLinks() {
   }
 }
 </script>
-  <!-- Login Modal -->
-<div id="loginModal" class="fixed inset-0 z-[1300] hidden items-center justify-center">
-  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+<!-- Login / Sign-Up Modal -->
+<div id="authModal" class="fixed inset-0 z-[1300] hidden items-center justify-center">
+  <div id="authOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
   <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 transform scale-95 opacity-0 transition-all duration-300">
     <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">Login</h2>
-      <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 id="authTitle" class="text-lg font-semibold text-gray-800">Login</h2>
+      <button id="closeAuthModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
     </div>
     <div class="flex flex-col gap-4">
-      <input id="emailInput" type="email" placeholder="Email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <input id="passwordInput" type="password" placeholder="Password" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <button id="loginBtn" class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">Login</button>
-      <span id="loginMessage" class="text-red-500 text-sm"></span>
+      <input id="authEmail" type="email" placeholder="Email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
+      <input id="authPassword" type="password" placeholder="Password" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
+      <button id="authActionBtn" class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">Login</button>
+      <span id="authMessage" class="text-red-500 text-sm"></span>
+      <p class="text-sm text-gray-600 mt-2">
+        <span id="toggleAuth" class="text-blue-600 hover:underline cursor-pointer">Don't have an account? Sign Up</span>
+      </p>
     </div>
   </div>
 </div>
+
 <script>
-// LOGIN MODAL SCRIPT
-const loginModal = document.getElementById('loginModal');
-const loginBtn = document.getElementById('loginBtn');
-const closeLoginModal = document.getElementById('closeLoginModal');
-const loginMessage = document.getElementById('loginMessage');
+// AUTH MODAL SCRIPT
+const authModal = document.getElementById('authModal');
+const authOverlay = document.getElementById('authOverlay');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authTitle = document.getElementById('authTitle');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const authActionBtn = document.getElementById('authActionBtn');
+const authMessage = document.getElementById('authMessage');
+const toggleAuth = document.getElementById('toggleAuth');
 
-// Open login modal (example: double-click profile button)
-profileBtn.addEventListener('dblclick', () => {
-  loginModal.classList.remove('hidden');
-  setTimeout(() => {
-    loginModal.querySelector('div.relative').classList.add('scale-100', 'opacity-100');
-  }, 10);
-});
+let isLogin = true; // Toggle between login and signup
 
-// Close modal function
-function closeLogin() {
-  const modalContent = loginModal.querySelector('div.relative');
-  modalContent.classList.remove('scale-100', 'opacity-100');
-  setTimeout(() => loginModal.classList.add('hidden'), 200);
-  loginMessage.textContent = '';
+function openAuthModal() {
+  authModal.classList.remove('hidden');
+  setTimeout(() => authModal.querySelector('div.relative').classList.add('scale-100','opacity-100'), 10);
 }
 
-// Close modal buttons
-closeLoginModal.addEventListener('click', closeLogin);
-loginModal.querySelector('div.absolute').addEventListener('click', closeLogin);
+function closeAuth() {
+  const modalContent = authModal.querySelector('div.relative');
+  modalContent.classList.remove('scale-100','opacity-0');
+  setTimeout(() => authModal.classList.add('hidden'), 200);
+  authMessage.textContent = '';
+  authEmail.value = '';
+  authPassword.value = '';
+}
 
-// Handle login
-loginBtn.addEventListener('click', async () => {
-  const email = document.getElementById('emailInput').value.trim();
-  const password = document.getElementById('passwordInput').value.trim();
+// Open modal on double-click profile button
+profileBtn.addEventListener('dblclick', openAuthModal);
+closeAuthModal.addEventListener('click', closeAuth);
+authOverlay.addEventListener('click', closeAuth);
+
+// Toggle Login / Sign-Up
+toggleAuth.addEventListener('click', () => {
+  isLogin = !isLogin;
+  if (isLogin) {
+    authTitle.textContent = 'Login';
+    authActionBtn.textContent = 'Login';
+    toggleAuth.textContent = "Don't have an account? Sign Up";
+  } else {
+    authTitle.textContent = 'Sign Up';
+    authActionBtn.textContent = 'Sign Up';
+    toggleAuth.textContent = "Already have an account? Login";
+  }
+  authMessage.textContent = '';
+});
+
+// Handle Auth (Login / Sign-Up)
+authActionBtn.addEventListener('click', async () => {
+  const email = authEmail.value.trim();
+  const password = authPassword.value.trim();
 
   if (!email || !password) {
-    loginMessage.textContent = 'Please enter email and password';
+    authMessage.textContent = 'Please enter email and password';
     return;
   }
 
-  const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    loginMessage.textContent = error.message;
+  if (isLogin) {
+    // LOGIN
+    const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) authMessage.textContent = error.message;
+    else { authMessage.textContent = 'Logged in successfully!'; closeAuth(); console.log('User:', user); }
   } else {
-    loginMessage.textContent = 'Logged in successfully!';
-    closeLogin();
-    console.log('User:', user);
+    // SIGN-UP
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) authMessage.textContent = error.message;
+    else { 
+      authMessage.textContent = 'Account created! Please check your email to confirm.';
+      authEmail.value = '';
+      authPassword.value = '';
+    }
   }
 });
 </script>
