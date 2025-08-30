@@ -23,10 +23,10 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
 .category-list{display:none;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
-.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;justify-content:space-between;}
+.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;cursor:pointer;justify-content:space-between;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 .favicon-img, .favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
-.new-tab-icon{margin-left:5px;font-size:0.7rem;}
+.new-tab-icon{font-size:0.75rem;color:#555;margin-left:6px;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -48,8 +48,8 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list -->
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1"></div>
+    <!-- Categories container -->
+    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;"></div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
@@ -101,12 +101,15 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// ---------- Utility Functions ----------
-function hashColor(str){ let hash=0; for(let i=0;i<str.length;i++) hash=str.charCodeAt(i)+((hash<<5)-hash); const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"]; return colors[Math.abs(hash)%colors.length]; }
-async function fetchTitle(url){ const cacheKey="title:"+url; const cached=localStorage.getItem(cacheKey); if(cached) return cached; try{ const res=await fetch(url,{mode:"cors"}); const text=await res.text(); const match=text.match(/<title[^>]*>([^<]+)<\/title>/i); if(match){ const title=match[1].trim(); localStorage.setItem(cacheKey,title); return title; } }catch(e){console.warn("Title fetch failed",url);} return new URL(url).hostname.replace(/^www\./,""); }
-function loadFavicon(link){ const url=link.dataset.url; let domain; try{domain=new URL(url).hostname;}catch(e){return;} const sources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`,`https://www.google.com/s2/favicons?sz=32&domain_url=${url}`,`${url.replace(/\/$/,"")}/favicon.ico`]; const img=document.createElement("img"); img.className="w-5 h-5 rounded"; img.alt="favicon"; let index=0; function tryNext(){ if(index>=sources.length){ const badge=document.createElement("span"); badge.textContent=link.querySelector('span').textContent.charAt(0).toUpperCase(); badge.className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-semibold"; badge.style.backgroundColor=hashColor(domain); badge.style.color="#000"; link.prepend(badge); return; } img.src=sources[index++]; } img.onerror=tryNext; img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.querySelector("img, span")?.remove(); link.prepend(img); }}; tryNext(); }
+// -------------------- Config --------------------
+const categories = {
+  "Games": [{ id: "englishLink", url: "https://www.julios.games/home", newTab: true }],
+  "Science": [{ id: "scienceLink", url: "https://intrinsic.observer/" }, { id: "spaceLink", url: "https://nasa.gov/" }],
+  "History": [{ id: "worldHistoryLink", url: "https://wfdxcajxzt.lawsonengineers.co.uk/" }, { id: "usHistoryLink", url: "https://edpuzzle.com.de/" }],
+  "Other": [{ id: "duckLink", url: "https://duck.quackprep.com/" }, { id: "healthLink", url: "https://gn-math.github.io/" }]
+};
 
-// ---------- Elements ----------
+// -------------------- Elements --------------------
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
 const enrolledChevron=document.getElementById("enrolledChevron");
@@ -116,52 +119,128 @@ const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
-// ---------- Enrolled toggle ----------
-function setEnrolled(open){ enrolledList.style.display=open?"flex":"none"; enrolledBtn.setAttribute("aria-expanded",open); enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)"; }
-setEnrolled(false); // hide on load
-enrolledBtn.addEventListener("click",()=>{ setEnrolled(enrolledList.style.display==="none"); });
+// -------------------- Utilities --------------------
+function setEnrolled(open){
+  enrolledList.style.display=open?"flex":"none";
+  enrolledBtn.setAttribute("aria-expanded",open);
+  enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
+}
 
-// ---------- Profile ----------
-const savedLetter=localStorage.getItem("profileLetter"); const savedColor=localStorage.getItem("profileColor");
-if(savedLetter) profileLetter.textContent=savedLetter; if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{ const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent; const newColor=prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor; profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor; localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor); });
+function hashColor(str){
+  let hash=0; for(let i=0;i<str.length;i++) hash=str.charCodeAt(i)+((hash<<5)-hash);
+  const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];
+  return colors[Math.abs(hash)%colors.length];
+}
 
-// ---------- Categories & Enrolled Items ----------
-const categories=[
-  { name:"Games", items:[{id:"englishLink", url:"https://www.julios.games/home", newTab:true}]},
-  { name:"Science", items:[{id:"scienceLink", url:"https://intrinsic.observer/"},{id:"spaceLink", url:"https://nasa.gov/"}]},
-  { name:"History", items:[{id:"worldHistoryLink", url:"https://wfdxcajxzt.lawsonengineers.co.uk/"},{id:"usHistoryLink", url:"https://edpuzzle.com.de/"}]},
-  { name:"Other", items:[{id:"duckLink", url:"https://duck.quackprep.com/"},{id:"healthLink", url:"https://gn-math.github.io/"}]},
-];
+async function fetchTitle(url){
+  const cacheKey="title:"+url;
+  const cached=localStorage.getItem(cacheKey);
+  if(cached) return cached;
+  try{
+    const res=await fetch(url,{mode:"cors"});
+    const text=await res.text();
+    const match=text.match(/<title[^>]*>([^<]+)<\/title>/i);
+    if(match){ const title=match[1].trim(); localStorage.setItem(cacheKey,title); return title; }
+  }catch(e){console.warn("Title fetch failed",url);}
+  return new URL(url).hostname;
+}
 
-categories.forEach(cat=>{
-  const catDiv=document.createElement("div"); catDiv.className="category";
-  const header=document.createElement("div"); header.className="category-header"; header.innerHTML=cat.name+' <i class="fas fa-chevron-down text-xs"></i>'; catDiv.appendChild(header);
-  const list=document.createElement("div"); list.className="category-list"; list.style.display="none"; catDiv.appendChild(list);
+function loadFavicon(link){
+  const url=link.dataset.url;
+  let domain; try{domain=new URL(url).hostname;}catch(e){return;}
+  const sources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${url.replace(/\/$/,"")}/favicon.ico`];
+  const img=document.createElement("img");
+  img.className="favicon-img"; img.alt="favicon";
+  let index=0;
+  function tryNext(){
+    if(index>=sources.length){
+      const badge=document.createElement("span");
+      badge.textContent=link.textContent.trim().charAt(0).toUpperCase();
+      badge.className="favicon-letter";
+      badge.style.backgroundColor=hashColor(domain);
+      link.prepend(badge);
+      return;
+    }
+    img.src=sources[index++];
+  }
+  img.onerror=tryNext;
+  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.querySelector("img, span")?.remove(); link.prepend(img); }};
+  tryNext();
+}
 
-  header.addEventListener("click",()=>{ const open=list.style.display!=="none"; list.style.display=open?"none":"flex"; header.querySelector('i').style.transform=open?"rotate(-90deg)":"rotate(0deg)"; });
+// -------------------- Render categories --------------------
+for (const [catName, sites] of Object.entries(categories)) {
+  const catDiv = document.createElement('div'); catDiv.className='category';
+  const header = document.createElement('div'); header.className='category-header'; header.innerHTML = `${catName} <i class="fas fa-chevron-down text-xs"></i>`;
+  const listDiv = document.createElement('div'); listDiv.className='category-list flex flex-col gap-1';
+  listDiv.style.display='none';
+  header.addEventListener('click',()=>{
+    const open = listDiv.style.display!=="flex";
+    listDiv.style.display=open?"flex":"none";
+    header.querySelector('i').style.transform=open?"rotate(0deg)":"rotate(-90deg)";
+  });
 
-  cat.items.forEach(item=>{
-    const a=document.createElement("a"); a.id=item.id; a.dataset.url=item.url; a.className="enrolled-item flex items-center justify-between"; a.innerHTML='<span></span>'+(item.newTab?'<i class="fas fa-external-link-alt new-tab-icon"></i>':''); list.appendChild(a);
-    fetchTitle(item.url).then(title=>{ a.querySelector('span').textContent=title; loadFavicon(a); });
-
-    a.addEventListener("click",e=>{
+  sites.forEach(site=>{
+    const a=document.createElement('a'); a.id=site.id; a.dataset.url=site.url; a.className='enrolled-item'; a.textContent=" ";
+    listDiv.appendChild(a);
+    loadFavicon(a);
+    fetchTitle(site.url).then(title=>{
+      a.append(" "+title.replace(/^https?:\/\//,"").replace(/\/$/,""));
+      if(site.newTab){
+        const icon = document.createElement('i'); icon.className='fas fa-external-link-alt new-tab-icon'; a.appendChild(icon);
+      }
+    });
+    a.addEventListener('click', e=>{
       e.preventDefault();
-      Array.from(enrolledList.querySelectorAll(".enrolled-item")).forEach(el=>el.classList.remove("active-link"));
-      if(item.newTab){ window.open(item.url,"_blank"); } else { iframeOverlay.style.display="block"; iframeEl.src=item.url; a.classList.add("active-link"); iframeToggleBtn.style.display="flex"; }
+      if(site.newTab){ window.open(site.url,"_blank"); return; }
+      openIframe(a, site.url);
     });
   });
 
-  enrolledList.appendChild(catDiv);
+  catDiv.appendChild(header); catDiv.appendChild(listDiv); enrolledList.appendChild(catDiv);
+}
+
+// -------------------- Profile --------------------
+const savedLetter=localStorage.getItem("profileLetter");
+const savedColor=localStorage.getItem("profileColor");
+if(savedLetter) profileLetter.textContent=savedLetter;
+if(savedColor) profileBtn.style.backgroundColor=savedColor;
+profileBtn.addEventListener("click",()=>{
+  const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
+  const newColor=prompt("Enter a new background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor;
+  localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
 });
 
-// ---------- Draggable toggle ----------
+// -------------------- Enrolled toggle --------------------
+enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
+
+// -------------------- Iframe --------------------
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block"; iframeEl.src=url;
+  iframeToggleBtn.style.display="flex";
+  setEnrolled(false);
+
+  // Only highlight this link
+  document.querySelectorAll('.enrolled-item').forEach(el=>el.classList.remove('active-link'));
+  linkEl.classList.add('active-link');
+
+  // Move link to top of its category
+  const catList = linkEl.closest('.category-list');
+  catList.prepend(linkEl);
+}
+
+iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; }});
+iframeToggleBtn.addEventListener("click",()=>{ iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none"; });
+
 let isDragging=false, dragOffsetX=0, dragOffsetY=0;
 iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
 document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
 document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
-iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; }});
-iframeToggleBtn.addEventListener("click",()=>{ if(!iframeEl.src) return; iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none"; });
+
+// -------------------- Hide enrolled when leaving tab --------------------
+window.addEventListener("blur", ()=>{ setEnrolled(false); });
+
 </script>
 </body>
 </html>
