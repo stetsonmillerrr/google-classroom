@@ -39,7 +39,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
+.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap-6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 
 .favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
@@ -302,7 +302,7 @@ archivedBtn.addEventListener('click', () => {
 });
 closeWiki.addEventListener('click', closeModal);
 wikiOverlay.addEventListener('click', closeModal);
-function closeModal() { wikiBox.classList.remove('scale-100','opacity-100'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
+function closeModal() { wikiBox.classList.remove('scale-100','opacity-0'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
 
 document.getElementById('filter-name').addEventListener('change', applyFilters);
 document.getElementById('filter-date').addEventListener('change', applyFilters);
@@ -321,7 +321,7 @@ function getDateRange(rangeType) {
     case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
     case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
     case 'thisMonth': start.setDate(1); return {start,end:now};
-    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(end.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
+    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(start.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
     case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
     default: return null;
   }
@@ -337,7 +337,7 @@ async function countTotalLinks() {
   const { count }=await query; totalLinks=count||0;
 }
 
-// fetchLinks() with thumbs up/down
+// fetchLinks() with thumbs up/down counts
 async function fetchLinks() {
   const container=document.getElementById('results');
   container.innerHTML='';
@@ -356,20 +356,46 @@ async function fetchLinks() {
       <span class="text-gray-500 text-xs break-all">${link.url}</span>
       <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
       <div class="flex items-center gap-2 mt-1">
-        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}"><i class="fas fa-thumbs-up"></i></button>
-        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}"><i class="fas fa-thumbs-down"></i></button>
+        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}">
+          <i class="fas fa-thumbs-up"></i> <span class="up-count">${link.thumbs_up || 0}</span>
+        </button>
+        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}">
+          <i class="fas fa-thumbs-down"></i> <span class="down-count">${link.thumbs_down || 0}</span>
+        </button>
       </div>
     `;
     container.appendChild(div);
 
-    const upBtn=div.querySelector('.thumb-up');
-    const downBtn=div.querySelector('.thumb-down');
-    upBtn.addEventListener('click',async()=>{await supabase.from('links').update({rating:1}).eq('id',link.id);upBtn.classList.add('text-green-500');downBtn.classList.remove('text-red-500');});
-    downBtn.addEventListener('click',async()=>{await supabase.from('links').update({rating:-1}).eq('id',link.id);downBtn.classList.add('text-red-500');upBtn.classList.remove('text-green-500');});
+    const upBtn = div.querySelector('.thumb-up');
+    const downBtn = div.querySelector('.thumb-down');
 
-    // Load existing rating
-    if(link.rating===1) upBtn.classList.add('text-green-500');
-    else if(link.rating===-1) downBtn.classList.add('text-red-500');
+    upBtn.addEventListener('click', async () => {
+      const { data: updated } = await supabase
+        .from('links')
+        .update({ thumbs_up: link.thumbs_up + 1 })
+        .eq('id', link.id)
+        .select();
+      if (updated && updated[0]) {
+        link.thumbs_up = updated[0].thumbs_up;
+        upBtn.querySelector('.up-count').textContent = link.thumbs_up;
+        upBtn.classList.add('text-green-500');
+        downBtn.classList.remove('text-red-500');
+      }
+    });
+
+    downBtn.addEventListener('click', async () => {
+      const { data: updated } = await supabase
+        .from('links')
+        .update({ thumbs_down: link.thumbs_down + 1 })
+        .eq('id', link.id)
+        .select();
+      if (updated && updated[0]) {
+        link.thumbs_down = updated[0].thumbs_down;
+        downBtn.querySelector('.down-count').textContent = link.thumbs_down;
+        downBtn.classList.add('text-red-500');
+        upBtn.classList.remove('text-green-500');
+      }
+    });
   });
 }
 </script>
