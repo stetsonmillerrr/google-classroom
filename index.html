@@ -369,32 +369,25 @@ async function fetchLinks() {
     const upBtn = div.querySelector('.thumb-up');
     const downBtn = div.querySelector('.thumb-down');
 
+    // PATCHED HANDLERS
     upBtn.addEventListener('click', async () => {
-      const { data: updated } = await supabase
-        .from('links')
-        .update({ thumbs_up: link.thumbs_up + 1 })
-        .eq('id', link.id)
-        .select();
-      if (updated && updated[0]) {
-        link.thumbs_up = updated[0].thumbs_up;
-        upBtn.querySelector('.up-count').textContent = link.thumbs_up;
-        upBtn.classList.add('text-green-500');
-        downBtn.classList.remove('text-red-500');
-      }
+      link.thumbs_up = (link.thumbs_up || 0) + 1;
+      upBtn.querySelector('.up-count').textContent = link.thumbs_up;
+      upBtn.classList.add('text-green-500');
+      downBtn.classList.remove('text-red-500');
+      await supabase.from('links')
+        .update({ thumbs_up: link.thumbs_up })
+        .eq('id', link.id);
     });
 
     downBtn.addEventListener('click', async () => {
-      const { data: updated } = await supabase
-        .from('links')
-        .update({ thumbs_down: link.thumbs_down + 1 })
-        .eq('id', link.id)
-        .select();
-      if (updated && updated[0]) {
-        link.thumbs_down = updated[0].thumbs_down;
-        downBtn.querySelector('.down-count').textContent = link.thumbs_down;
-        downBtn.classList.add('text-red-500');
-        upBtn.classList.remove('text-green-500');
-      }
+      link.thumbs_down = (link.thumbs_down || 0) + 1;
+      downBtn.querySelector('.down-count').textContent = link.thumbs_down;
+      downBtn.classList.add('text-red-500');
+      upBtn.classList.remove('text-green-500');
+      await supabase.from('links')
+        .update({ thumbs_down: link.thumbs_down })
+        .eq('id', link.id);
     });
   });
 }
