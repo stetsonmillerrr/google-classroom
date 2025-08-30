@@ -12,23 +12,10 @@
 <style>
 body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
-/* Smooth expand/collapse */
-.category-list {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
-  opacity: 0;
-  margin-top: 0;
-}
-.category-list.open {
-  opacity: 1;
-  margin-top: 0.25rem;
-  max-height: 500px; /* large enough to fit contents */
-}
+.category-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease; opacity: 0; margin-top: 0; }
+.category-list.open { opacity: 1; margin-top: 0.25rem; max-height: 500px; }
 
-/* Skeleton shimmer */
 @keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
-
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 
@@ -94,7 +81,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <!-- Archived classes -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
 
-    <!-- Settings button moved outside enrolled -->
+    <!-- Settings -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
 </aside>
@@ -193,37 +180,9 @@ async function smartFavicon(url,link){
   const img=document.createElement("img");
   img.className="favicon-img";
   img.alt="favicon";
-
   const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
-
-  try {
-    const resp=await fetch(url,{mode:"cors"});
-    const html=await resp.text();
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(html,"text/html");
-    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
-    if(icons.length){
-      const href=icons[0].getAttribute("href");
-      if(href){
-        const abs=new URL(href,domain).href;
-        trySources.unshift(abs);
-      }
-    }
-  } catch(e){}
-
   let i=0;
-  function tryNext(){
-    if(i>=trySources.length){
-      const fallback=document.createElement("span");
-      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
-      fallback.className="favicon-letter";
-      fallback.style.backgroundColor=hashColor(url);
-      link.querySelector("img, span")?.remove();
-      link.prepend(fallback);
-      return;
-    }
-    img.src=trySources[i++];
-  }
+  function tryNext(){ if(i>=trySources.length){ const fallback=document.createElement("span"); fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase(); fallback.className="favicon-letter"; fallback.style.backgroundColor=hashColor(url); link.querySelector("img, span")?.remove(); link.prepend(fallback); return; } img.src=trySources[i++]; }
   img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
   img.onerror=tryNext;
   tryNext();
@@ -296,7 +255,7 @@ const wikiBox = document.getElementById('wikiBox');
 const closeWiki = document.getElementById('closeWiki');
 const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
 
-let page = 0, pageSize = 10, currentFilter = { name: '', range: 'all' };
+let currentFilter = { name: '', range: 'all' };
 
 archivedBtn.addEventListener('click', async () => {
   wikiModal.classList.remove('hidden');
@@ -318,12 +277,7 @@ async function loadNames() {
   const { data } = await supabase.from('link_names').select('name');
   const select = document.getElementById('filter-name');
   select.innerHTML = `<option value="">All</option>`;
-  data?.forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d.name;
-    opt.textContent = d.name;
-    select.appendChild(opt);
-  });
+  data?.forEach(d => { const opt = document.createElement('option'); opt.value = d.name; opt.textContent = d.name; select.appendChild(opt); });
 }
 
 function getDateRange(rangeType) {
@@ -348,10 +302,13 @@ async function applyFilters() {
 async function fetchLinks() {
   const container = document.getElementById('results');
   container.innerHTML = '';
+
   let query = supabase.from('links').select('*').order('date', { ascending:false });
+
   if(currentFilter.name) query = query.eq('name', currentFilter.name);
   const range = getDateRange(currentFilter.range);
-  if(range) query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  if(range) query = query.gte('date', range.start.toISOString()).lte('date', range.end.toISOString());
+
   const { data } = await query;
 
   if(!data || data.length===0) {
