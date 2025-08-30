@@ -22,6 +22,9 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
+.category-title{font-size:0.75rem; font-weight:600; color:#555; margin-top:8px; margin-bottom:2px; padding-left:12px; text-transform:uppercase;}
+.category-divider{border-t border-gray-200 my-1 mx-2;}
+.enrolled-item{padding-left:12px;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -43,14 +46,29 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list (aligned left with sidebar) -->
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
+    <!-- Enrolled list with categories -->
+    <div id="enrolledList" class="flex flex-col mt-1" style="display: none;">
+      <!-- Category: Games -->
+      <div class="category-title">Games</div>
+      <div class="category-divider"></div>
       <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
-      <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
+      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
+
+      <!-- Category: Science -->
+      <div class="category-title">Science</div>
+      <div class="category-divider"></div>
       <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
       <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item"></a>
+
+      <!-- Category: History -->
+      <div class="category-title">History</div>
+      <div class="category-divider"></div>
+      <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
       <a id="usHistoryLink" data-url="https://edpuzzle.com.de/" class="enrolled-item"></a>
-      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
+
+      <!-- Category: Math -->
+      <div class="category-title">Math</div>
+      <div class="category-divider"></div>
       <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
     </div>
 
@@ -196,15 +214,12 @@ profileBtn.addEventListener("click",()=>{
 function openIframe(linkEl,url){
   iframeOverlay.style.display="block";
   iframeEl.src=url;
-
-  // ✅ show toggle button now that iframe is loaded
   iframeToggleBtn.style.display="flex";
-
   setEnrolled(false);
   enrolledList.prepend(linkEl);
-  Array.from(enrolledList.children).forEach(a=>a.classList.remove("active-link"));
+  Array.from(enrolledList.querySelectorAll(".enrolled-item")).forEach(a=>a.classList.remove("active-link"));
   linkEl.classList.add("active-link");
-  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
+  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.querySelectorAll(".enrolled-item")).map(a=>a.id)));
 }
 
 // -------------------- Restore order --------------------
@@ -214,7 +229,7 @@ if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(i
 // -------------------- Enhance enrolled links --------------------
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.getAttribute("data-url");
-  link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-3","py-2","select-none","cursor-pointer");
+  link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","py-1","select-none","cursor-pointer");
 
   const title=await fetchTitle(url);
   link.textContent=" "+title;
@@ -234,7 +249,7 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
 
 // -------------------- Toggle iframe --------------------
 iframeToggleBtn.addEventListener("click",()=>{
-  if(!iframeEl.src) return; // do nothing if no iframe loaded
+  if(!iframeEl.src) return;
   iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";
 });
 
