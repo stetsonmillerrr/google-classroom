@@ -11,20 +11,38 @@
 
 <style>
 body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
+
+/* Smooth expand/collapse */
+.category-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+.category-list.open {
+  opacity: 1;
+  margin-top: 0.25rem;
+  max-height: 500px; /* large enough to fit contents */
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
+
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
 #iframeOverlay iframe{width:100%;height:100%;border:none;}
-#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none; display:none;}
+#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;display:none;}
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
+
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.category-list{display:flex;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
 .enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
-.favicon-img, .favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
+
+.favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -47,7 +65,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
 
     <!-- Enrolled list -->
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
+    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
       <div class="category">
         <div class="category-header">Science <i class="fas fa-chevron-down text-xs"></i></div>
         <div class="category-list">
@@ -89,7 +107,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Skeleton cards -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
       for(let i=0;i<5;i++){
@@ -120,7 +137,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// Elements
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
 const enrolledChevron=document.getElementById("enrolledChevron");
@@ -130,46 +146,109 @@ const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
-// Utils
+// Toggle enrolled
 function setEnrolled(open){
   enrolledList.style.display=open?"flex":"none";
   enrolledBtn.setAttribute("aria-expanded",open);
   enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
 }
-function hashColor(str){let h=0;for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"]; return colors[Math.abs(h)%colors.length];}
-async function fetchTitle(url){const cacheKey="title:"+url; const cached=localStorage.getItem(cacheKey); if(cached) return cached; try{ const res=await fetch(url,{mode:"cors"}); const text=await res.text(); const match=text.match(/<title[^>]*>([^<]+)<\/title>/i); if(match){ const t=match[1].trim(); localStorage.setItem(cacheKey,t); return t;} } catch(e){ console.warn("Title fetch failed",url);} return new URL(url).hostname;}
-function loadFavicon(link){ const url=link.dataset.url; let domain; try{domain=new URL(url).hostname.replace(/^www\./,"");}catch(e){return;} const sources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`,`${url.replace(/\/$/,"")}/favicon.ico`]; const img=document.createElement("img"); img.className="favicon-img"; img.alt="favicon"; let i=0; function tryNext(){if(i>=sources.length){const b=document.createElement("span");b.textContent=domain.charAt(0).toUpperCase();b.className="favicon-letter";b.style.backgroundColor=hashColor(domain); link.querySelector("img, span")?.remove(); link.prepend(b); return;} img.src=sources[i++];} img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}}; img.onerror=tryNext; tryNext();}
-
-// Category toggle
-document.querySelectorAll('.category-header').forEach(h=>{const l=h.nextElementSibling; const a=h.querySelector('i'); l.style.display="none"; a.style.transform="rotate(-90deg)"; h.addEventListener('click',()=>{const open=l.style.display==="none"; l.style.display=open?"flex":"none"; a.style.transform=open?"rotate(0deg)":"rotate(-90deg)";});});
-
-// Enrolled toggle
 enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
 
-// Profile
-const savedLetter=localStorage.getItem("profileLetter"); const savedColor=localStorage.getItem("profileColor");
+// Profile persistence
+const savedLetter=localStorage.getItem("profileLetter");
+const savedColor=localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{const l=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent; const c=prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor; profileLetter.textContent=l; profileBtn.style.backgroundColor=c; localStorage.setItem("profileLetter",l); localStorage.setItem("profileColor",c);});
+profileBtn.addEventListener("click",()=>{const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;profileLetter.textContent=l;profileBtn.style.backgroundColor=c;localStorage.setItem("profileLetter",l);localStorage.setItem("profileColor",c);});
 
-// Iframe
-function openIframe(linkEl,url){iframeOverlay.style.display="block"; iframeEl.src=url; iframeToggleBtn.style.display="flex"; setEnrolled(false); document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link")); linkEl.classList.add("active-link");}
+// Category expand/collapse smooth
+document.querySelectorAll('.category-header').forEach(h=>{
+  const list=h.nextElementSibling;
+  const icon=h.querySelector('i');
+  h.addEventListener('click',()=>{
+    const open=list.classList.toggle('open');
+    icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
+  });
+});
 
-// Enrolled items
-document.querySelectorAll(".enrolled-item").forEach(async link=>{const url=link.dataset.url; const title=await fetchTitle(url); link.textContent=" "+title; loadFavicon(link); link.addEventListener("click", e=>{e.preventDefault(); if(url.includes("julios.games")){window.open(url,"_blank"); const icon=document.createElement("i"); icon.className="fas fa-external-link-alt ml-auto text-xs"; if(!link.querySelector("i")) link.append(icon);} else openIframe(link,url);});});
+// Iframe open
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block";
+  iframeEl.src=url;
+  iframeToggleBtn.style.display="flex";
+  setEnrolled(false);
+  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
+}
+
+// Smart favicon
+function hashColor(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];return colors[Math.abs(h)%colors.length];}
+async function smartFavicon(url,link){
+  let domain;
+  try{domain=new URL(url).origin;}catch{ return;}
+  const img=document.createElement("img");
+  img.className="favicon-img";
+  img.alt="favicon";
+
+  const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
+
+  try {
+    const resp=await fetch(url,{mode:"cors"});
+    const html=await resp.text();
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,"text/html");
+    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
+    if(icons.length){
+      const href=icons[0].getAttribute("href");
+      if(href){
+        const abs=new URL(href,domain).href;
+        trySources.unshift(abs);
+      }
+    }
+  } catch(e){}
+
+  let i=0;
+  function tryNext(){
+    if(i>=trySources.length){
+      const fallback=document.createElement("span");
+      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
+      fallback.className="favicon-letter";
+      fallback.style.backgroundColor=hashColor(url);
+      link.querySelector("img, span")?.remove();
+      link.prepend(fallback);
+      return;
+    }
+    img.src=trySources[i++];
+  }
+  img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
+  img.onerror=tryNext;
+  tryNext();
+}
+
+// Load links
+document.querySelectorAll(".enrolled-item").forEach(async link=>{
+  const url=link.dataset.url;
+  link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
+  smartFavicon(url,link);
+  link.addEventListener("click",e=>{
+    e.preventDefault();
+    if(url.includes("julios.games")){
+      window.open(url,"_blank");
+      if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
+    } else {
+      openIframe(link,url);
+    }
+  });
+});
 
 // Toggle iframe
 iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
 
 // Draggable iframe button
-let isDragging=false, dragX=0, dragY=0;
-iframeToggleBtn.addEventListener("mousedown", e=>{isDragging=true; dragX=e.clientX-iframeToggleBtn.offsetLeft; dragY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing";});
-document.addEventListener("mousemove", e=>{if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragX}px`; iframeToggleBtn.style.top=`${e.clientY-dragY}px`;});
-document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
-iframeOverlay.addEventListener("click", e=>{if(e.target===iframeOverlay) iframeOverlay.style.display="none";});
-
-// Hide enrolled on blur
-window.addEventListener("blur",()=>{setEnrolled(false);});
+let isDragging=false,dx=0,dy=0;
+iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
+document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
+document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
 </script>
 </body>
 </html>
