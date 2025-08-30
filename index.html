@@ -8,40 +8,22 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
-
 <style>
 body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
-
-/* Smooth expand/collapse */
-.category-list {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
-  opacity: 0;
-  margin-top: 0;
-}
-.category-list.open {
-  opacity: 1;
-  margin-top: 0.25rem;
-  max-height: 500px; /* large enough to fit contents */
-}
-
-/* Skeleton shimmer */
+.category-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease; opacity: 0; margin-top: 0; }
+.category-list.open { opacity: 1; margin-top: 0.25rem; max-height: 500px; }
 @keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
-
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
 #iframeOverlay iframe{width:100%;height:100%;border:none;}
 #iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;display:none;}
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
-
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
 .enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap-6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
-
 .favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
 </style>
 </head>
@@ -57,14 +39,10 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   <nav class="flex flex-col mt-4 px-2 space-y-1">
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
-
-    <!-- Enrolled toggle -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
-
-    <!-- Enrolled list -->
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
       <div class="category">
         <div class="category-header">Science <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
@@ -87,7 +65,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
         </div>
       </div>
     </div>
-
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
@@ -132,11 +109,9 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </section>
 </main>
 
-<!-- Iframe overlay -->
 <div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
-<!-- WIKI-LINKS POPUP -->
 <div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
   <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
   <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
@@ -183,6 +158,10 @@ const supabase = window.supabase.createClient(
   'https://ylbeucokkfotgghbveuv.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
 );
+
+// Per-user ID for voting
+const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
+localStorage.setItem('userId', userId);
 
 // Toggle enrolled
 function setEnrolled(open){
@@ -337,7 +316,6 @@ async function countTotalLinks() {
   const { count }=await query; totalLinks=count||0;
 }
 
-// fetchLinks() with thumbs up/down counts
 async function fetchLinks() {
   const container=document.getElementById('results');
   container.innerHTML='';
@@ -348,7 +326,7 @@ async function fetchLinks() {
   const { data }=await query;
   if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
 
-  data.forEach(link=>{
+  for(const link of data){
     const div=document.createElement('div');
     div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
     div.innerHTML=`
@@ -356,12 +334,8 @@ async function fetchLinks() {
       <span class="text-gray-500 text-xs break-all">${link.url}</span>
       <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
       <div class="flex items-center gap-2 mt-1">
-        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}">
-          <i class="fas fa-thumbs-up"></i> <span class="up-count">${link.thumbs_up || 0}</span>
-        </button>
-        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}">
-          <i class="fas fa-thumbs-down"></i> <span class="down-count">${link.thumbs_down || 0}</span>
-        </button>
+        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}"><i class="fas fa-thumbs-up"></i> <span class="up-count">${link.thumbs_up||0}</span></button>
+        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}"><i class="fas fa-thumbs-down"></i> <span class="down-count">${link.thumbs_down||0}</span></button>
       </div>
     `;
     container.appendChild(div);
@@ -369,27 +343,25 @@ async function fetchLinks() {
     const upBtn = div.querySelector('.thumb-up');
     const downBtn = div.querySelector('.thumb-down');
 
-    // PATCHED HANDLERS
-    upBtn.addEventListener('click', async () => {
-      link.thumbs_up = (link.thumbs_up || 0) + 1;
-      upBtn.querySelector('.up-count').textContent = link.thumbs_up;
-      upBtn.classList.add('text-green-500');
-      downBtn.classList.remove('text-red-500');
-      await supabase.from('links')
-        .update({ thumbs_up: link.thumbs_up })
-        .eq('id', link.id);
-    });
+    async function vote(linkId, type) {
+      const { data: existing } = await supabase.from('link_votes').select('*').eq('link_id', linkId).eq('user_id', userId).single();
+      if(existing){
+        if(existing.vote_type===type) await supabase.from('link_votes').delete().eq('id', existing.id);
+        else await supabase.from('link_votes').update({vote_type:type}).eq('id', existing.id);
+      } else await supabase.from('link_votes').insert({link_id:linkId,user_id:userId,vote_type:type});
+      const { data: votes } = await supabase.from('link_votes').select('*').eq('link_id', linkId);
+      const up=votes.filter(v=>v.vote_type==='up').length;
+      const down=votes.filter(v=>v.vote_type==='down').length;
+      upBtn.querySelector('.up-count').textContent=up;
+      downBtn.querySelector('.down-count').textContent=down;
+      const userVote = votes.find(v=>v.user_id===userId)?.vote_type;
+      upBtn.classList.toggle('text-green-500', userVote==='up');
+      downBtn.classList.toggle('text-red-500', userVote==='down');
+    }
 
-    downBtn.addEventListener('click', async () => {
-      link.thumbs_down = (link.thumbs_down || 0) + 1;
-      downBtn.querySelector('.down-count').textContent = link.thumbs_down;
-      downBtn.classList.add('text-red-500');
-      upBtn.classList.remove('text-green-500');
-      await supabase.from('links')
-        .update({ thumbs_down: link.thumbs_down })
-        .eq('id', link.id);
-    });
-  });
+    upBtn.addEventListener('click',()=>vote(link.id,'up'));
+    downBtn.addEventListener('click',()=>vote(link.id,'down'));
+  }
 }
 </script>
 </body>
