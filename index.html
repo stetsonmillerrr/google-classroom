@@ -7,8 +7,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
-
-<!-- Favicon -->
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
 
 <style>
@@ -143,7 +141,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// Elements
+// -------------------- Elements --------------------
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
 const enrolledChevron=document.getElementById("enrolledChevron");
@@ -154,6 +152,7 @@ const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
 // -------------------- Enrolled toggle --------------------
+function closeEnrolled(){ enrolledList.style.display="none"; enrolledBtn.setAttribute("aria-expanded",false); enrolledChevron.style.transform="rotate(-90deg)";}
 enrolledBtn.addEventListener("click",()=>{ 
   const open = enrolledList.style.display==="none"; 
   enrolledList.style.display = open ? "flex":"none"; 
@@ -171,7 +170,7 @@ document.querySelectorAll('.category-header').forEach(header=>{
   });
 });
 
-// -------------------- Profile Icon --------------------
+// -------------------- Profile --------------------
 const savedLetter=localStorage.getItem("profileLetter");
 const savedColor=localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent=savedLetter;
@@ -183,17 +182,22 @@ profileBtn.addEventListener("click",()=>{
   localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
 });
 
-// -------------------- Favicon loader --------------------
+// -------------------- Favicon --------------------
 function hashColor(str){ let hash=0; for(let i=0;i<str.length;i++) hash=str.charCodeAt(i)+((hash<<5)-hash); const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"]; return colors[Math.abs(hash)%colors.length];}
 function loadFavicon(link){
   const url=link.dataset.url;
-  let domain; try{domain=new URL(url).hostname.replace(/^www\./,"");}catch(e){return;}
-  const sources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`,`https://www.google.com/s2/favicons?sz=32&domain_url=${url}`,`${url.replace(/\/$/,"")}/favicon.ico`];
-  const img=document.createElement("img"); img.className="favicon-img"; img.alt="favicon"; let index=0;
-  function tryNext(){ if(index>=sources.length){ // letter fallback
-    const badge=document.createElement("span"); badge.className="favicon-letter"; badge.textContent=domain.charAt(0).toUpperCase();
-    link.prepend(badge); return; }
-    img.src=sources[index++]; }
+  let domain;
+  try{domain=new URL(url).hostname.replace(/^www\./,"");}catch(e){return;}
+  const img=document.createElement("img"); img.className="favicon-img"; img.alt="favicon";
+  const sources=[`${url.replace(/\/$/,"")}/favicon.ico`,`https://www.google.com/s2/favicons?domain=${domain}&sz=32`];
+  let index=0;
+  function tryNext(){
+    if(index>=sources.length){
+      const badge=document.createElement("span"); badge.className="favicon-letter"; badge.textContent=domain.charAt(0).toUpperCase();
+      link.prepend(badge); return;
+    }
+    img.src=sources[index++];
+  }
   img.onerror=tryNext;
   img.onload=()=>{ if(img.naturalWidth<16) tryNext(); else { link.querySelector("img, span")?.remove(); link.prepend(img); }};
   tryNext();
@@ -209,11 +213,11 @@ async function fetchTitle(url){
   return new URL(url).hostname.replace(/^www\./,"");
 }
 
-// -------------------- Load enrolled links --------------------
+// -------------------- Load enrolled items --------------------
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.dataset.url;
   link.title = url.replace(/^https?:\/\//,"").replace(/\/$/,"");
-  link.textContent=" "; // space for favicon
+  link.textContent=" ";
   loadFavicon(link);
   const title = await fetchTitle(url);
   link.append(" "+title.replace(/^https?:\/\//,"").replace(/\/$/,""));
@@ -228,7 +232,7 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
 function openIframe(linkEl,url){
   iframeOverlay.style.display="block"; iframeEl.src=url;
   iframeToggleBtn.style.display="flex";
-  // move to top of its category
+  closeEnrolled(); // hide enrolled dropdown when iframe opens
   const catList = linkEl.closest('.category-list');
   catList.prepend(linkEl);
   Array.from(catList.children).forEach(a=>a.classList.remove("active-link"));
@@ -245,6 +249,9 @@ let isDragging=false, dragOffsetX=0, dragOffsetY=0;
 iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
 document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
 document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
+
+// -------------------- Hide enrolled when tab inactive --------------------
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) closeEnrolled(); });
 </script>
 </body>
 </html>
