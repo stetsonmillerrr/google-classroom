@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -67,20 +67,20 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <!-- Enrolled list -->
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
       <div class="category">
-        <div class="category-header">Science <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-header">Science <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
           <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
           <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item"></a>
         </div>
       </div>
       <div class="category">
-        <div class="category-header">Games <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-header">Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
           <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
         </div>
       </div>
       <div class="category">
-        <div class="category-header">Other <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-header">Other <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
           <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
           <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
@@ -161,16 +161,16 @@ if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
 profileBtn.addEventListener("click",()=>{const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;profileLetter.textContent=l;profileBtn.style.backgroundColor=c;localStorage.setItem("profileLetter",l);localStorage.setItem("profileColor",c);});
 
-// Category expand/collapse smooth with synced arrows
+// Category expand/collapse smooth
 document.querySelectorAll('.category-header').forEach(h=>{
   const list=h.nextElementSibling;
   const icon=h.querySelector('i');
+  // ensure arrows start collapsed
+  icon.style.transform="rotate(-90deg)";
   h.addEventListener('click',()=>{
     const open=list.classList.toggle('open');
     icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
   });
-  // Ensure initial sync
-  icon.style.transform=list.classList.contains('open')?"rotate(0deg)":"rotate(-90deg)";
 });
 
 // Iframe open
@@ -232,17 +232,14 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.dataset.url;
   link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
   smartFavicon(url,link);
-
+  // ADD: always append external link icon for Julio's Games
+  if(url.includes("julios.games")){
+    if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
+  }
   link.addEventListener("click",e=>{
     e.preventDefault();
     if(url.includes("julios.games")){
       window.open(url,"_blank");
-      // Always ensure external link icon is present
-      if(!link.querySelector(".fa-external-link-alt")){
-        const icon=document.createElement("i");
-        icon.className="fas fa-external-link-alt ml-auto text-xs";
-        link.append(icon);
-      }
     } else {
       openIframe(link,url);
     }
