@@ -13,7 +13,7 @@
 
 <style>
 body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
@@ -37,33 +37,21 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
 
+    <!-- Enrolled toggle -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
+    <!-- Enrolled list (auto favicon) -->
     <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display: none;">
-      <a id="duckLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#ffd700] text-[#000] text-xs font-semibold">D</span> Duck
-      </a>
-      <a id="worldHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">B</span> Bolt
-      </a>
-      <a id="scienceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#e0e0e0] text-[#4a4a4a] text-xs font-semibold">R</span> Radius
-      </a>
-      <a id="spaceLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#add8e6] text-[#000] text-xs font-semibold">S</span> Space
-      </a>
-      <a id="usHistoryLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#f9d9c5] text-[#d18b5b] text-xs font-semibold">E</span> Szvy Central
-      </a>
-      <a id="englishLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">J</span> Julio's Games
-      </a>
-      <a id="healthLink" class="flex items-center gap-3 text-gray-700 text-xs font-normal hover:bg-gray-100 rounded px-2 py-1 select-none cursor-pointer">
-        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-[#cce0ff] text-[#3a6ed8] text-xs font-semibold">G</span> gn-math
-      </a>
+      <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item">Duck</a>
+      <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item">Bolt</a>
+      <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item">Radius</a>
+      <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item">Space</a>
+      <a id="usHistoryLink" data-url="https://edpuzzle.com.de/" class="enrolled-item">Szvy Central</a>
+      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item">Julio's Games</a>
+      <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item">gn-math</a>
     </div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
@@ -86,27 +74,26 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
-  <!-- Classroom cards section -->
+  <!-- Classroom cards -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <!-- Repeat 5 identical cards -->
     <script>
       for(let i=0;i<5;i++){
         document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="space-y-2 w-3/4">
-            <div class="h-3 skeleton w-2/3"></div>
-            <div class="h-3 skeleton w-1/2"></div>
+          <div class="flex justify-between items-start mb-4">
+            <div class="space-y-2 w-3/4">
+              <div class="h-3 skeleton w-2/3"></div>
+              <div class="h-3 skeleton w-1/2"></div>
+            </div>
+            <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
           </div>
-          <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
-        </div>
-        <hr class="border-gray-200 mb-3">
-        <div class="flex justify-between items-center text-gray-400 text-xs">
-          <div class="flex gap-2">
-            <input disabled type="checkbox" class="cursor-not-allowed">
-            <input disabled type="checkbox" class="cursor-not-allowed">
+          <hr class="border-gray-200 mb-3">
+          <div class="flex justify-between items-center text-gray-400 text-xs">
+            <div class="flex gap-2">
+              <input disabled type="checkbox" class="cursor-not-allowed">
+              <input disabled type="checkbox" class="cursor-not-allowed">
+            </div>
+            <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
           </div>
-          <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
-        </div>
         </article>`);
       }
     </script>
@@ -157,21 +144,41 @@ function openIframe(linkEl,url){
   linkEl.classList.add("active-link");
   localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));
 }
+
 // Restore order
 const savedOrder = JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
 if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
-// Links
-document.getElementById("usHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://edpuzzle.com.de/"));
-document.getElementById("englishLink").addEventListener("click",e=>{window.open("https://www.julios.games/home","_blank");enrolledList.prepend(e.currentTarget);localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.children).map(a=>a.id)));});
-document.getElementById("scienceLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://intrinsic.observer/"));
-document.getElementById("healthLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://gn-math.github.io/"));
-document.getElementById("worldHistoryLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://wfdxcajxzt.lawsonengineers.co.uk/"));
-document.getElementById("duckLink").addEventListener("click",e=>openIframe(e.currentTarget,"https://duck.quackprep.com/"));
+
+// Smart favicon + click handlers
+document.querySelectorAll(".enrolled-item").forEach(link=>{
+  const url = link.getAttribute("data-url");
+  try {
+    const domain = new URL(url).hostname;
+    const icon = document.createElement("img");
+    icon.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+    icon.className = "w-5 h-5 rounded";
+    icon.alt = "favicon";
+    link.prepend(icon);
+    link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-2","py-1","select-none","cursor-pointer");
+  } catch(e) { console.error("Bad URL", url); }
+
+  link.addEventListener("click",e=>{
+    e.preventDefault();
+    if(link.id==="englishLink"){
+      window.open(url,"_blank");
+      enrolledList.prepend(link);
+    } else {
+      openIframe(link,url);
+    }
+  });
+});
+
 // Toggle iframe
 const iframeToggleBtn = document.getElementById("iframeToggleBtn");
 iframeToggleBtn.addEventListener("click", () => {
   iframeOverlay.style.display = iframeOverlay.style.display === "none" ? "block" : "none";
 });
+
 // Draggable toggle button
 let isDragging = false, dragOffsetX=0, dragOffsetY=0;
 iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
