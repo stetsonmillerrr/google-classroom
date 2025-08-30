@@ -255,7 +255,7 @@ iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-if
 document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
 document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
 </script>
-<!-- WIKI-LINKS POPUP -->
+  <!-- WIKI-LINKS POPUP -->
 <div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
   <!-- Overlay -->
   <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
@@ -293,12 +293,6 @@ document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.
 
     <!-- Results -->
     <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
-
-    <!-- Pagination -->
-    <div class="flex justify-between items-center mt-4 hidden" id="pagination-controls">
-      <button id="prev-links" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">⬅️ Previous</button>
-      <button id="next-links" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">Next ➡️</button>
-    </div>
   </div>
 </div>
 
@@ -389,11 +383,39 @@ document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.
       container.innerHTML = `<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;
       return;
     }
+
     data.forEach(link => {
       const div = document.createElement('div');
-      div.className = 'p-3 rounded-lg border hover:bg-gray-50 flex justify-between items-center';
-      div.innerHTML = `<a href="${link.url}" target="_blank" class="text-blue-600 underline">${link.name}</a><span class="text-xs text-gray-400">${new Date(link.date).toLocaleDateString()}</span>`;
+      div.className = 'p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
+      div.innerHTML = `
+        <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
+        <span class="text-gray-500 text-xs break-all">${link.url}</span>
+        <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
+        <div class="flex items-center gap-1 mt-1">
+          ${[1,2,3,4,5].map(i => `<button class="star text-gray-300 hover:text-yellow-400" data-link-id="${link.id}" data-rating="${i}">★</button>`).join('')}
+        </div>
+      `;
       container.appendChild(div);
+
+      // Load existing rating
+      const stars = div.querySelectorAll('.star');
+      if(link.rating) {
+        stars.forEach(star => {
+          if(star.dataset.rating <= link.rating) star.classList.remove('text-gray-300'), star.classList.add('text-yellow-400');
+        });
+      }
+
+      // Click event for rating
+      stars.forEach(star => {
+        star.addEventListener('click', async () => {
+          const ratingValue = parseInt(star.dataset.rating);
+          await supabase.from('links').update({ rating: ratingValue }).eq('id', link.id);
+          stars.forEach(s => s.classList.remove('text-yellow-400'));
+          stars.forEach(s => {
+            if(s.dataset.rating <= ratingValue) s.classList.add('text-yellow-400');
+          });
+        });
+      });
     });
   }
 </script>
