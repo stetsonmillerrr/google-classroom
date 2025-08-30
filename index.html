@@ -12,7 +12,7 @@
 body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .category-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease; opacity: 0; margin-top: 0; }
 .category-list.open { opacity: 1; margin-top: 0.25rem; max-height: 500px; }
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
@@ -22,7 +22,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
+.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap-6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 .favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
 </style>
@@ -96,35 +96,64 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
             <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
           </div>
           <hr class="border-gray-200 mb-3">
-          <div class="flex justify-between items-center text-gray-400 text-xs">
-            <div class="flex gap-2">
-              <input disabled type="checkbox" class="cursor-not-allowed">
-              <input disabled type="checkbox" class="cursor-not-allowed">
-            </div>
-            <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
-          </div>
+          <!-- votes section removed -->
         </article>`);
       }
     </script>
   </section>
 </main>
 
+<div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
+<div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
+
+<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
+  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">🌐 Wiki-Links Browser</h2>
+      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Name</span>
+        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="">All</option>
+        </select>
+      </label>
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Date</span>
+        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="thisMonth">This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="all" selected>All Time</option>
+        </select>
+      </label>
+    </div>
+    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
 const enrolledChevron=document.getElementById("enrolledChevron");
+const iframeOverlay=document.getElementById("iframeOverlay");
+const iframeEl=iframeOverlay.querySelector("iframe");
+const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
-// Supabase
 const supabase = window.supabase.createClient(
   'https://ylbeucokkfotgghbveuv.supabase.co',
-  'PUBLIC_ANON_KEY_REPLACE'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
 );
 
-// Simulated user (replace with auth.user.id if using Supabase Auth)
-const userId = localStorage.getItem('userId') || crypto.randomUUID();
+const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
 localStorage.setItem('userId', userId);
 
 // Toggle enrolled
@@ -158,64 +187,149 @@ document.querySelectorAll('.category-header').forEach(h=>{
   });
 });
 
-// Example of adding thumbs vote buttons to links
-function addVoteButtons(container, links){
+// Iframe open
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block";
+  iframeEl.src=url;
+  iframeToggleBtn.style.display="flex";
+  setEnrolled(false);
+  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
+}
+
+// Smart favicon
+function hashColor(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];return colors[Math.abs(h)%colors.length];}
+async function smartFavicon(url,link){
+  let domain;
+  try{domain=new URL(url).origin;}catch{ return;}
+  const img=document.createElement("img");
+  img.className="favicon-img";
+  img.alt="favicon";
+  const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
+  try {
+    const resp=await fetch(url,{mode:"cors"});
+    const html=await resp.text();
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,"text/html");
+    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
+    if(icons.length){
+      const href=icons[0].getAttribute("href");
+      if(href){const abs=new URL(href,domain).href;trySources.unshift(abs);}
+    }
+  } catch(e){}
+  let i=0;
+  function tryNext(){
+    if(i>=trySources.length){
+      const fallback=document.createElement("span");
+      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
+      fallback.className="favicon-letter";
+      fallback.style.backgroundColor=hashColor(url);
+      link.querySelector("img, span")?.remove();
+      link.prepend(fallback);
+      return;
+    }
+    img.src=trySources[i++];
+  }
+  img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
+  img.onerror=tryNext;
+  tryNext();
+}
+
+// Load enrolled links
+document.querySelectorAll(".enrolled-item").forEach(async link=>{
+  const url=link.dataset.url;
+  link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
+  smartFavicon(url,link);
+  if(url.includes("julios.games")){
+    if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
+  }
+  link.addEventListener("click",e=>{
+    e.preventDefault();
+    if(url.includes("julios.games")){window.open(url,"_blank");} else {openIframe(link,url);}
+  });
+});
+
+// Toggle iframe
+iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
+
+// Draggable iframe
+let isDragging=false,dx=0,dy=0;
+iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
+document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
+document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
+
+// WIKI-LINKS FETCH (votes removed, everything else intact)
+const wikiModal = document.getElementById('wikiModal');
+const wikiBox = document.getElementById('wikiBox');
+const wikiOverlay = document.getElementById('wikiOverlay');
+const closeWiki = document.getElementById('closeWiki');
+const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
+let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
+
+archivedBtn.addEventListener('click', () => {
+  wikiModal.classList.remove('hidden');
+  setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
+  loadNames();
+  applyFilters();
+});
+closeWiki.addEventListener('click', closeModal);
+wikiOverlay.addEventListener('click', closeModal);
+function closeModal() { wikiBox.classList.remove('scale-100','opacity-0'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
+
+document.getElementById('filter-name').addEventListener('change', applyFilters);
+document.getElementById('filter-date').addEventListener('change', applyFilters);
+
+async function loadNames() {
+  const { data } = await supabase.from('link_names').select('name');
+  const select = document.getElementById('filter-name');
+  select.innerHTML = `<option value="">All</option>`;
+  data?.forEach(d => { const opt = document.createElement('option'); opt.value=d.name; opt.textContent=d.name; select.appendChild(opt); });
+}
+
+function getDateRange(rangeType) {
+  const now=new Date(), start=new Date(), end=new Date();
+  switch(rangeType){
+    case 'today': start.setHours(0,0,0,0); return {start,end:now};
+    case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
+    case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
+    case 'thisMonth': start.setDate(1); return {start,end:now};
+    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(start.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
+    case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
+    default: return null;
+  }
+}
+
+async function applyFilters() { page=0; currentFilter.name=document.getElementById('filter-name').value; currentFilter.range=document.getElementById('filter-date').value; await countTotalLinks(); await fetchLinks(); }
+
+async function countTotalLinks() {
+  let query = supabase.from('links').select('*', { count: 'exact', head: true });
+  if(currentFilter.name) query = query.eq('name', currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { count }=await query; totalLinks=count||0;
+}
+
+async function fetchLinks() {
+  const container=document.getElementById('results');
   container.innerHTML='';
-  links.forEach(link=>{
+  let query=supabase.from('links').select('*').order('date',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
+  if(currentFilter.name) query=query.eq('name',currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { data }=await query;
+  if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
+
+  for(const link of data){
     const div=document.createElement('div');
     div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
     div.innerHTML=`
       <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
       <span class="text-gray-500 text-xs break-all">${link.url}</span>
-      <div class="flex items-center gap-2 mt-1">
-        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}">
-          <i class="fas fa-thumbs-up"></i> <span class="up-count">${link.thumbs_up || 0}</span>
-        </button>
-        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}">
-          <i class="fas fa-thumbs-down"></i> <span class="down-count">${link.thumbs_down || 0}</span>
-        </button>
-      </div>
+      <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
     `;
     container.appendChild(div);
-
-    const upBtn = div.querySelector('.thumb-up');
-    const downBtn = div.querySelector('.thumb-down');
-
-    async function vote(linkId, type){
-      // Check existing vote
-      const { data: existing } = await supabase.from('link_votes').select('*').eq('link_id',linkId).eq('user_id',userId).single().catch(()=>({data:null}));
-      if(existing){
-        if(existing.vote_type===type){
-          await supabase.from('link_votes').delete().eq('id',existing.id);
-        } else {
-          await supabase.from('link_votes').update({vote_type:type}).eq('id',existing.id);
-        }
-      } else {
-        await supabase.from('link_votes').insert({link_id:linkId,user_id:userId,vote_type:type});
-      }
-      // Refresh counts
-      const { data:votes } = await supabase.from('link_votes').select('*').eq('link_id',linkId);
-      const upCount=votes.filter(v=>v.vote_type==='up').length;
-      const downCount=votes.filter(v=>v.vote_type==='down').length;
-      upBtn.querySelector('.up-count').textContent=upCount;
-      downBtn.querySelector('.down-count').textContent=downCount;
-      const userVote=votes.find(v=>v.user_id===userId)?.vote_type;
-      upBtn.classList.toggle('text-green-500', userVote==='up');
-      downBtn.classList.toggle('text-red-500', userVote==='down');
-    }
-
-    upBtn.addEventListener('click',()=>vote(link.id,'up'));
-    downBtn.addEventListener('click',()=>vote(link.id,'down'));
-  });
+  }
 }
-
-// Example fetch links (replace with your real supabase table)
-async function loadLinks(){
-  const container=document.querySelector('main section[aria-label="Classroom cards"]');
-  const { data: links } = await supabase.from('links').select('*').order('date',{ascending:false}).limit(5);
-  addVoteButtons(container, links || []);
-}
-loadLinks();
 </script>
 </body>
 </html>
