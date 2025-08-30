@@ -25,12 +25,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:0.80rem;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 .favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
-/* LOGIN MODAL */
-#loginModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;}
-#loginModal .modal-content{background:white;padding:1.5rem;border-radius:8px;width:300px;display:flex;flex-direction:column;gap:0.5rem;}
-#loginModal input{padding:0.5rem;border:1px solid #ccc;border-radius:4px;}
-#loginModal button{padding:0.5rem;border:none;border-radius:4px;background:#1967d2;color:white;cursor:pointer;}
-#loginModal button#closeLogin{background:#aaa;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -50,7 +44,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
-      <!-- Categories fully restored -->
       <div class="category">
         <div class="category-header">Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
@@ -67,15 +60,15 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
           <a id="browserLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a>
           <a id="spaceLink" data-url="https://erbytes.host2go.net/" class="enrolled-item"></a>
           <a id="randomLink" data-url="https://study.info.north-kazakhstan.su/" class="enrolled-item"></a>
-          <a id="utopiLink" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
-          <a id="utopi3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
-          <a id="utopi5Link" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
-          <a id="utopi4Link" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
+          <a id="utopia2Link" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
+          <a id="utopia3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
+          <a id="utopiaLink" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
+          <a id="utopiaLink" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
         </div>
       </div>
     </div>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Settings<span class="text-xs font-normal ml-auto">›</span></a>
+    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
 </aside>
 
@@ -105,6 +98,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
             <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
           </div>
           <hr class="border-gray-200 mb-3">
+          <!-- votes section removed -->
         </article>`);
       }
     </script>
@@ -114,82 +108,334 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
-<!-- LOGIN MODAL -->
-<div id="loginModal">
-  <div class="modal-content">
-    <input type="text" id="usernameInput" placeholder="Username">
-    <input type="password" id="passwordInput" placeholder="Password">
-    <button id="loginBtn">Login</button>
-    <button id="closeLogin">Close</button>
+<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
+  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">🌐 Web Proxy 🌐</h2>
+      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Name</span>
+        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="">All</option>
+        </select>
+      </label>
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Date</span>
+        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="thisMonth">This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="all" selected>All Time</option>
+        </select>
+      </label>
+    </div>
+    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-// --- PROFILE & LOGIN ---
-const profileBtnEl=document.getElementById('profileBtn');
-const profileLetterEl=document.getElementById('profileLetter');
-const loginModalEl=document.getElementById('loginModal');
-const loginBtnEl=document.getElementById('loginBtn');
-const closeLoginEl=document.getElementById('closeLogin');
+const enrolledBtn=document.getElementById("enrolledBtn");
+const enrolledList=document.getElementById("enrolledList");
+const enrolledChevron=document.getElementById("enrolledChevron");
+const iframeOverlay=document.getElementById("iframeOverlay");
+const iframeEl=iframeOverlay.querySelector("iframe");
+const iframeToggleBtn=document.getElementById("iframeToggleBtn");
+const profileBtn=document.getElementById("profileBtn");
+const profileLetter=document.getElementById("profileLetter");
 
-profileBtnEl.addEventListener('click',()=>{ loginModalEl.style.display='flex'; });
-closeLoginEl.addEventListener('click',()=>{ loginModalEl.style.display='none'; });
-loginBtnEl.addEventListener('click',()=>{
-  const username=document.getElementById('usernameInput').value.trim();
-  const password=document.getElementById('passwordInput').value.trim();
-  if(!username||!password){alert('Enter username & password'); return;}
-  localStorage.setItem('loggedIn','true');
-  localStorage.setItem('username',username);
-  loginModalEl.style.display='none';
-  profileLetterEl.textContent=username.charAt(0).toUpperCase();
-  profileBtnEl.style.backgroundColor='#1967d2';
-});
-if(localStorage.getItem('loggedIn')==='true'){
-  const username=localStorage.getItem('username');
-  profileLetterEl.textContent=username.charAt(0).toUpperCase();
-  profileBtnEl.style.backgroundColor='#1967d2';
+const supabase = window.supabase.createClient(
+  'https://ylbeucokkfotgghbveuv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
+);
+
+const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
+localStorage.setItem('userId', userId);
+
+// Toggle enrolled
+function setEnrolled(open){
+  enrolledList.style.display=open?"flex":"none";
+  enrolledBtn.setAttribute("aria-expanded",open);
+  enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
 }
+enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
 
-// --- CATEGORY DROPDOWN ---
+// Profile persistence
+const savedLetter=localStorage.getItem("profileLetter");
+const savedColor=localStorage.getItem("profileColor");
+if(savedLetter) profileLetter.textContent=savedLetter;
+if(savedColor) profileBtn.style.backgroundColor=savedColor;
+profileBtn.addEventListener("click",()=>{
+  const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;
+  const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  profileLetter.textContent=l; profileBtn.style.backgroundColor=c;
+  localStorage.setItem("profileLetter",l); localStorage.setItem("profileColor",c);
+});
+
+// Category expand/collapse
 document.querySelectorAll('.category-header').forEach(h=>{
   const list=h.nextElementSibling;
   const icon=h.querySelector('i');
-  list.classList.remove('open'); icon.style.transform='rotate(-90deg)';
+  icon.style.transform="rotate(-90deg)";
   h.addEventListener('click',()=>{
     const open=list.classList.toggle('open');
-    icon.style.transform=open?'rotate(0deg)':'rotate(-90deg)';
+    icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
   });
 });
 
-// --- ENROLLED LINKS ---
-document.querySelectorAll('.enrolled-item').forEach(el=>{
-  const url=el.dataset.url;
-  el.textContent=' ' + new URL(url).hostname.replace(/^www\./,'');
-  el.addEventListener('click',()=>{ window.open(url,'_blank'); });
-});
+// Iframe open
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block";
+  iframeEl.src=url;
+  iframeToggleBtn.style.display="flex";
+  setEnrolled(false);
+  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
+}
 
-// --- ENROLLED TOGGLE ---
-const enrolledBtn=document.getElementById('enrolledBtn');
-const enrolledList=document.getElementById('enrolledList');
-const enrolledChevron=document.getElementById('enrolledChevron');
-enrolledBtn.addEventListener('click',()=>{
-  const isOpen=enrolledList.style.display==='flex';
-  enrolledList.style.display=isOpen?'none':'flex';
-  enrolledChevron.style.transform=isOpen?'rotate(-90deg)':'rotate(0deg)';
-});
+// Smart favicon
+function hashColor(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];return colors[Math.abs(h)%colors.length];}
+async function smartFavicon(url,link){
+  let domain;
+  try{domain=new URL(url).origin;}catch{ return;}
+  const img=document.createElement("img");
+  img.className="favicon-img";
+  img.alt="favicon";
+  const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
+  try {
+    const resp=await fetch(url,{mode:"cors"});
+    const html=await resp.text();
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,"text/html");
+    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
+    if(icons.length){
+      const href=icons[0].getAttribute("href");
+      if(href){const abs=new URL(href,domain).href;trySources.unshift(abs);}
+    }
+  } catch(e){}
+  let i=0;
+  function tryNext(){
+    if(i>=trySources.length){
+      const fallback=document.createElement("span");
+      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
+      fallback.className="favicon-letter";
+      fallback.style.backgroundColor=hashColor(url);
+      link.querySelector("img, span")?.remove();
+      link.prepend(fallback);
+      return;
+    }
+    img.src=trySources[i++];
+  }
+  img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
+  img.onerror=tryNext;
+  tryNext();
+}
 
-// --- IFRAME & DRAG TOGGLE RESTORED ---
-const iframeOverlay=document.getElementById('iframeOverlay');
-const iframeEl=iframeOverlay.querySelector('iframe');
-const iframeToggleBtn=document.getElementById('iframeToggleBtn');
+// Load enrolled links and restore order after all items exist
+async function loadEnrolledItems() {
+  const links = document.querySelectorAll(".enrolled-item");
 
-iframeToggleBtn.addEventListener('click',()=>{ iframeOverlay.style.display=iframeOverlay.style.display==='none'?'block':'none'; });
+  for (const link of links) {
+    const url = link.dataset.url;
+    link.textContent = " " + (new URL(url).hostname.replace(/^www\./, ""));
+    await smartFavicon(url, link);
+
+    if (url.includes("julios.games")) {
+      if (!link.querySelector("i")) {
+        const icon = document.createElement("i");
+        icon.className = "fas fa-external-link-alt ml-auto text-xs";
+        link.append(icon);
+      }
+    }
+
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const categoryList = link.parentElement;
+
+      // Move clicked link to the top
+      categoryList.prepend(link);
+
+      // Save new order in localStorage
+      const ids = Array.from(categoryList.querySelectorAll(".enrolled-item")).map(l => l.id);
+      localStorage.setItem(`order_${categoryList.parentElement.querySelector(".category-header").textContent}`, JSON.stringify(ids));
+
+      if (url.includes("julios.games")) {
+        window.open(url, "_blank");
+      } else {
+        openIframe(link, url);
+      }
+    });
+  }
+
+  // Restore saved order AFTER all links are populated
+  document.querySelectorAll(".category").forEach(cat => {
+    const header = cat.querySelector(".category-header").textContent;
+    const list = cat.querySelector(".category-list");
+    const savedOrder = JSON.parse(localStorage.getItem(`order_${header}`) || "[]");
+    if (savedOrder.length) {
+      savedOrder.forEach(id => {
+        const el = list.querySelector(`#${id}`);
+        if (el) list.appendChild(el);
+      });
+    }
+  });
+}
+
+// Initialize enrolled links
+loadEnrolledItems();
+
+  
+// Toggle iframe
+iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
+
+// Draggable iframe
 let isDragging=false,dx=0,dy=0;
-iframeToggleBtn.addEventListener('mousedown',e=>{ isDragging=true; dx=e.clientX-iframeToggleBtn.offsetLeft; dy=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor='grabbing'; });
-document.addEventListener('mousemove',e=>{ if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dx}px`; iframeToggleBtn.style.top=`${e.clientY-dy}px`; });
-document.addEventListener('mouseup',()=>{ isDragging=false; iframeToggleBtn.style.cursor='grab'; });
-</script>
+iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
+document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
+document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
 
+// WIKI-LINKS FETCH (votes removed, everything else intact)
+const wikiModal = document.getElementById('wikiModal');
+const wikiBox = document.getElementById('wikiBox');
+const wikiOverlay = document.getElementById('wikiOverlay');
+const closeWiki = document.getElementById('closeWiki');
+const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
+let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
+
+archivedBtn.addEventListener('click', () => {
+  wikiModal.classList.remove('hidden');
+  setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
+  loadNames();
+  applyFilters();
+});
+closeWiki.addEventListener('click', closeModal);
+wikiOverlay.addEventListener('click', closeModal);
+function closeModal() { wikiBox.classList.remove('scale-100','opacity-0'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
+
+document.getElementById('filter-name').addEventListener('change', applyFilters);
+document.getElementById('filter-date').addEventListener('change', applyFilters);
+
+async function loadNames() {
+  const { data } = await supabase.from('link_names').select('name');
+  const select = document.getElementById('filter-name');
+  select.innerHTML = `<option value="">All</option>`;
+  data?.forEach(d => { const opt = document.createElement('option'); opt.value=d.name; opt.textContent=d.name; select.appendChild(opt); });
+}
+
+function getDateRange(rangeType) {
+  const now=new Date(), start=new Date(), end=new Date();
+  switch(rangeType){
+    case 'today': start.setHours(0,0,0,0); return {start,end:now};
+    case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
+    case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
+    case 'thisMonth': start.setDate(1); return {start,end:now};
+    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(start.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
+    case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
+    default: return null;
+  }
+}
+
+async function applyFilters() { page=0; currentFilter.name=document.getElementById('filter-name').value; currentFilter.range=document.getElementById('filter-date').value; await countTotalLinks(); await fetchLinks(); }
+
+async function countTotalLinks() {
+  let query = supabase.from('links').select('*', { count: 'exact', head: true });
+  if(currentFilter.name) query = query.eq('name', currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { count }=await query; totalLinks=count||0;
+}
+
+async function fetchLinks() {
+  const container=document.getElementById('results');
+  container.innerHTML='';
+  let query=supabase.from('links').select('*').order('date',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
+  if(currentFilter.name) query=query.eq('name',currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { data }=await query;
+  if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
+
+  for(const link of data){
+    const div=document.createElement('div');
+    div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
+    div.innerHTML=`
+      <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
+      <span class="text-gray-500 text-xs break-all">${link.url}</span>
+      <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
+    `;
+    container.appendChild(div);
+  }
+}
+</script>
+  <!-- Login Modal -->
+<div id="loginModal" class="fixed inset-0 z-[1300] hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">Login</h2>
+      <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+    <div class="flex flex-col gap-4">
+      <input id="emailInput" type="email" placeholder="Email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
+      <input id="passwordInput" type="password" placeholder="Password" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
+      <button id="loginBtn" class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">Login</button>
+      <span id="loginMessage" class="text-red-500 text-sm"></span>
+    </div>
+  </div>
+</div>
+<script>
+// LOGIN MODAL SCRIPT
+const loginModal = document.getElementById('loginModal');
+const loginBtn = document.getElementById('loginBtn');
+const closeLoginModal = document.getElementById('closeLoginModal');
+const loginMessage = document.getElementById('loginMessage');
+
+// Open login modal (example: double-click profile button)
+profileBtn.addEventListener('dblclick', () => {
+  loginModal.classList.remove('hidden');
+  setTimeout(() => {
+    loginModal.querySelector('div.relative').classList.add('scale-100', 'opacity-100');
+  }, 10);
+});
+
+// Close modal function
+function closeLogin() {
+  const modalContent = loginModal.querySelector('div.relative');
+  modalContent.classList.remove('scale-100', 'opacity-100');
+  setTimeout(() => loginModal.classList.add('hidden'), 200);
+  loginMessage.textContent = '';
+}
+
+// Close modal buttons
+closeLoginModal.addEventListener('click', closeLogin);
+loginModal.querySelector('div.absolute').addEventListener('click', closeLogin);
+
+// Handle login
+loginBtn.addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value.trim();
+
+  if (!email || !password) {
+    loginMessage.textContent = 'Please enter email and password';
+    return;
+  }
+
+  const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    loginMessage.textContent = error.message;
+  } else {
+    loginMessage.textContent = 'Logged in successfully!';
+    closeLogin();
+    console.log('User:', user);
+  }
+});
+</script>
 </body>
 </html>
