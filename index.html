@@ -1,264 +1,254 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Home</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
+<div class="wiki-links-tool">
+  <div class="max-w-4xl mx-auto p-4">
+    <h2 class="text-3xl font-bold text-center mb-6">🌐 Wiki-Links Browser (2.0)</h2>
+    <h3 class="text-1xl font-light text-center mb-3">👊ـــــــــــــــﮩ٨ـ❤️MADE BY RUSTY-NAIL</h3>
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+      <label class="flex flex-col w-full md:w-1/3">
+        <span class="text-sm font-semibold mb-1">Filter by Name</span>
+        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500"><option value="">All</option><option value="Rammerhead">Rammerhead</option><option value="Interstellar">Interstellar</option><option value="Shuttle">Shuttle</option><option value="Utopia">Utopia</option><option value="Doge">Doge</option><option value="Shadow">Shadow</option><option value="Space">Space</option><option value="DayDreamX">DayDreamX</option><option value="Bolt">Bolt</option><option value="SKrypt">SKrypt</option><option value="Reds Exploit Corner">Reds Exploit Corner</option></select>
+      </label>
 
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
+      <label class="flex flex-col w-full md:w-1/3">
+        <span class="text-sm font-semibold mb-1">Filter by Date</span>
+        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="thisMonth">This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="all" selected="">All Time</option>
+        </select>
+      </label>
 
-<style>
-body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
-.skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
-.skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
-#iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
-#iframeOverlay iframe{width:100%;height:100%;border:none;}
-#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none; display:none;}
-#iframeToggleBtn:active{cursor:grabbing;}
-.active-link{background-color:#d2e3fc;color:#1967d2;}
-.sidebar-scale{transform:scale(1.05);transform-origin:top left;}
-.category-title{font-size:0.75rem; font-weight:600; color:#555; margin-top:8px; margin-bottom:2px; padding-left:12px; text-transform:uppercase;}
-.category-divider{border-t border-gray-200 my-1 mx-2;}
-.enrolled-item{padding-left:12px;}
-</style>
-</head>
-<body class="bg-[#f8fafc] min-h-screen flex">
-
-<!-- Sidebar -->
-<aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
-  <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-    <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
-    <img alt="Google Classroom icon" class="w-6 h-6 ml-2" src="https://www.gstatic.com/classroom/ic_product_classroom_144.png">
-    <span class="text-gray-800 text-base font-normal select-none ml-2">Classroom</span>
-  </header>
-  <nav class="flex flex-col mt-4 px-2 space-y-1">
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
-
-    <!-- Enrolled toggle -->
-    <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
-      <i class="fas fa-graduation-cap text-sm"></i> Enrolled
-      <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
-    </button>
-
-    <!-- Enrolled list with categories -->
-    <div id="enrolledList" class="flex flex-col mt-1" style="display: none;">
-      <!-- Category: Games -->
-      <div class="category-title">Games</div>
-      <div class="category-divider"></div>
-      <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
-      <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
-
-      <!-- Category: Science -->
-      <div class="category-title">Science</div>
-      <div class="category-divider"></div>
-      <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
-      <a id="spaceLink" data-url="https://nasa.gov/" class="enrolled-item"></a>
-
-      <!-- Category: History -->
-      <div class="category-title">History</div>
-      <div class="category-divider"></div>
-      <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
-      <a id="usHistoryLink" data-url="https://edpuzzle.com.de/" class="enrolled-item"></a>
-
-      <!-- Category: Math -->
-      <div class="category-title">Math</div>
-      <div class="category-divider"></div>
-      <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
+      <button id="search-btn" class="w-full md:w-auto bg-blue-600 text-white px-4 py-2 mt-2 md:mt-0 rounded hover:bg-blue-700 transition">
+        🔍 Search
+      </button>
     </div>
 
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
-  </nav>
-</aside>
+    <div class="text-right mb-3" id="copy-all-container">
+      <button id="copy-all-btn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+        📋 Copy All Visible URLs
+      </button>
+    </div>
 
-<!-- Main content -->
-<main class="flex-1 p-6 overflow-auto">
-  <!-- Top bar -->
-  <header class="flex items-center justify-end gap-6 mb-6">
-    <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
-      <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-    </button>
-    <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
-      <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
-    </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
-      <span id="profileLetter" class="text-sm leading-none">A</span>
-    </button>
-  </header>
+    <div id="results" class="space-y-4"><div class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold mb-1">Shuttle (2025-08-29)</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="https://best-force-734.nowgg.me/" target="_blank" class="text-blue-600 underline break-words max-w-full">https://best-force-734.nowgg.me/</a>
+            <button onclick="copySingleLink('https://best-force-734.nowgg.me/')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('5721dfa9-f38d-4af4-8edc-b1a027a055d7', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>0</span></button>
+            <button onclick="rateLink('5721dfa9-f38d-4af4-8edc-b1a027a055d7', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>7</span></button>
+          </div></div><div class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold mb-1">Shuttle (2025-08-29)</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="https://calm-soul-501.sz.games/" target="_blank" class="text-blue-600 underline break-words max-w-full">https://calm-soul-501.sz.games/</a>
+            <button onclick="copySingleLink('https://calm-soul-501.sz.games/')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('bcf837d7-423e-4f48-ba0b-027f145dbe32', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>0</span></button>
+            <button onclick="rateLink('bcf837d7-423e-4f48-ba0b-027f145dbe32', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>2</span></button>
+          </div></div><div class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold mb-1">Shuttle (2025-08-29)</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="https://wide-heart-891.discovergeographics.com/" target="_blank" class="text-blue-600 underline break-words max-w-full">https://wide-heart-891.discovergeographics.com/</a>
+            <button onclick="copySingleLink('https://wide-heart-891.discovergeographics.com/')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('f9f3cb6b-c9e2-4da6-bd7b-23c35b0f6f50', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>3</span></button>
+            <button onclick="rateLink('f9f3cb6b-c9e2-4da6-bd7b-23c35b0f6f50', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>4</span></button>
+          </div></div><div class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold mb-1">Shuttle (2025-08-29)</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="https://new-hawk-791.scientificsense.org/" target="_blank" class="text-blue-600 underline break-words max-w-full">https://new-hawk-791.scientificsense.org/</a>
+            <button onclick="copySingleLink('https://new-hawk-791.scientificsense.org/')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('1b06f595-d9f7-4d18-980f-bed7a16fb843', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>1</span></button>
+            <button onclick="rateLink('1b06f595-d9f7-4d18-980f-bed7a16fb843', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>1</span></button>
+          </div></div><div class="bg-white p-4 rounded shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold mb-1">Shuttle (2025-08-29)</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="https://sunny-hawk-220.3kh0.org/" target="_blank" class="text-blue-600 underline break-words max-w-full">https://sunny-hawk-220.3kh0.org/</a>
+            <button onclick="copySingleLink('https://sunny-hawk-220.3kh0.org/')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('7665815f-2554-4679-b39a-9ed1d7014d98', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>1</span></button>
+            <button onclick="rateLink('7665815f-2554-4679-b39a-9ed1d7014d98', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>2</span></button>
+          </div></div></div>
 
-  <!-- Classroom cards -->
-  <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <script>
-      for(let i=0;i<5;i++){
-        document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-          <div class="flex justify-between items-start mb-4">
-            <div class="space-y-2 w-3/4">
-              <div class="h-3 skeleton w-2/3"></div>
-              <div class="h-3 skeleton w-1/2"></div>
-            </div>
-            <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
-          </div>
-          <hr class="border-gray-200 mb-3">
-          <div class="flex justify-between items-center text-gray-400 text-xs">
-            <div class="flex gap-2">
-              <input disabled type="checkbox" class="cursor-not-allowed">
-              <input disabled type="checkbox" class="cursor-not-allowed">
-            </div>
-            <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
-          </div>
-        </article>`);
+    <div class="flex justify-between items-center mt-6" id="pagination-controls">
+      <button id="prev-links" class="bg-gray-600 text-white px-5 py-2 rounded hover:bg-gray-700 transition" disabled="">⬅️ Previous Links</button>
+      <button id="next-links" class="bg-gray-600 text-white px-5 py-2 rounded hover:bg-gray-700 transition">Next Links ➡️</button>
+    </div>
+  </div>
+
+  <div id="loading-spinner" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+    <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden z-50">
+    ✅ Rated successfully!
+  </div>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://ylbeucokkfotgghbveuv.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
+    );
+
+    let page = 0;
+    const pageSize = 5;
+    let currentFilter = { name: '', range: 'all' };
+    let totalLinks = 0;
+
+    document.getElementById('search-btn').addEventListener('click', applyFilters);
+    document.getElementById('next-links').addEventListener('click', () => { page++; fetchLinks(); });
+    document.getElementById('prev-links').addEventListener('click', () => { page--; fetchLinks(); });
+    document.getElementById('copy-all-btn').addEventListener('click', copyAllVisibleLinks);
+
+    function showSpinner() {
+      document.getElementById('loading-spinner').classList.remove('hidden');
+    }
+
+    function hideSpinner() {
+      document.getElementById('loading-spinner').classList.add('hidden');
+    }
+
+    function showToast(message = 'Action completed!') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2000);
+    }
+
+    async function loadNames() {
+      const { data } = await supabase.from('link_names').select('name');
+      const select = document.getElementById('filter-name');
+      select.innerHTML = `<option value="">All</option>`;
+      data?.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.name;
+        opt.textContent = d.name;
+        select.appendChild(opt);
+      });
+    }
+
+    function getDateRange(rangeType) {
+      const now = new Date();
+      const start = new Date();
+      const end = new Date();
+      switch (rangeType) {
+        case 'today': start.setHours(0, 0, 0, 0); return { start, end: now };
+        case 'yesterday': start.setDate(start.getDate() - 1); end.setDate(end.getDate() - 1); start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999); return { start, end };
+        case 'last7': start.setDate(start.getDate() - 6); return { start, end: now };
+        case 'thisMonth': start.setDate(1); return { start, end: now };
+        case 'lastMonth': start.setMonth(start.getMonth() - 1); start.setDate(1); end.setMonth(end.getMonth() - 1); end.setDate(new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate()); end.setHours(23, 59, 59, 999); return { start, end };
+        case 'thisYear': start.setMonth(0, 1); start.setHours(0, 0, 0, 0); return { start, end: now };
+        default: return null;
       }
-    </script>
-  </section>
-</main>
+    }
 
-<!-- iframe overlay -->
-<div id="iframeOverlay">
-  <iframe src="" allowfullscreen allow="fullscreen"></iframe>
+    async function applyFilters() {
+      page = 0;
+      currentFilter.name = document.getElementById('filter-name').value;
+      currentFilter.range = document.getElementById('filter-date').value;
+      await countTotalLinks();
+      await fetchLinks();
+    }
+
+    async function countTotalLinks() {
+      let query = supabase.from('links').select('*', { count: 'exact', head: true });
+      if (currentFilter.name) query = query.eq('name', currentFilter.name);
+      const range = getDateRange(currentFilter.range);
+      if (range) {
+        query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+      }
+      const { count } = await query;
+      totalLinks = count || 0;
+    }
+
+    async function fetchLinks() {
+      showSpinner();
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      let query = supabase
+        .from('links')
+        .select('*')
+        .order('date', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (currentFilter.name) query = query.eq('name', currentFilter.name);
+      const range = getDateRange(currentFilter.range);
+      if (range) {
+        query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+      }
+
+      const { data, error } = await query;
+      hideSpinner();
+
+      if (error || !data || data.length === 0) {
+        container.innerHTML = `<div class="bg-yellow-100 text-yellow-800 p-4 rounded shadow text-center">⚠️ No links found.</div>`;
+        document.getElementById('copy-all-container').classList.add('hidden');
+        document.getElementById('pagination-controls').classList.add('hidden');
+        return;
+      }
+
+      for (const link of data) {
+        const { count: upCount } = await supabase.from('ratings_up').select('*', { count: 'exact', head: true }).eq('link_id', link.id);
+        const { count: downCount } = await supabase.from('ratings_down').select('*', { count: 'exact', head: true }).eq('link_id', link.id);
+        const formattedDate = new Date(link.date).toISOString().split('T')[0];
+
+        const div = document.createElement('div');
+        div.className = 'bg-white p-4 rounded shadow hover:shadow-md transition';
+        div.innerHTML = `
+          <h3 class="text-lg font-semibold mb-1">${link.name} (${formattedDate})</h3>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <a href="${link.url}" target="_blank" class="text-blue-600 underline break-words max-w-full">${link.url}</a>
+            <button onclick="copySingleLink('${link.url}')" class="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">📋 Copy</button>
+          </div>
+          <div class="flex items-center gap-4 mt-3 text-sm">
+            <button onclick="rateLink('${link.id}', 'up', this)" class="flex items-center gap-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">✅ <span>${upCount || 0}</span></button>
+            <button onclick="rateLink('${link.id}', 'down', this)" class="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">❌ <span>${downCount || 0}</span></button>
+          </div>`;
+        container.appendChild(div);
+      }
+
+      document.getElementById('copy-all-container').classList.remove('hidden');
+      const prevBtn = document.getElementById('prev-links');
+      const nextBtn = document.getElementById('next-links');
+      const pagination = document.getElementById('pagination-controls');
+      pagination.classList.remove('hidden');
+      prevBtn.disabled = page === 0;
+      nextBtn.disabled = (page + 1) * pageSize >= totalLinks;
+    }
+
+    async function rateLink(linkId, direction, btn) {
+      const table = direction === 'up' ? 'ratings_up' : 'ratings_down';
+      await supabase.from(table).insert({ link_id: linkId });
+      const countSpan = btn.querySelector('span');
+      countSpan.textContent = parseInt(countSpan.textContent) + 1;
+      showToast(direction === 'up' ? '✅ Upvoted!' : '❌ Downvoted!');
+    }
+
+    function copySingleLink(url) {
+      navigator.clipboard.writeText(url);
+      showToast('📋 Link copied!');
+    }
+
+    function copyAllVisibleLinks() {
+      const links = document.querySelectorAll('#results a');
+      const urls = Array.from(links).map(a => a.href).join('\n');
+      navigator.clipboard.writeText(urls);
+      showToast('📋 All visible links copied!');
+    }
+
+    loadNames();
+    applyFilters();
+  </script>
 </div>
-
-<!-- draggable toggle button -->
-<div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
-
-<script>
-// -------------------- Utility functions --------------------
-function setEnrolled(open){
-  enrolledList.style.display=open?"flex":"none";
-  enrolledBtn.setAttribute("aria-expanded",open);
-  enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-}
-function hashColor(str){
-  let hash=0; for(let i=0;i<str.length;i++) hash=str.charCodeAt(i)+((hash<<5)-hash);
-  const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];
-  return colors[Math.abs(hash)%colors.length];
-}
-async function fetchTitle(url){
-  const cacheKey="title:"+url;
-  const cached=localStorage.getItem(cacheKey);
-  if(cached) return cached;
-  try{
-    const res=await fetch(url,{mode:"cors"});
-    const text=await res.text();
-    const match=text.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if(match){
-      const title=match[1].trim();
-      localStorage.setItem(cacheKey,title);
-      return title;
-    }
-  }catch(e){ console.warn("Title fetch failed",url); }
-  return new URL(url).hostname;
-}
-function loadFavicon(link){
-  const url=link.getAttribute("data-url");
-  let domain; try{domain=new URL(url).hostname;}catch(e){return;}
-  const sources=[
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=32`,
-    `https://www.google.com/s2/favicons?sz=32&domain_url=${url}`,
-    `${url.replace(/\/$/,"")}/favicon.ico`
-  ];
-  const img=document.createElement("img");
-  img.className="w-5 h-5 rounded"; img.alt="favicon";
-  let index=0;
-  function tryNext(){
-    if(index>=sources.length){
-      const badge=document.createElement("span");
-      badge.textContent=link.textContent.trim().charAt(0).toUpperCase();
-      badge.className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-semibold";
-      badge.style.backgroundColor=hashColor(domain);
-      badge.style.color="#000";
-      link.prepend(badge);
-      return;
-    }
-    img.src=sources[index++];
-  }
-  img.onerror=tryNext;
-  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { 
-    link.querySelector("img, span")?.remove();
-    link.prepend(img);
-  }};
-  tryNext();
-}
-
-// -------------------- Elements --------------------
-const enrolledBtn=document.getElementById("enrolledBtn");
-const enrolledList=document.getElementById("enrolledList");
-const enrolledChevron=document.getElementById("enrolledChevron");
-const iframeOverlay=document.getElementById("iframeOverlay");
-const iframeEl=iframeOverlay.querySelector("iframe");
-const iframeToggleBtn=document.getElementById("iframeToggleBtn");
-
-// -------------------- Enrolled toggle --------------------
-enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
-
-// -------------------- Profile Icon logic --------------------
-const profileBtn=document.getElementById("profileBtn");
-const profileLetter=document.getElementById("profileLetter");
-const savedLetter=localStorage.getItem("profileLetter");
-const savedColor=localStorage.getItem("profileColor");
-if(savedLetter) profileLetter.textContent=savedLetter;
-if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{
-  const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
-  const newColor=prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
-  profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor;
-  localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
-});
-
-// -------------------- Iframe logic --------------------
-function openIframe(linkEl,url){
-  iframeOverlay.style.display="block";
-  iframeEl.src=url;
-  iframeToggleBtn.style.display="flex";
-  setEnrolled(false);
-  enrolledList.prepend(linkEl);
-  Array.from(enrolledList.querySelectorAll(".enrolled-item")).forEach(a=>a.classList.remove("active-link"));
-  linkEl.classList.add("active-link");
-  localStorage.setItem("enrolledOrder",JSON.stringify(Array.from(enrolledList.querySelectorAll(".enrolled-item")).map(a=>a.id)));
-}
-
-// -------------------- Restore order --------------------
-const savedOrder=JSON.parse(localStorage.getItem("enrolledOrder")||"[]");
-if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(id);if(el) enrolledList.appendChild(el);});
-
-// -------------------- Enhance enrolled links --------------------
-document.querySelectorAll(".enrolled-item").forEach(async link=>{
-  const url=link.getAttribute("data-url");
-  link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","py-1","select-none","cursor-pointer");
-
-  const title=await fetchTitle(url);
-  link.textContent=" "+title;
-
-  loadFavicon(link);
-
-  link.addEventListener("click",e=>{
-    e.preventDefault();
-    if(link.id==="englishLink"){
-      window.open(url,"_blank");
-      enrolledList.prepend(link);
-    } else {
-      openIframe(link,url);
-    }
-  });
-});
-
-// -------------------- Toggle iframe --------------------
-iframeToggleBtn.addEventListener("click",()=>{
-  if(!iframeEl.src) return;
-  iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";
-});
-
-// -------------------- Draggable toggle button --------------------
-let isDragging=false, dragOffsetX=0, dragOffsetY=0;
-iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
-document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
-document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
-iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay) iframeOverlay.style.display="none"; });
-</script>
-</body>
-</html>
