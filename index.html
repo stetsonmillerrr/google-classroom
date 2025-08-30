@@ -43,8 +43,8 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Enrolled list (auto favicon + title) -->
-    <div id="enrolledList" class="flex flex-col pl-8 space-y-1 mt-1" style="display: none;">
+    <!-- Enrolled list (auto favicon + title, aligned left) -->
+    <div id="enrolledList" class="flex flex-col space-y-1 mt-1 pl-3" style="display: none;">
       <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
       <a id="worldHistoryLink" data-url="https://wfdxcajxzt.lawsonengineers.co.uk/" class="enrolled-item"></a>
       <a id="scienceLink" data-url="https://intrinsic.observer/" class="enrolled-item"></a>
@@ -137,7 +137,6 @@ async function fetchTitle(url){
   return new URL(url).hostname;
 }
 function loadFavicon(link){
-  if(link.querySelector("img,span")) return; // ✅ Prevent duplicate favicon/letter
   const url=link.getAttribute("data-url");
   let domain; try{domain=new URL(url).hostname;}catch(e){return;}
   const sources=[
@@ -161,7 +160,10 @@ function loadFavicon(link){
     img.src=sources[index++];
   }
   img.onerror=tryNext;
-  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.prepend(img);} };
+  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { 
+    link.querySelector("img, span")?.remove(); // prevent duplicates
+    link.prepend(img);
+  }};
   tryNext();
 }
 // -------------------- Elements --------------------
@@ -207,14 +209,15 @@ if(savedOrder.length) savedOrder.forEach(id=>{const el=document.getElementById(i
 // -------------------- Enhance enrolled links --------------------
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.getAttribute("data-url");
-  link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-2","py-1","select-none","cursor-pointer");
+  link.classList.add("flex","items-center","gap-3","text-gray-700","text-xs","font-normal","hover:bg-gray-100","rounded","px-3","py-2","select-none","cursor-pointer");
 
-  // Detect title first
-  const title=await fetchTitle(url);
-  link.textContent=" "+title; // space so favicon/letter doesn't stick
-
-  // Load favicon once
+  // Load favicon
   loadFavicon(link);
+
+  // Detect title
+  const title=await fetchTitle(url);
+  link.textContent=" "+title; // keep space for favicon
+  loadFavicon(link); // re-insert favicon in front
 
   link.addEventListener("click",e=>{
     e.preventDefault();
