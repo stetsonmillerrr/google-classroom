@@ -17,16 +17,15 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 #iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
 #iframeOverlay iframe{width:100%;height:100%;border:none;}
-#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:none;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;}
+#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none; display:none;}
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
 .sidebar-scale{transform:scale(1.05);transform-origin:top left;}
 .category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.category-list{display:none;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
-.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;cursor:pointer;justify-content:space-between;}
+.category-list{display:flex;flex-direction:column;gap:0.25rem;margin-left:0.25rem;}
+.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem; cursor:pointer;}
 .enrolled-item:hover{background-color:#e3f2fd;}
 .favicon-img, .favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
-.new-tab-icon{font-size:0.75rem;color:#555;margin-left:6px;}
 </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
@@ -48,8 +47,36 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Categories container -->
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;"></div>
+    <!-- Enrolled list -->
+    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display: none;">
+
+      <!-- Example category: Science -->
+      <div class="category">
+        <div class="category-header">Science <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-list">
+          <a data-url="https://intrinsic.observer/" class="enrolled-item"></a>
+          <a data-url="https://nasa.gov/" class="enrolled-item"></a>
+        </div>
+      </div>
+
+      <!-- Example category: Games -->
+      <div class="category">
+        <div class="category-header">Games <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-list">
+          <a data-url="https://www.julios.games/home" class="enrolled-item"></a>
+        </div>
+      </div>
+
+      <!-- Example category: Other -->
+      <div class="category">
+        <div class="category-header">Other <i class="fas fa-chevron-down text-xs"></i></div>
+        <div class="category-list">
+          <a data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
+          <a data-url="https://gn-math.github.io/" class="enrolled-item"></a>
+        </div>
+      </div>
+
+    </div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
@@ -58,6 +85,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
 <!-- Main content -->
 <main class="flex-1 p-6 overflow-auto">
+  <!-- Top bar -->
   <header class="flex items-center justify-end gap-6 mb-6">
     <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
       <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -70,6 +98,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     </button>
   </header>
 
+  <!-- Classroom cards -->
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
       for(let i=0;i<5;i++){
@@ -98,28 +127,21 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeOverlay">
   <iframe src="" allowfullscreen allow="fullscreen"></iframe>
 </div>
+
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// -------------------- Config --------------------
-const categories = {
-  "Games": [{ id: "englishLink", url: "https://www.julios.games/home", newTab: true }],
-  "Science": [{ id: "scienceLink", url: "https://intrinsic.observer/" }, { id: "spaceLink", url: "https://nasa.gov/" }],
-  "History": [{ id: "worldHistoryLink", url: "https://wfdxcajxzt.lawsonengineers.co.uk/" }, { id: "usHistoryLink", url: "https://edpuzzle.com.de/" }],
-  "Other": [{ id: "duckLink", url: "https://duck.quackprep.com/" }, { id: "healthLink", url: "https://gn-math.github.io/" }]
-};
+// Elements
+const enrolledBtn = document.getElementById("enrolledBtn");
+const enrolledList = document.getElementById("enrolledList");
+const enrolledChevron = document.getElementById("enrolledChevron");
+const iframeOverlay = document.getElementById("iframeOverlay");
+const iframeEl = iframeOverlay.querySelector("iframe");
+const iframeToggleBtn = document.getElementById("iframeToggleBtn");
+const profileBtn = document.getElementById("profileBtn");
+const profileLetter = document.getElementById("profileLetter");
 
-// -------------------- Elements --------------------
-const enrolledBtn=document.getElementById("enrolledBtn");
-const enrolledList=document.getElementById("enrolledList");
-const enrolledChevron=document.getElementById("enrolledChevron");
-const iframeOverlay=document.getElementById("iframeOverlay");
-const iframeEl=iframeOverlay.querySelector("iframe");
-const iframeToggleBtn=document.getElementById("iframeToggleBtn");
-const profileBtn=document.getElementById("profileBtn");
-const profileLetter=document.getElementById("profileLetter");
-
-// -------------------- Utilities --------------------
+// -------------------- Utility functions --------------------
 function setEnrolled(open){
   enrolledList.style.display=open?"flex":"none";
   enrolledBtn.setAttribute("aria-expanded",open);
@@ -140,65 +162,54 @@ async function fetchTitle(url){
     const res=await fetch(url,{mode:"cors"});
     const text=await res.text();
     const match=text.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if(match){ const title=match[1].trim(); localStorage.setItem(cacheKey,title); return title; }
-  }catch(e){console.warn("Title fetch failed",url);}
+    if(match){
+      const title=match[1].trim();
+      localStorage.setItem(cacheKey,title);
+      return title;
+    }
+  }catch(e){ console.warn("Title fetch failed",url); }
   return new URL(url).hostname;
 }
 
 function loadFavicon(link){
   const url=link.dataset.url;
-  let domain; try{domain=new URL(url).hostname;}catch(e){return;}
-  const sources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${url.replace(/\/$/,"")}/favicon.ico`];
-  const img=document.createElement("img");
-  img.className="favicon-img"; img.alt="favicon";
+  let domain;
+  try{ domain = new URL(url).hostname.replace(/^www\./,""); }catch(e){ return; }
+  const sources=[ `https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${url.replace(/\/$/,"")}/favicon.ico`];
+  const img=document.createElement("img"); img.className="favicon-img"; img.alt="favicon";
   let index=0;
   function tryNext(){
     if(index>=sources.length){
       const badge=document.createElement("span");
-      badge.textContent=link.textContent.trim().charAt(0).toUpperCase();
+      badge.textContent = domain.charAt(0).toUpperCase();
       badge.className="favicon-letter";
-      badge.style.backgroundColor=hashColor(domain);
-      link.prepend(badge);
+      badge.style.backgroundColor = hashColor(domain);
+      link.querySelector("img, span")?.remove();
+      link.prepend(badge); 
       return;
     }
-    img.src=sources[index++];
+    img.src = sources[index++];
   }
+  img.onload = ()=>{ if(img.naturalWidth<16) tryNext(); else { link.querySelector("img, span")?.remove(); link.prepend(img); } };
   img.onerror=tryNext;
-  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.querySelector("img, span")?.remove(); link.prepend(img); }};
   tryNext();
 }
 
-// -------------------- Render categories --------------------
-for (const [catName, sites] of Object.entries(categories)) {
-  const catDiv = document.createElement('div'); catDiv.className='category';
-  const header = document.createElement('div'); header.className='category-header'; header.innerHTML = `${catName} <i class="fas fa-chevron-down text-xs"></i>`;
-  const listDiv = document.createElement('div'); listDiv.className='category-list flex flex-col gap-1';
-  listDiv.style.display='none';
+// -------------------- Category dropdowns --------------------
+document.querySelectorAll('.category-header').forEach(header=>{
+  const list = header.nextElementSibling;
+  const arrow = header.querySelector('i');
+  list.style.display="none"; 
+  arrow.style.transform="rotate(-90deg)";
   header.addEventListener('click',()=>{
-    const open = listDiv.style.display!=="flex";
-    listDiv.style.display=open?"flex":"none";
-    header.querySelector('i').style.transform=open?"rotate(0deg)":"rotate(-90deg)";
+    const open = list.style.display==="none";
+    list.style.display=open?"flex":"none";
+    arrow.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
   });
+});
 
-  sites.forEach(site=>{
-    const a=document.createElement('a'); a.id=site.id; a.dataset.url=site.url; a.className='enrolled-item'; a.textContent=" ";
-    listDiv.appendChild(a);
-    loadFavicon(a);
-    fetchTitle(site.url).then(title=>{
-      a.append(" "+title.replace(/^https?:\/\//,"").replace(/\/$/,""));
-      if(site.newTab){
-        const icon = document.createElement('i'); icon.className='fas fa-external-link-alt new-tab-icon'; a.appendChild(icon);
-      }
-    });
-    a.addEventListener('click', e=>{
-      e.preventDefault();
-      if(site.newTab){ window.open(site.url,"_blank"); return; }
-      openIframe(a, site.url);
-    });
-  });
-
-  catDiv.appendChild(header); catDiv.appendChild(listDiv); enrolledList.appendChild(catDiv);
-}
+// -------------------- Enrolled toggle --------------------
+enrolledBtn.addEventListener("click",()=>{ setEnrolled(enrolledList.style.display==="none"); });
 
 // -------------------- Profile --------------------
 const savedLetter=localStorage.getItem("profileLetter");
@@ -207,54 +218,53 @@ if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
 profileBtn.addEventListener("click",()=>{
   const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
-  const newColor=prompt("Enter a new background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  const newColor=prompt("Enter a new background color (hex or name):",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
   profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor;
   localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
 });
 
-// -------------------- Enrolled toggle --------------------
-enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
-
 // -------------------- Iframe --------------------
-function openIframe(linkEl, url){
-  iframeOverlay.style.display = "block"; 
-  iframeEl.src = url;
-  iframeToggleBtn.style.display = "flex";
+function openIframe(linkEl,url){
+  iframeOverlay.style.display="block"; iframeEl.src=url;
+  iframeToggleBtn.style.display="flex";
+
+  // Hide enrolled
   setEnrolled(false);
 
-  // Only highlight this link
-  document.querySelectorAll('.enrolled-item').forEach(el => el.classList.remove('active-link'));
-  linkEl.classList.add('active-link');
-
-  // Move link to top of its category
-  const catList = linkEl.closest('.category-list');
-  catList.prepend(linkEl);
-
-  // Save last opened link
-  localStorage.setItem('lastOpenedLink', linkEl.id);
+  // Remove active from all links and set current
+  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
+  linkEl.classList.add("active-link");
 }
 
-// Restore last opened iframe
-window.addEventListener('DOMContentLoaded', () => {
-  const lastId = localStorage.getItem('lastOpenedLink');
-  if(lastId){
-    const lastLink = document.getElementById(lastId);
-    if(lastLink && !lastLink.dataset.newTab){
-      openIframe(lastLink, lastLink.dataset.url);
-    }
-  }
+// -------------------- Enrolled items --------------------
+document.querySelectorAll(".enrolled-item").forEach(async link=>{
+  const url=link.dataset.url;
+  const title = await fetchTitle(url);
+  link.textContent=" " + title;
+  loadFavicon(link);
+  link.addEventListener("click", e=>{
+    e.preventDefault();
+    if(url.includes("julios.games")){
+      window.open(url,"_blank");
+      const icon=document.createElement("i");
+      icon.className="fas fa-external-link-alt ml-auto text-xs";
+      if(!link.querySelector("i")) link.append(icon);
+    } else openIframe(link,url);
+  });
 });
 
-iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; }});
+// -------------------- Toggle iframe --------------------
 iframeToggleBtn.addEventListener("click",()=>{ iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none"; });
 
+// -------------------- Draggable iframe button --------------------
 let isDragging=false, dragOffsetX=0, dragOffsetY=0;
 iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
 document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
 document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
+iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay) iframeOverlay.style.display="none"; });
 
-// Hide enrolled when leaving tab
-window.addEventListener("blur", ()=>{ setEnrolled(false); });
+// -------------------- Hide enrolled on blur or when iframe opens --------------------
+window.addEventListener("blur",()=>{ setEnrolled(false); });
 </script>
 </body>
 </html>
