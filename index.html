@@ -243,7 +243,11 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
   smartFavicon(url,link);
   if(url.includes("julios.games")){
-    if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
+    if(!link.querySelector("i")){
+      const icon=document.createElement("i");
+      icon.className="fas fa-external-link-alt ml-auto text-xs";
+      link.append(icon);
+    }
   }
   link.addEventListener("click", e => {
     e.preventDefault();
@@ -260,8 +264,24 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
     } else {
         openIframe(link, url);
     }
+  });
 });
 
+  // Restore saved order on page load
+document.querySelectorAll('.category').forEach(cat => {
+  const header = cat.querySelector('.category-header').textContent;
+  const list = cat.querySelector('.category-list');
+  const savedOrder = JSON.parse(localStorage.getItem(`order_${header}`) || "[]");
+
+  if(savedOrder.length){
+    savedOrder.forEach(id => {
+      const el = list.querySelector(`#${id}`);
+      if(el) list.appendChild(el); // move to top in saved order
+    });
+  }
+});
+
+  
 // Toggle iframe
 iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
 
