@@ -27,7 +27,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 }
 
 /* Skeleton shimmer */
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 
@@ -136,6 +136,39 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
+<!-- WIKI-LINKS POPUP -->
+<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
+  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">🌐 Wiki-Links Browser</h2>
+      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Name</span>
+        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="">All</option>
+        </select>
+      </label>
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Date</span>
+        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="thisMonth">This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="all" selected>All Time</option>
+        </select>
+      </label>
+    </div>
+    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const enrolledBtn=document.getElementById("enrolledBtn");
 const enrolledList=document.getElementById("enrolledList");
@@ -145,6 +178,11 @@ const iframeEl=iframeOverlay.querySelector("iframe");
 const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
+
+const supabase = window.supabase.createClient(
+  'https://ylbeucokkfotgghbveuv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
+);
 
 // Toggle enrolled
 function setEnrolled(open){
@@ -159,13 +197,17 @@ const savedLetter=localStorage.getItem("profileLetter");
 const savedColor=localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;profileLetter.textContent=l;profileBtn.style.backgroundColor=c;localStorage.setItem("profileLetter",l);localStorage.setItem("profileColor",c);});
+profileBtn.addEventListener("click",()=>{
+  const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;
+  const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
+  profileLetter.textContent=l; profileBtn.style.backgroundColor=c;
+  localStorage.setItem("profileLetter",l); localStorage.setItem("profileColor",c);
+});
 
-// Category expand/collapse smooth
+// Category expand/collapse
 document.querySelectorAll('.category-header').forEach(h=>{
   const list=h.nextElementSibling;
   const icon=h.querySelector('i');
-  // ensure arrows start collapsed
   icon.style.transform="rotate(-90deg)";
   h.addEventListener('click',()=>{
     const open=list.classList.toggle('open');
@@ -191,9 +233,7 @@ async function smartFavicon(url,link){
   const img=document.createElement("img");
   img.className="favicon-img";
   img.alt="favicon";
-
   const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
-
   try {
     const resp=await fetch(url,{mode:"cors"});
     const html=await resp.text();
@@ -202,13 +242,9 @@ async function smartFavicon(url,link){
     const icons=[...doc.querySelectorAll("link[rel*='icon']")];
     if(icons.length){
       const href=icons[0].getAttribute("href");
-      if(href){
-        const abs=new URL(href,domain).href;
-        trySources.unshift(abs);
-      }
+      if(href){const abs=new URL(href,domain).href;trySources.unshift(abs);}
     }
   } catch(e){}
-
   let i=0;
   function tryNext(){
     if(i>=trySources.length){
@@ -227,197 +263,115 @@ async function smartFavicon(url,link){
   tryNext();
 }
 
-// Load links
+// Load enrolled links
 document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.dataset.url;
   link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
   smartFavicon(url,link);
-  // ADD: always append external link icon for Julio's Games
   if(url.includes("julios.games")){
     if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
   }
   link.addEventListener("click",e=>{
     e.preventDefault();
-    if(url.includes("julios.games")){
-      window.open(url,"_blank");
-    } else {
-      openIframe(link,url);
-    }
+    if(url.includes("julios.games")){window.open(url,"_blank");} else {openIframe(link,url);}
   });
 });
 
 // Toggle iframe
 iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
 
-// Draggable iframe button
+// Draggable iframe
 let isDragging=false,dx=0,dy=0;
 iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
 document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
 document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
-</script>
-  <!-- WIKI-LINKS POPUP -->
-<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
-  <!-- Overlay -->
-  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-  <!-- Modal Box -->
-  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <!-- Header -->
-    <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">🌐 Wiki-Links Browser</h2>
-      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-    </div>
+// WIKI-LINKS FETCH + THUMBS RATING
+const wikiModal = document.getElementById('wikiModal');
+const wikiBox = document.getElementById('wikiBox');
+const wikiOverlay = document.getElementById('wikiOverlay');
+const closeWiki = document.getElementById('closeWiki');
+const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
+let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
 
-    <!-- Filters -->
-    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Name</span>
-        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="">All</option>
-        </select>
-      </label>
+archivedBtn.addEventListener('click', () => {
+  wikiModal.classList.remove('hidden');
+  setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
+  loadNames();
+  applyFilters();
+});
+closeWiki.addEventListener('click', closeModal);
+wikiOverlay.addEventListener('click', closeModal);
+function closeModal() { wikiBox.classList.remove('scale-100','opacity-100'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
 
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Date</span>
-        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="today">Today</option>
-          <option value="yesterday">Yesterday</option>
-          <option value="last7">Last 7 Days</option>
-          <option value="thisMonth">This Month</option>
-          <option value="lastMonth">Last Month</option>
-          <option value="thisYear">This Year</option>
-          <option value="all" selected>All Time</option>
-        </select>
-      </label>
-    </div>
+document.getElementById('filter-name').addEventListener('change', applyFilters);
+document.getElementById('filter-date').addEventListener('change', applyFilters);
 
-    <!-- Results -->
-    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
-  </div>
-</div>
+async function loadNames() {
+  const { data } = await supabase.from('link_names').select('name');
+  const select = document.getElementById('filter-name');
+  select.innerHTML = `<option value="">All</option>`;
+  data?.forEach(d => { const opt = document.createElement('option'); opt.value=d.name; opt.textContent=d.name; select.appendChild(opt); });
+}
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-  const supabase = window.supabase.createClient(
-    'https://ylbeucokkfotgghbveuv.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
-  );
+function getDateRange(rangeType) {
+  const now=new Date(), start=new Date(), end=new Date();
+  switch(rangeType){
+    case 'today': start.setHours(0,0,0,0); return {start,end:now};
+    case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
+    case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
+    case 'thisMonth': start.setDate(1); return {start,end:now};
+    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(end.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
+    case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
+    default: return null;
+  }
+}
 
-  const wikiModal = document.getElementById('wikiModal');
-  const wikiBox = document.getElementById('wikiBox');
-  const wikiOverlay = document.getElementById('wikiOverlay');
-  const closeWiki = document.getElementById('closeWiki');
-  const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
+async function applyFilters() { page=0; currentFilter.name=document.getElementById('filter-name').value; currentFilter.range=document.getElementById('filter-date').value; await countTotalLinks(); await fetchLinks(); }
 
-  let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
+async function countTotalLinks() {
+  let query = supabase.from('links').select('*', { count: 'exact', head: true });
+  if(currentFilter.name) query = query.eq('name', currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { count }=await query; totalLinks=count||0;
+}
 
-  archivedBtn.addEventListener('click', () => {
-    wikiModal.classList.remove('hidden');
-    setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
-    loadNames();
-    applyFilters();
+// fetchLinks() with thumbs up/down
+async function fetchLinks() {
+  const container=document.getElementById('results');
+  container.innerHTML='';
+  let query=supabase.from('links').select('*').order('date',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
+  if(currentFilter.name) query=query.eq('name',currentFilter.name);
+  const range=getDateRange(currentFilter.range);
+  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  const { data }=await query;
+  if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
+
+  data.forEach(link=>{
+    const div=document.createElement('div');
+    div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
+    div.innerHTML=`
+      <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
+      <span class="text-gray-500 text-xs break-all">${link.url}</span>
+      <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
+      <div class="flex items-center gap-2 mt-1">
+        <button class="thumb-up text-gray-400 hover:text-green-500" data-link-id="${link.id}"><i class="fas fa-thumbs-up"></i></button>
+        <button class="thumb-down text-gray-400 hover:text-red-500" data-link-id="${link.id}"><i class="fas fa-thumbs-down"></i></button>
+      </div>
+    `;
+    container.appendChild(div);
+
+    const upBtn=div.querySelector('.thumb-up');
+    const downBtn=div.querySelector('.thumb-down');
+    upBtn.addEventListener('click',async()=>{await supabase.from('links').update({rating:1}).eq('id',link.id);upBtn.classList.add('text-green-500');downBtn.classList.remove('text-red-500');});
+    downBtn.addEventListener('click',async()=>{await supabase.from('links').update({rating:-1}).eq('id',link.id);downBtn.classList.add('text-red-500');upBtn.classList.remove('text-green-500');});
+
+    // Load existing rating
+    if(link.rating===1) upBtn.classList.add('text-green-500');
+    else if(link.rating===-1) downBtn.classList.add('text-red-500');
   });
-
-  closeWiki.addEventListener('click', closeModal);
-  wikiOverlay.addEventListener('click', closeModal);
-  function closeModal() {
-    wikiBox.classList.remove('scale-100', 'opacity-100');
-    setTimeout(() => wikiModal.classList.add('hidden'), 200);
-  }
-
-  // Filter events
-  document.getElementById('filter-name').addEventListener('change', applyFilters);
-  document.getElementById('filter-date').addEventListener('change', applyFilters);
-
-  async function loadNames() {
-    const { data } = await supabase.from('link_names').select('name');
-    const select = document.getElementById('filter-name');
-    select.innerHTML = `<option value="">All</option>`;
-    data?.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d.name;
-      opt.textContent = d.name;
-      select.appendChild(opt);
-    });
-  }
-
-  function getDateRange(rangeType) {
-    const now = new Date(), start = new Date(), end = new Date();
-    switch (rangeType) {
-      case 'today': start.setHours(0,0,0,0); return { start, end: now };
-      case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return { start, end };
-      case 'last7': start.setDate(start.getDate()-6); return { start, end: now };
-      case 'thisMonth': start.setDate(1); return { start, end: now };
-      case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(end.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return { start, end };
-      case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return { start, end: now };
-      default: return null;
-    }
-  }
-
-  async function applyFilters() {
-    page = 0;
-    currentFilter.name = document.getElementById('filter-name').value;
-    currentFilter.range = document.getElementById('filter-date').value;
-    await countTotalLinks();
-    await fetchLinks();
-  }
-
-  async function countTotalLinks() {
-    let query = supabase.from('links').select('*', { count: 'exact', head: true });
-    if(currentFilter.name) query = query.eq('name', currentFilter.name);
-    const range = getDateRange(currentFilter.range);
-    if(range) query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-    const { count } = await query;
-    totalLinks = count || 0;
-  }
-
-  async function fetchLinks() {
-    const container = document.getElementById('results');
-    container.innerHTML = '';
-    let query = supabase.from('links').select('*').order('date', { ascending:false }).range(page*pageSize, (page+1)*pageSize-1);
-    if(currentFilter.name) query = query.eq('name', currentFilter.name);
-    const range = getDateRange(currentFilter.range);
-    if(range) query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-    const { data } = await query;
-    if(!data || data.length===0) {
-      container.innerHTML = `<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;
-      return;
-    }
-
-    data.forEach(link => {
-      const div = document.createElement('div');
-      div.className = 'p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
-      div.innerHTML = `
-        <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
-        <span class="text-gray-500 text-xs break-all">${link.url}</span>
-        <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
-        <div class="flex items-center gap-1 mt-1">
-          ${[1,2,3,4,5].map(i => `<button class="star text-gray-300 hover:text-yellow-400" data-link-id="${link.id}" data-rating="${i}">★</button>`).join('')}
-        </div>
-      `;
-      container.appendChild(div);
-
-      // Load existing rating
-      const stars = div.querySelectorAll('.star');
-      if(link.rating) {
-        stars.forEach(star => {
-          if(star.dataset.rating <= link.rating) star.classList.remove('text-gray-300'), star.classList.add('text-yellow-400');
-        });
-      }
-
-      // Click event for rating
-      stars.forEach(star => {
-        star.addEventListener('click', async () => {
-          const ratingValue = parseInt(star.dataset.rating);
-          await supabase.from('links').update({ rating: ratingValue }).eq('id', link.id);
-          stars.forEach(s => s.classList.remove('text-yellow-400'));
-          stars.forEach(s => {
-            if(s.dataset.rating <= ratingValue) s.classList.add('text-yellow-400');
-          });
-        });
-      });
-    });
-  }
+}
 </script>
 </body>
 </html>
