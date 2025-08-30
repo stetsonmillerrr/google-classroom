@@ -28,6 +28,7 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
 /* Skeleton shimmer */
 @keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 
@@ -77,9 +78,8 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       <div class="category">
         <div class="category-header">Browser & Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
-          
           <a id="spaceLink" data-url="https://erbytes.host2go.net/" class="enrolled-item"></a>
-          <a id="shuttleLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a
+          <a id="shuttleLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a>
         </div>
       </div>
       <div class="category">
@@ -91,7 +91,10 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
       </div>
     </div>
 
+    <!-- Archived classes -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
+
+    <!-- Settings button moved outside enrolled -->
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
   </nav>
 </aside>
@@ -168,12 +171,8 @@ profileBtn.addEventListener("click",()=>{const l=prompt("Enter new letter:",prof
 document.querySelectorAll('.category-header').forEach(h=>{
   const list=h.nextElementSibling;
   const icon=h.querySelector('i');
-  // ensure arrows start collapsed
   icon.style.transform="rotate(-90deg)";
-  h.addEventListener('click',()=>{
-    const open=list.classList.toggle('open');
-    icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-  });
+  h.addEventListener('click',()=>{const open=list.classList.toggle('open'); icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";});
 });
 
 // Iframe open
@@ -235,17 +234,12 @@ document.querySelectorAll(".enrolled-item").forEach(async link=>{
   const url=link.dataset.url;
   link.textContent=" "+(new URL(url).hostname.replace(/^www\./,""));
   smartFavicon(url,link);
-  // ADD: always append external link icon for Julio's Games
   if(url.includes("julios.games")){
     if(!link.querySelector("i")){const icon=document.createElement("i");icon.className="fas fa-external-link-alt ml-auto text-xs";link.append(icon);}
   }
   link.addEventListener("click",e=>{
     e.preventDefault();
-    if(url.includes("julios.games")){
-      window.open(url,"_blank");
-    } else {
-      openIframe(link,url);
-    }
+    if(url.includes("julios.games")){window.open(url,"_blank");}else{openIframe(link,url);}
   });
 });
 
@@ -258,17 +252,14 @@ iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-if
 document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
 document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
 </script>
-  <!-- WIKI-LINKS POPUP -->
+
+<!-- WIKI-LINKS POPUP -->
 <div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center bg-black/50">
-  <!-- Modal Box -->
   <div id="wikiBox" class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <!-- Header -->
     <div class="flex justify-between items-center border-b pb-3 mb-4">
       <h2 class="text-xl font-bold text-gray-800">🌐 Wiki-Links Browser</h2>
       <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
     </div>
-
-    <!-- Filters -->
     <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
       <label class="flex flex-col w-full md:w-1/2">
         <span class="text-sm font-semibold mb-1">Filter by Name</span>
@@ -276,7 +267,6 @@ document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.
           <option value="">All</option>
         </select>
       </label>
-
       <label class="flex flex-col w-full md:w-1/2">
         <span class="text-sm font-semibold mb-1">Filter by Date</span>
         <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
@@ -290,8 +280,6 @@ document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.
         </select>
       </label>
     </div>
-
-    <!-- Results -->
     <div id="results" class="space-y-3 max-h-[60vh] overflow-y-auto"></div>
   </div>
 </div>
@@ -310,7 +298,6 @@ const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textConten
 
 let page = 0, pageSize = 10, currentFilter = { name: '', range: 'all' };
 
-// Open modal
 archivedBtn.addEventListener('click', async () => {
   wikiModal.classList.remove('hidden');
   setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
@@ -318,18 +305,15 @@ archivedBtn.addEventListener('click', async () => {
   await applyFilters();
 });
 
-// Close modal
 closeWiki.addEventListener('click', () => {
   wikiBox.classList.remove('scale-100', 'opacity-100');
   setTimeout(() => wikiModal.classList.add('hidden'), 200);
 });
 wikiModal.addEventListener('click', e => { if(e.target === wikiModal) closeWiki.click(); });
 
-// Filters
 document.getElementById('filter-name').addEventListener('change', applyFilters);
 document.getElementById('filter-date').addEventListener('change', applyFilters);
 
-// Load names into filter dropdown
 async function loadNames() {
   const { data } = await supabase.from('link_names').select('name');
   const select = document.getElementById('filter-name');
@@ -361,7 +345,6 @@ async function applyFilters() {
   await fetchLinks();
 }
 
-// Fetch links with votes
 async function fetchLinks() {
   const container = document.getElementById('results');
   container.innerHTML = '';
@@ -391,7 +374,6 @@ async function fetchLinks() {
     `;
     container.appendChild(div);
 
-    // Voting
     const [upBtn, downBtn] = div.querySelectorAll('.vote-btn');
     upBtn.addEventListener('click', async () => {
       await supabase.from('links').update({ upvotes: (link.upvotes||0)+1 }).eq('id', link.id);
