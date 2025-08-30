@@ -30,7 +30,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex">
 
-<!-- Sidebar -->
 <aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
   <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
     <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
@@ -41,13 +40,11 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
 
-    <!-- Enrolled toggle -->
     <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
       <i class="fas fa-graduation-cap text-sm"></i> Enrolled
       <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
     </button>
 
-    <!-- Categories container -->
     <div id="enrolledList" class="flex flex-col space-y-1 mt-1"></div>
 
     <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
@@ -55,7 +52,6 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
   </nav>
 </aside>
 
-<!-- Main content -->
 <main class="flex-1 p-6 overflow-auto">
   <header class="flex items-center justify-end gap-6 mb-6">
     <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
@@ -100,23 +96,12 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 <div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
 
 <script>
-// -------------------- Configurable categories --------------------
+// -------------------- Categories --------------------
 const categories = {
-  "Games": [
-    { id: "englishLink", url: "https://www.julios.games/home" }
-  ],
-  "Science": [
-    { id: "scienceLink", url: "https://intrinsic.observer/" },
-    { id: "spaceLink", url: "https://nasa.gov/" }
-  ],
-  "History": [
-    { id: "worldHistoryLink", url: "https://wfdxcajxzt.lawsonengineers.co.uk/" },
-    { id: "usHistoryLink", url: "https://edpuzzle.com.de/" }
-  ],
-  "Other": [
-    { id: "duckLink", url: "https://duck.quackprep.com/" },
-    { id: "healthLink", url: "https://gn-math.github.io/" }
-  ]
+  "Games":[ {id:"englishLink", url:"https://www.julios.games/home"} ],
+  "Science":[ {id:"scienceLink", url:"https://intrinsic.observer/"},{id:"spaceLink", url:"https://nasa.gov/"} ],
+  "History":[ {id:"worldHistoryLink", url:"https://wfdxcajxzt.lawsonengineers.co.uk/"},{id:"usHistoryLink", url:"https://edpuzzle.com.de/"} ],
+  "Other":[ {id:"duckLink", url:"https://duck.quackprep.com/"},{id:"healthLink", url:"https://gn-math.github.io/"} ]
 };
 
 // -------------------- Elements --------------------
@@ -129,110 +114,82 @@ const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
-// -------------------- Utility --------------------
+// -------------------- Enrolled toggle --------------------
 function setEnrolled(open){
   enrolledList.style.display=open?"flex":"none";
   enrolledBtn.setAttribute("aria-expanded",open);
   enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
 }
-function hashColor(str){
-  let hash=0; for(let i=0;i<str.length;i++) hash=str.charCodeAt(i)+((hash<<5)-hash);
-  const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];
-  return colors[Math.abs(hash)%colors.length];
+enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
+
+// -------------------- Favicon extractor --------------------
+function loadFavicon(link){
+  const url=link.dataset.url;
+  let domain;
+  try{ domain=new URL(url).hostname.replace(/^www\./,""); }catch(e){return;}
+  const img = document.createElement("img"); img.className="favicon-img"; img.alt="favicon";
+  const sources = [
+    url.replace(/\/$/,"") + "/favicon.ico",
+    `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+  ];
+  let index=0;
+  function tryNext(){
+    if(index>=sources.length){
+      const badge=document.createElement("span"); badge.className="favicon-letter"; badge.textContent=domain.charAt(0).toUpperCase();
+      link.querySelector("img, span")?.remove();
+      link.prepend(badge); return;
+    }
+    img.src = sources[index++];
+  }
+  img.onload = () => { if(img.naturalWidth<16) tryNext(); else { link.querySelector("img, span")?.remove(); link.prepend(img); } }
+  img.onerror = tryNext;
+  tryNext();
 }
 async function fetchTitle(url){
   const cacheKey="title:"+url;
   const cached=localStorage.getItem(cacheKey);
   if(cached) return cached;
-  try{
-    const res=await fetch(url,{mode:"cors"});
-    const text=await res.text();
-    const match=text.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if(match){ const title=match[1].trim(); localStorage.setItem(cacheKey,title); return title; }
-  }catch(e){console.warn("Title fetch failed",url);}
-  return new URL(url).hostname;
-}
-function loadFavicon(link){
-  const url=link.dataset.url;
-  let domain; try{domain=new URL(url).hostname;}catch(e){return;}
-  const sources=[
-    `https://www.google.com/s2/favicons?domain=${domain}&sz=32`,
-    `${url.replace(/\/$/,"")}/favicon.ico`
-  ];
-  const img=document.createElement("img");
-  img.className="favicon-img"; img.alt="favicon";
-  let index=0;
-  function tryNext(){
-    if(index>=sources.length){
-      const badge=document.createElement("span");
-      badge.textContent=link.textContent.trim().charAt(0).toUpperCase();
-      badge.className="favicon-letter";
-      badge.style.backgroundColor=hashColor(domain);
-      link.prepend(badge);
-      return;
-    }
-    img.src=sources[index++];
-  }
-  img.onerror=tryNext;
-  img.onload=()=>{ if(img.naturalWidth<=16){ tryNext(); } else { link.querySelector("img, span")?.remove(); link.prepend(img); }};
-  tryNext();
+  try{ const res=await fetch(url,{mode:"cors"}); const text=await res.text(); const match=text.match(/<title[^>]*>([^<]+)<\/title>/i); if(match){ const title=match[1].trim(); localStorage.setItem(cacheKey,title); return title; } }catch(e){console.warn("Title fetch failed",url);}
+  return new URL(url).hostname.replace(/^www\./,"");
 }
 
 // -------------------- Render categories --------------------
-for (const [catName, sites] of Object.entries(categories)) {
-  const catDiv = document.createElement('div'); catDiv.className='category';
-  const header = document.createElement('div'); header.className='category-header'; header.innerHTML = `${catName} <i class="fas fa-chevron-down text-xs"></i>`;
-  const listDiv = document.createElement('div'); listDiv.className='category-list flex flex-col gap-1';
-  listDiv.style.display = 'none';
-  header.addEventListener('click',()=>{
-    const open = listDiv.style.display!=="flex";
-    listDiv.style.display=open?"flex":"none";
-    header.querySelector('i').style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-  });
+for(const [catName, sites] of Object.entries(categories)){
+  const catDiv=document.createElement("div"); catDiv.className="category";
+  const header=document.createElement("div"); header.className="category-header"; header.innerHTML=`${catName} <i class="fas fa-chevron-down text-xs"></i>`;
+  const listDiv=document.createElement("div"); listDiv.className="category-list flex flex-col gap-1"; listDiv.style.display="none";
+  header.addEventListener("click",()=>{ const open=listDiv.style.display!=="flex"; listDiv.style.display=open?"flex":"none"; header.querySelector("i").style.transform=open?"rotate(0deg)":"rotate(-90deg)"; });
   sites.forEach(site=>{
-    const a=document.createElement('a'); a.id=site.id; a.dataset.url=site.url; a.className='enrolled-item'; a.textContent=" "; listDiv.appendChild(a);
+    const a=document.createElement("a"); a.id=site.id; a.dataset.url=site.url; a.className="enrolled-item"; a.textContent=" ";
+    listDiv.appendChild(a);
     loadFavicon(a);
     fetchTitle(site.url).then(title=>a.append(" "+title));
-    a.addEventListener('click',e=>{
-      e.preventDefault();
-      if(site.id==="englishLink"){ window.open(site.url,"_blank"); } 
-      else { openIframe(a, site.url); }
-    });
+    a.addEventListener("click",e=>{ e.preventDefault(); if(site.id==="englishLink"){ window.open(site.url,"_blank"); } else { openIframe(a,site.url); } });
   });
   catDiv.appendChild(header); catDiv.appendChild(listDiv); enrolledList.appendChild(catDiv);
 }
-
-// -------------------- Profile --------------------
-const savedLetter=localStorage.getItem("profileLetter");
-const savedColor=localStorage.getItem("profileColor");
-if(savedLetter) profileLetter.textContent=savedLetter;
-if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{
-  const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent;
-  const newColor=prompt("Enter a new background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
-  profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor;
-  localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor);
-});
-
-// -------------------- Enrolled toggle --------------------
-enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
 
 // -------------------- Iframe --------------------
 function openIframe(linkEl,url){
   iframeOverlay.style.display="block"; iframeEl.src=url;
   iframeToggleBtn.style.display="flex";
   setEnrolled(false);
-  const catList = linkEl.closest('.category-list');
-  catList.prepend(linkEl);
-  Array.from(catList.children).forEach(a=>a.classList.remove("active-link"));
-  linkEl.classList.add("active-link");
+  const catList = linkEl.closest('.category-list'); catList.prepend(linkEl);
+  Array.from(catList.children).forEach(a=>a.classList.remove("active-link")); linkEl.classList.add("active-link");
 }
-iframeOverlay.addEventListener("click", e => { if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; }});
+iframeOverlay.addEventListener("click",e=>{ if(e.target===iframeOverlay){ iframeOverlay.style.display="none"; iframeToggleBtn.style.display="none"; } });
 iframeToggleBtn.addEventListener("click",()=>{ iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none"; });
 let isDragging=false, dragOffsetX=0, dragOffsetY=0;
-iframeToggleBtn.addEventListener("mousedown", e => { isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
-document.addEventListener("mousemove", e => { if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
-document.addEventListener("mouseup",()=>{isDragging=false; iframeToggleBtn.style.cursor="grab";});
+iframeToggleBtn.addEventListener("mousedown", e=>{ isDragging=true; dragOffsetX=e.clientX-iframeToggleBtn.offsetLeft; dragOffsetY=e.clientY-iframeToggleBtn.offsetTop; iframeToggleBtn.style.cursor="grabbing"; });
+document.addEventListener("mousemove", e=>{ if(!isDragging) return; iframeToggleBtn.style.left=`${e.clientX-dragOffsetX}px`; iframeToggleBtn.style.top=`${e.clientY-dragOffsetY}px`; });
+document.addEventListener("mouseup",()=>{ isDragging=false; iframeToggleBtn.style.cursor="grab"; });
+
+// -------------------- Profile --------------------
+const savedLetter=localStorage.getItem("profileLetter"); if(savedLetter) profileLetter.textContent=savedLetter;
+const savedColor=localStorage.getItem("profileColor"); if(savedColor) profileBtn.style.backgroundColor=savedColor;
+profileBtn.addEventListener("click",()=>{ const newLetter=prompt("Enter a new letter for profile icon:",profileLetter.textContent)||profileLetter.textContent; const newColor=prompt("Enter a new background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor; profileLetter.textContent=newLetter; profileBtn.style.backgroundColor=newColor; localStorage.setItem("profileLetter",newLetter); localStorage.setItem("profileColor",newColor); });
+
+// -------------------- Hide enrolled if leaving tab --------------------
 window.addEventListener("blur", ()=>{ setEnrolled(false); });
 </script>
 </body>
