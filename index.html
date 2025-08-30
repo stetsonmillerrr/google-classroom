@@ -80,9 +80,9 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
         </div>
       </div>
       <div class="category">
-        <div class="category-header">Other <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
+        <div class="category-header">Browser+Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
         <div class="category-list">
-          <a id="duckLink" data-url="https://duck.quackprep.com/" class="enrolled-item"></a>
+          <a id="duckLink" data-url="https://rustynailspace.com/wikilink/" class="enrolled-item"></a>
           <a id="healthLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
         </div>
       </div>
@@ -254,6 +254,148 @@ let isDragging=false,dx=0,dy=0;
 iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
 document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
 document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
+</script>
+<!-- WIKI-LINKS POPUP -->
+<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
+  <!-- Overlay -->
+  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+
+  <!-- Modal Box -->
+  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
+    <!-- Header -->
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">🌐 Wiki-Links Browser</h2>
+      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Name</span>
+        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="">All</option>
+        </select>
+      </label>
+
+      <label class="flex flex-col w-full md:w-1/2">
+        <span class="text-sm font-semibold mb-1">Filter by Date</span>
+        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="thisMonth">This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="all" selected>All Time</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-4 hidden" id="pagination-controls">
+      <button id="prev-links" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">⬅️ Previous</button>
+      <button id="next-links" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">Next ➡️</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    'https://ylbeucokkfotgghbveuv.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
+  );
+
+  const wikiModal = document.getElementById('wikiModal');
+  const wikiBox = document.getElementById('wikiBox');
+  const wikiOverlay = document.getElementById('wikiOverlay');
+  const closeWiki = document.getElementById('closeWiki');
+  const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
+
+  let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
+
+  archivedBtn.addEventListener('click', () => {
+    wikiModal.classList.remove('hidden');
+    setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
+    loadNames();
+    applyFilters();
+  });
+
+  closeWiki.addEventListener('click', closeModal);
+  wikiOverlay.addEventListener('click', closeModal);
+  function closeModal() {
+    wikiBox.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => wikiModal.classList.add('hidden'), 200);
+  }
+
+  // Filter events
+  document.getElementById('filter-name').addEventListener('change', applyFilters);
+  document.getElementById('filter-date').addEventListener('change', applyFilters);
+
+  async function loadNames() {
+    const { data } = await supabase.from('link_names').select('name');
+    const select = document.getElementById('filter-name');
+    select.innerHTML = `<option value="">All</option>`;
+    data?.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.name;
+      opt.textContent = d.name;
+      select.appendChild(opt);
+    });
+  }
+
+  function getDateRange(rangeType) {
+    const now = new Date(), start = new Date(), end = new Date();
+    switch (rangeType) {
+      case 'today': start.setHours(0,0,0,0); return { start, end: now };
+      case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return { start, end };
+      case 'last7': start.setDate(start.getDate()-6); return { start, end: now };
+      case 'thisMonth': start.setDate(1); return { start, end: now };
+      case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(end.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return { start, end };
+      case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return { start, end: now };
+      default: return null;
+    }
+  }
+
+  async function applyFilters() {
+    page = 0;
+    currentFilter.name = document.getElementById('filter-name').value;
+    currentFilter.range = document.getElementById('filter-date').value;
+    await countTotalLinks();
+    await fetchLinks();
+  }
+
+  async function countTotalLinks() {
+    let query = supabase.from('links').select('*', { count: 'exact', head: true });
+    if(currentFilter.name) query = query.eq('name', currentFilter.name);
+    const range = getDateRange(currentFilter.range);
+    if(range) query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+    const { count } = await query;
+    totalLinks = count || 0;
+  }
+
+  async function fetchLinks() {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+    let query = supabase.from('links').select('*').order('date', { ascending:false }).range(page*pageSize, (page+1)*pageSize-1);
+    if(currentFilter.name) query = query.eq('name', currentFilter.name);
+    const range = getDateRange(currentFilter.range);
+    if(range) query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+    const { data } = await query;
+    if(!data || data.length===0) {
+      container.innerHTML = `<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;
+      return;
+    }
+    data.forEach(link => {
+      const div = document.createElement('div');
+      div.className = 'p-3 rounded-lg border hover:bg-gray-50 flex justify-between items-center';
+      div.innerHTML = `<a href="${link.url}" target="_blank" class="text-blue-600 underline">${link.name}</a><span class="text-xs text-gray-400">${new Date(link.date).toLocaleDateString()}</span>`;
+      container.appendChild(div);
+    });
+  }
 </script>
 </body>
 </html>
