@@ -150,6 +150,28 @@ const iframeToggleBtn=document.getElementById("iframeToggleBtn");
 const profileBtn=document.getElementById("profileBtn");
 const profileLetter=document.getElementById("profileLetter");
 
+// Select the "+" button at the top
+const createBtn = document.querySelector('button[aria-label="Create"]');
+
+// Toggle Minnit chat iframe
+function toggleMinnitIframe() {
+  if (iframeOverlay.style.display === "block" && iframeEl.src.includes("minnit.chat")) {
+    // Just hide (don't unload)
+    iframeOverlay.style.display = "none";
+  } else {
+    // Show Minnit chat
+    iframeOverlay.style.display = "block";
+    iframeEl.src = "https://organizations.minnit.chat/878547462864938/c/Main?embed&transparent";
+    iframeToggleBtn.style.display = "none"; // hide the ⇅ for this iframe
+    setEnrolled(false);
+    document.querySelectorAll(".enrolled-item").forEach(l => l.classList.remove("active-link"));
+  }
+}
+
+// Attach to "+"
+createBtn.addEventListener("click", toggleMinnitIframe);
+
+  
 const supabase = window.supabase.createClient(
   'https://ylbeucokkfotgghbveuv.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
