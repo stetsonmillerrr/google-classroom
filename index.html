@@ -3,47 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smooth URL Typing</title>
+<title>URL Bar Typing Effect</title>
 <script>
-function smoothReplaceURL(target) {
-    let current = window.location.pathname.slice(1); // remove leading /
+function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
     let index = 0;
-    let erasing = current.length > 0;
 
-    function randomDelay(base) {
-        // Smooth human-like variation
-        return base * (0.85 + Math.random() * 0.3);
-    }
-
-    function step() {
-        if (erasing) {
-            if (current.length > 0) {
-                current = current.slice(0, -1);
-                window.history.replaceState(null, null, '/' + current);
-                setTimeout(step, randomDelay(50));
-            } else {
-                erasing = false;
-                index = 0;
-                setTimeout(step, 20); // immediate start typing
-            }
+    function type() {
+        if (index <= text.length) {
+            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
+            index++;
+            setTimeout(type, typeSpeed);
         } else {
-            if (index <= target.length) {
-                window.history.replaceState(null, null, '/' + target.slice(0, index));
-                index++;
-                setTimeout(step, randomDelay(80));
-            }
+            setTimeout(erase, pause); // pause before erasing
         }
     }
 
-    step();
+    function erase() {
+        if (index >= 0) {
+            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
+            index--;
+            setTimeout(erase, typeSpeed / 1.4); // slightly faster erase
+        }
+    }
+
+    type();
 }
 
 window.onload = function() {
-    smoothReplaceURL('.google.com');
+    // Show normal URL first
+    window.history.replaceState(null, null, '/');
+    // Start typing after short delay
+    setTimeout(() => {
+        typeAndEraseURL('.google.com', 85, 1000);
+    }, 250); // slightly shorter delay
 };
 </script>
 </head>
 <body>
-<h1>Watch the URL bar type smoothly!</h1>
+<h1>Please check your URL bar!</h1>
 </body>
 </html>
