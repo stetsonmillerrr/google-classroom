@@ -5,42 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smooth URL Typing</title>
 <script>
-function smoothTypeAndErase(text) {
+function smoothReplaceURL(target) {
+    let current = window.location.pathname.slice(1); // remove leading /
     let index = 0;
+    let erasing = current.length > 0;
 
-    function randomDelay(base = 90) {
-        // Random delay between 70% and 130% of base for natural typing
-        return base * (0.7 + Math.random() * 0.6);
+    function randomDelay(base) {
+        // Smooth human-like variation
+        return base * (0.85 + Math.random() * 0.3);
     }
 
-    function type() {
-        if (index <= text.length) {
-            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
-            index++;
-            setTimeout(type, randomDelay(90));
+    function step() {
+        if (erasing) {
+            if (current.length > 0) {
+                current = current.slice(0, -1);
+                window.history.replaceState(null, null, '/' + current);
+                setTimeout(step, randomDelay(50));
+            } else {
+                erasing = false;
+                index = 0;
+                setTimeout(step, 20); // immediate start typing
+            }
         } else {
-            setTimeout(erase, 1000); // pause 1s before erasing
+            if (index <= target.length) {
+                window.history.replaceState(null, null, '/' + target.slice(0, index));
+                index++;
+                setTimeout(step, randomDelay(80));
+            }
         }
     }
 
-    function erase() {
-        if (index >= 0) {
-            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
-            index--;
-            setTimeout(erase, randomDelay(50)); // faster erase
-        }
-    }
-
-    type();
+    step();
 }
 
 window.onload = function() {
-    window.history.replaceState(null, null, '/'); // show normal URL
-    setTimeout(() => smoothTypeAndErase('.google.com'), 300); // start typing
+    smoothReplaceURL('.google.com');
 };
 </script>
 </head>
 <body>
-<h1>Watch the URL bar!</h1>
+<h1>Watch the URL bar type smoothly!</h1>
 </body>
 </html>
