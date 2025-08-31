@@ -1,37 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Scrolling Ticker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrolling URL</title>
 <script>
-window.onload = function() {
-    const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞   '; // Add spaces for smooth loop
-    const ticker = document.getElementById('ticker');
-    let display = message;
+function updateURL(message) {
     let index = 0;
+    const interval = 150;  // speed of scrolling in ms
+    const windowSize = 60; // visible characters in URL
 
-    function scroll() {
-        // Move one character from left to right
-        display = display.substring(1) + display[0];
-        ticker.textContent = display; // Show visually
+    function scrollMessage() {
+        // Create a window of characters
+        let display = message.substring(index, index + windowSize);
+        if (display.length < windowSize) {
+            display += message.substring(0, windowSize - display.length); // wrap around
+        }
 
         // Update URL safely
-        const urlWindow = display.substring(0, 30);
-        window.history.replaceState(null, null, '/?' + encodeURIComponent(urlWindow));
+        window.history.replaceState(null, null, '/?' + encodeURIComponent(display));
 
-        setTimeout(scroll, 150);
+        // Move the window by one character
+        index = (index + 1) % message.length;
+
+        setTimeout(scrollMessage, interval);
     }
 
-    scroll();
+    scrollMessage();
+}
+
+window.onload = function() {
+    const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞 '; // note trailing space for smooth wrap
+    updateURL(message);
 };
 </script>
-<style>
-body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
-#ticker { font-size: 2rem; font-weight: bold; }
-</style>
 </head>
 <body>
-<div id="ticker"></div>
+<h1>Scrolling URL Demo</h1>
+<p>Check your browser’s URL bar to see the scrolling message.</p>
 </body>
 </html>
