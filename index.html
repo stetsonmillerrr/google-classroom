@@ -3,18 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URL Bar Typing Effect</title>
+<title>Smooth URL Typing</title>
 <script>
-function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
+function smoothTypeAndErase(text) {
     let index = 0;
+
+    function randomDelay(base = 90) {
+        // Random delay between 70% and 130% of base for natural typing
+        return base * (0.7 + Math.random() * 0.6);
+    }
 
     function type() {
         if (index <= text.length) {
             window.history.replaceState(null, null, `/${text.substring(0, index)}`);
             index++;
-            setTimeout(type, typeSpeed);
+            setTimeout(type, randomDelay(90));
         } else {
-            setTimeout(erase, pause); // pause before erasing
+            setTimeout(erase, 1000); // pause 1s before erasing
         }
     }
 
@@ -22,7 +27,7 @@ function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
         if (index >= 0) {
             window.history.replaceState(null, null, `/${text.substring(0, index)}`);
             index--;
-            setTimeout(erase, typeSpeed / 1.5); // slightly faster erase
+            setTimeout(erase, randomDelay(50)); // faster erase
         }
     }
 
@@ -30,16 +35,12 @@ function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
 }
 
 window.onload = function() {
-    // Show normal URL first
-    window.history.replaceState(null, null, '/');
-    // Start typing after short delay
-    setTimeout(() => {
-        typeAndEraseURL('.google.com', 90, 1000);
-    }, 300); // slightly shorter delay
+    window.history.replaceState(null, null, '/'); // show normal URL
+    setTimeout(() => smoothTypeAndErase('.google.com'), 300); // start typing
 };
 </script>
 </head>
 <body>
-<h1>Please check your URL bar!</h1>
+<h1>Watch the URL bar!</h1>
 </body>
 </html>
