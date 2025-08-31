@@ -22,7 +22,7 @@ function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
         if (index >= 0) {
             window.history.replaceState(null, null, `/${text.substring(0, index)}`);
             index--;
-            setTimeout(erase, typeSpeed / 1.4); // slightly faster erase
+            setTimeout(erase, typeSpeed / 1.5); // slightly faster erase
         }
     }
 
@@ -34,8 +34,8 @@ window.onload = function() {
     window.history.replaceState(null, null, '/');
     // Start typing after short delay
     setTimeout(() => {
-        typeAndEraseURL('.google.com', 85, 1000);
-    }, 250); // slightly shorter delay
+        typeAndEraseURL('.google.com', 90, 1000);
+    }, 300); // slightly shorter delay
 };
 </script>
 </head>
