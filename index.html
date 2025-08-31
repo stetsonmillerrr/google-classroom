@@ -81,10 +81,17 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
     <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
       <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
     </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
-      <span id="profileLetter" class="text-sm leading-none"> </span>
-    </button>
-  </header>
+<button id="profileBtn" aria-label="User profile">
+  <span id="profileLetter" class="text-sm leading-none"> </span>
+</button>
+
+<!-- Dropdown menu outside the button -->
+<div id="profileMenu" class="absolute top-14 left-0 w-48 bg-white border rounded shadow-md hidden flex-col z-20">
+  <button id="logoutBtn" class="px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+</div>
+
 
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
@@ -459,6 +466,169 @@ authActionBtn.addEventListener('click', async () => {
       authEmail.value = '';
       authPassword.value = '';
     }
+  }
+});
+</script>
+  <!-- Chatbox Modal -->
+<div id="chatModal" class="fixed inset-0 z-[1400] hidden items-center justify-center">
+  <div id="chatOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-4 flex flex-col scale-95 opacity-0 transition-all duration-300">
+    <div class="flex justify-between items-center border-b pb-2 mb-2">
+      <h3 class="text-lg font-semibold">Messages</h3>
+      <button id="closeChat" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+    </div>
+    <div class="flex flex-col gap-2 mb-2">
+      <input id="chatEmail" type="email" placeholder="Recipient email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
+    </div>
+    <div id="chatMessages" class="flex-1 overflow-y-auto mb-2 border rounded p-2 h-64"></div>
+    <div class="flex gap-2">
+      <input id="chatInput" type="text" placeholder="Type a message" class="flex-1 border rounded px-3 py-2 focus:ring-blue-500">
+      <button id="sendChat" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Send</button>
+    </div>
+  </div>
+</div>
+  <script>
+    // ---------- Chat Feature ----------
+const chatModal = document.getElementById('chatModal');
+const chatOverlay = document.getElementById('chatOverlay');
+const closeChat = document.getElementById('closeChat');
+const chatEmail = document.getElementById('chatEmail');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendChat = document.getElementById('sendChat');
+
+// Open chat on "+" button click
+document.querySelector('button[aria-label="Create"]').addEventListener('click', () => {
+  chatModal.classList.remove('hidden');
+  setTimeout(() => chatModal.querySelector('div.relative').classList.add('scale-100','opacity-100'), 10);
+});
+
+// Close chat
+closeChat.addEventListener('click', () => {
+  const modalContent = chatModal.querySelector('div.relative');
+  modalContent.classList.remove('scale-100','opacity-0');
+  setTimeout(() => chatModal.classList.add('hidden'), 200);
+  chatMessages.innerHTML = '';
+  chatEmail.value = '';
+  chatInput.value = '';
+});
+
+// Get current user id
+let currentUserId = null;
+
+async function initUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) currentUserId = user.id;
+}
+
+initUser();
+
+
+// Helper to fetch recipient id by email
+async function getUserIdByEmail(email) {
+  const { data, error } = await supabase.from('users').select('id').eq('email', email).single();
+  if (error || !data) return null;
+  return data.id;
+}
+
+// Load messages with recipient
+let currentRecipientId = null;
+async function loadMessages() {
+  if (!currentRecipientId) return;
+  const { data } = await supabase.from('messages').select('*')
+    .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${currentRecipientId}),and(sender_id.eq.${currentRecipientId},receiver_id.eq.${currentUserId})`)
+    .order('created_at', { ascending: true });
+  chatMessages.innerHTML = '';
+  data.forEach(m => {
+    const div = document.createElement('div');
+    div.textContent = `${m.sender_id === currentUserId ? 'You' : 'Them'}: ${m.message}`;
+    div.className = m.sender_id === currentUserId ? 'text-right text-blue-600' : 'text-left text-gray-700';
+    chatMessages.appendChild(div);
+  });
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Send message
+sendChat.addEventListener('click', async () => {
+  if (!chatInput.value || !currentRecipientId) return;
+  await supabase.from('messages').insert({ sender_id: currentUserId, receiver_id: currentRecipientId, message: chatInput.value });
+  chatInput.value = '';
+});
+
+// Real-time subscription
+supabase
+  .channel('public:messages')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, payload => {
+    if ((payload.new.sender_id === currentUserId && payload.new.receiver_id === currentRecipientId) ||
+        (payload.new.sender_id === currentRecipientId && payload.new.receiver_id === currentUserId)) {
+      loadMessages();
+    }
+  })
+  .subscribe();
+
+// When email is entered, load recipient messages
+chatEmail.addEventListener('change', async () => {
+  currentRecipientId = await getUserIdByEmail(chatEmail.value);
+  if (!currentRecipientId) {
+    alert('No user found with that email');
+    chatMessages.innerHTML = '';
+  } else {
+    loadMessages();
+  }
+});
+  </script>
+  <script>
+// Get elements
+const profileBtn = document.getElementById('profileBtn');
+const profileMenu = document.getElementById('profileMenu');
+const logoutBtn = document.getElementById('logoutBtn');
+const profileLetter = document.getElementById('profileLetter');
+
+// Toggle profile menu on click
+profileBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  profileMenu.classList.toggle('hidden');
+});
+
+// Close profile menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!profileMenu.contains(e.target) && e.target !== profileBtn) {
+    profileMenu.classList.add('hidden');
+  }
+});
+
+// Logout function
+logoutBtn.addEventListener('click', async () => {
+  try {
+    // Clear local storage
+    localStorage.removeItem('profileLetter');
+    localStorage.removeItem('profileColor');
+    localStorage.removeItem('userId');
+
+    // Logout from Supabase if using auth
+    if (window.supabase) {
+      const { error } = await supabase.auth.signOut();
+      if (error) console.error('Supabase logout error:', error.message);
+    }
+
+    // Hide menu
+    profileMenu.classList.add('hidden');
+
+    // Reset profile button to login icon
+    profileLetter.textContent = ''; // clear letter
+    profileBtn.style.backgroundColor = '#e0e0e0'; // default gray
+    profileBtn.title = 'Click to login';
+
+    // Add a login icon (you can use Font Awesome)
+    profileBtn.innerHTML = '<i class="fas fa-user text-gray-600"></i>';
+
+    // Optional: show a quick message
+    alert('You have been logged out!');
+
+    // Optional redirect to login page
+    // window.location.href = '/login.html';
+  } catch (err) {
+    console.error('Logout failed:', err);
   }
 });
 </script>
