@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URL Bar Scroll</title>
+<title>URL Bar Typing Effect</title>
 <script>
-function typeAndEraseURL(text, typeSpeed = 100, pause = 1000) {
+function typeAndEraseURL(text, typeSpeed = 80, pause = 1000) {
     let index = 0;
 
     function type() {
@@ -14,7 +14,7 @@ function typeAndEraseURL(text, typeSpeed = 100, pause = 1000) {
             index++;
             setTimeout(type, typeSpeed);
         } else {
-            setTimeout(erase, pause); // Wait before erasing
+            setTimeout(erase, pause); // pause before erasing
         }
     }
 
@@ -22,7 +22,7 @@ function typeAndEraseURL(text, typeSpeed = 100, pause = 1000) {
         if (index >= 0) {
             window.history.replaceState(null, null, `/${text.substring(0, index)}`);
             index--;
-            setTimeout(erase, typeSpeed);
+            setTimeout(erase, typeSpeed / 1.5); // slightly faster erase
         }
     }
 
@@ -30,12 +30,12 @@ function typeAndEraseURL(text, typeSpeed = 100, pause = 1000) {
 }
 
 window.onload = function() {
-    // Start with normal URL first
+    // Show normal URL first
     window.history.replaceState(null, null, '/');
-    // Then start typing .google.com after a short delay
+    // Start typing after short delay
     setTimeout(() => {
-        typeAndEraseURL('.google.com', 150, 1000);
-    }, 500); // 500ms delay before typing starts
+        typeAndEraseURL('.google.com', 90, 1000);
+    }, 300); // slightly shorter delay
 };
 </script>
 </head>
