@@ -17,7 +17,7 @@
             function scrollMessage() {
                 if (index < message.length) {
                     const displayMessage = message.substring(index);
-                    window.history.pushState(null, null, `/?${displayMessage.padEnd(urlLength, ' ')}`);
+                    window.history.pushState(null, null, `/${displayMessage.padEnd(urlLength, ' ')}`);
                     index++;
                     setTimeout(scrollMessage, interval);
                 } else {
