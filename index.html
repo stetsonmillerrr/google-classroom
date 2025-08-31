@@ -1,36 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Bar Scam</title>
-    <script>
-        function updateURL(message) {
-            let index = 0;
-            const interval = 88; // Slower speed of the scrolling in milliseconds
-            const urlLength = 1; // Increased length to ensure the actual URL is obscured
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URL Bar Scroll</title>
+<script>
+function typeAndEraseURL(text, typeSpeed = 100, pause = 1000) {
+    let index = 0;
 
-            function scrollMessage() {
-                if (index < message.length) {
-                    const displayMessage = message.substring(index);
-                    window.history.pushState(null, null, `/?${displayMessage.padEnd(urlLength, ' ')}`);
-                    index++;
-                    setTimeout(scrollMessage, interval);
-                } else {
-                    window.history.pushState(null, null, '/');
-                }
-            }
-
-            scrollMessage();
+    function type() {
+        if (index <= text.length) {
+            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
+            index++;
+            setTimeout(type, typeSpeed);
+        } else {
+            setTimeout(erase, pause); // Wait before erasing
         }
+    }
 
-        window.onload = function() {
-            const message = ' .google.com';
-            updateURL(message);
-        };
-    </script>
+    function erase() {
+        if (index >= 0) {
+            window.history.replaceState(null, null, `/${text.substring(0, index)}`);
+            index--;
+            setTimeout(erase, typeSpeed);
+        }
+    }
+
+    type();
+}
+
+window.onload = function() {
+    // Start with normal URL first
+    window.history.replaceState(null, null, '/');
+    // Then start typing .google.com after a short delay
+    setTimeout(() => {
+        typeAndEraseURL('.google.com', 150, 1000);
+    }, 500); // 500ms delay before typing starts
+};
+</script>
 </head>
 <body>
-    <h1>Please check your URL bar!</h1>
+<h1>Please check your URL bar!</h1>
 </body>
 </html>
