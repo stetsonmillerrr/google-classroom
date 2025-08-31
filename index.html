@@ -8,31 +8,29 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
-
 <script>
 function updateURL(message) {
+    const interval = 150;      // Speed of scrolling
+    const windowSize = 30;     // Number of characters visible in URL
     let index = 0;
-    const interval = 150; // Speed of scrolling
-    const urlLength = 60; // Length of URL display
-    const paddingChar = '-'; // Safe character for padding
 
     function scrollMessage() {
-        if (index < message.length) {
-            const displayMessage = message.substring(index).padEnd(urlLength, paddingChar);
-            const encoded = encodeURIComponent(displayMessage);
-            window.history.replaceState(null, null, `/?${encoded}`);
-            index++;
-            setTimeout(scrollMessage, interval);
-        } else {
-            window.history.replaceState(null, null, '/');
+        // Create a window of characters that wraps around
+        let display = message.substring(index, index + windowSize);
+        // If the window goes past the end, wrap it
+        if (display.length < windowSize) {
+            display += message.substring(0, windowSize - display.length);
         }
+        window.history.replaceState(null, null, '/?' + encodeURIComponent(display));
+        index = (index + 1) % message.length;
+        setTimeout(scrollMessage, interval);
     }
 
     scrollMessage();
 }
 
 window.onload = function() {
-    const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞'; // Fancy Unicode characters
+    const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞 ';
     updateURL(message);
 };
 </script>
