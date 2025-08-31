@@ -17,14 +17,17 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
 #iframeOverlay {
   display: none;
-  position: absolute; /* or fixed if needed */
-  top: 64px;          /* height of the header (adjust if different) */
-  left: 16rem;        /* width of sidebar (w-64 = 16rem) */
-  right: 0;
-  bottom: 0;
+  position: absolute;
+  top: 64px; /* height of header */
+  left: 16rem; /* sidebar width */
+  right: 1rem; /* small right margin */
+  bottom: 1rem; /* small bottom margin */
   z-index: 1000;
   background: white;
   border: none;
+  border-radius: 8px; /* optional, looks nicer */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* optional */
+  overflow: hidden;
 }
 
 #iframeOverlay iframe {
