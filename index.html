@@ -95,20 +95,23 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 
   <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
-      for(let i=0;i<5;i++){
-        document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-          <div class="flex justify-between items-start mb-4">
-            <div class="space-y-2 w-3/4">
-              <div class="h-3 skeleton w-2/3"></div>
-              <div class="h-3 skeleton w-1/2"></div>
-            </div>
-            <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
-          </div>
-          <hr class="border-gray-200 mb-3">
-          <!-- votes section removed -->
-        </article>`);
-      }
-    </script>
+const cardsSection = document.querySelector('[aria-label="Classroom cards"]');
+for (let i = 0; i < 5; i++) {
+  const article = document.createElement('article');
+  article.className = 'bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]';
+  article.innerHTML = `
+    <div class="flex justify-between items-start mb-4">
+      <div class="space-y-2 w-3/4">
+        <div class="h-3 skeleton w-2/3"></div>
+        <div class="h-3 skeleton w-1/2"></div>
+      </div>
+      <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
+    </div>
+    <hr class="border-gray-200 mb-3">
+  `;
+  cardsSection.appendChild(article);
+}
+</script>
   </section>
 </main>
 
@@ -578,7 +581,7 @@ chatEmail.addEventListener('change', async () => {
 });
   </script>
   <script>
-// Get elements
+// Elements
 const profileBtn = document.getElementById('profileBtn');
 const profileMenu = document.getElementById('profileMenu');
 const logoutBtn = document.getElementById('logoutBtn');
@@ -590,14 +593,14 @@ profileBtn.addEventListener('click', (e) => {
   profileMenu.classList.toggle('hidden');
 });
 
-// Close profile menu when clicking outside
+// Close profile menu if clicked outside
 document.addEventListener('click', (e) => {
   if (!profileMenu.contains(e.target) && e.target !== profileBtn) {
     profileMenu.classList.add('hidden');
   }
 });
 
-// Logout function
+// Logout functionality
 logoutBtn.addEventListener('click', async () => {
   try {
     // Clear local storage
@@ -605,7 +608,7 @@ logoutBtn.addEventListener('click', async () => {
     localStorage.removeItem('profileColor');
     localStorage.removeItem('userId');
 
-    // Logout from Supabase if using auth
+    // Supabase logout
     if (window.supabase) {
       const { error } = await supabase.auth.signOut();
       if (error) console.error('Supabase logout error:', error.message);
@@ -614,19 +617,13 @@ logoutBtn.addEventListener('click', async () => {
     // Hide menu
     profileMenu.classList.add('hidden');
 
-    // Reset profile button to login icon
-    profileLetter.textContent = ''; // clear letter
-    profileBtn.style.backgroundColor = '#e0e0e0'; // default gray
+    // Reset profile button
+    profileLetter.textContent = '';
+    profileBtn.style.backgroundColor = '#e0e0e0';
     profileBtn.title = 'Click to login';
-
-    // Add a login icon (you can use Font Awesome)
     profileBtn.innerHTML = '<i class="fas fa-user text-gray-600"></i>';
 
-    // Optional: show a quick message
     alert('You have been logged out!');
-
-    // Optional redirect to login page
-    // window.location.href = '/login.html';
   } catch (err) {
     console.error('Logout failed:', err);
   }
