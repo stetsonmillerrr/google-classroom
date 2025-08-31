@@ -171,12 +171,6 @@ const savedLetter=localStorage.getItem("profileLetter");
 const savedColor=localStorage.getItem("profileColor");
 if(savedLetter) profileLetter.textContent=savedLetter;
 if(savedColor) profileBtn.style.backgroundColor=savedColor;
-profileBtn.addEventListener("click",()=>{
-  const l=prompt("Enter new letter:",profileLetter.textContent)||profileLetter.textContent;
-  const c=prompt("Enter background color:",profileBtn.style.backgroundColor)||profileBtn.style.backgroundColor;
-  profileLetter.textContent=l; profileBtn.style.backgroundColor=c;
-  localStorage.setItem("profileLetter",l); localStorage.setItem("profileColor",c);
-});
 
 // Category expand/collapse
 document.querySelectorAll('.category-header').forEach(h=>{
