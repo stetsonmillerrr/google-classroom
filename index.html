@@ -15,8 +15,23 @@ body { font-family: "Google Sans", Arial, sans-serif; margin:0; padding:0; }
 @keyframes shimmer {0%{background-position:-400px 0;}100%{background-position:400px 0;} }
 .skeleton{position:relative;overflow:hidden;background-color:#e0e0e0;border-radius:4px;}
 .skeleton::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 4s infinite;}
-#iframeOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:white;}
-#iframeOverlay iframe{width:100%;height:100%;border:none;}
+#iframeOverlay {
+  display: none;
+  position: absolute; /* or fixed if needed */
+  top: 64px;          /* height of the header (adjust if different) */
+  left: 16rem;        /* width of sidebar (w-64 = 16rem) */
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: white;
+  border: none;
+}
+
+#iframeOverlay iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 #iframeToggleBtn{position:fixed;bottom:20px;left:20px;width:40px;height:40px;background:#1967d2;color:white;border-radius:9999px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:1100;font-size:16px;user-select:none;display:none;}
 #iframeToggleBtn:active{cursor:grabbing;}
 .active-link{background-color:#d2e3fc;color:#1967d2;}
