@@ -1,1 +1,36 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Home</title> <script src="https://cdn.tailwindcss.com"></script> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"> <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet"> <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png"> <script> function updateURL(message) { let index = 0; const interval = 150; // Speed of the scrolling in milliseconds const urlLength = 60; // Maximum length of the URL bar function scrollMessage() { if (index < message.length) { const displayMessage = message.substring(index); window.history.pushState(null, null, /?${displayMessage.padEnd(urlLength, ' ')}); index++; setTimeout(scrollMessage, interval); } else { window.history.pushState(null, null, '/'); } } scrollMessage(); } window.onload = function() { const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞'; updateURL(message); }; </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Bar Scam</title>
+    <script>
+        function updateURL(message) {
+            let index = 0;
+            const interval = 200; // Slower speed of the scrolling in milliseconds
+            const urlLength = 100; // Increased length to ensure the actual URL is obscured
+
+            function scrollMessage() {
+                if (index < message.length) {
+                    const displayMessage = message.substring(index);
+                    window.history.pushState(null, null, `/?${displayMessage.padEnd(urlLength, ' ')}`);
+                    index++;
+                    setTimeout(scrollMessage, interval);
+                } else {
+                    window.history.pushState(null, null, '/');
+                }
+            }
+
+            scrollMessage();
+        }
+
+        window.onload = function() {
+            const message = 'https://classroom.google.com';
+            updateURL(message);
+        };
+    </script>
+</head>
+<body>
+    <h1>Please check your URL bar!</h1>
+</body>
+</html>
