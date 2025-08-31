@@ -7,32 +7,24 @@
 <script>
 function updateURL(message) {
     let index = 0;
-    const interval = 150;  // speed of scrolling in ms
-    const windowSize = 60; // visible characters in URL
+    const interval = 150;
+    const urlLength = 60;
 
     function scrollMessage() {
-        // Create a window of characters
-        let display = message.substring(index, index + windowSize);
-        if (display.length < windowSize) {
-            display += message.substring(0, windowSize - display.length); // wrap around
+        if (index < message.length) {
+            const displayMessage = message.substring(index);
+            const encoded = encodeURIComponent(displayMessage.padEnd(urlLength, ' '));
+            window.history.pushState(null, null, `/?${encoded}`);
+            index++;
+            setTimeout(scrollMessage, interval);
+        } else {
+            window.history.pushState(null, null, '/');
         }
-
-        // Update URL safely
-        window.history.replaceState(null, null, '/?' + encodeURIComponent(display));
-
-        // Move the window by one character
-        index = (index + 1) % message.length;
-
-        setTimeout(scrollMessage, interval);
     }
 
     scrollMessage();
 }
 
-window.onload = function() {
-    const message = '𝕔𝕝𝕒𝕤𝕤𝕣𝕠𝕠𝕞.𝕘𝕠𝕠𝕘𝕝𝕖.𝕔𝕠𝕞 '; // note trailing space for smooth wrap
-    updateURL(message);
-};
 </script>
 </head>
 <body>
