@@ -6,14 +6,12 @@
 <title>FlareLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin:0; padding:0; }
-  body, html { font-family: 'Inter', sans-serif; background:#0a0a0f; color:#eee; height:100%; overflow:hidden; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body,html { font-family:'Inter',sans-serif; background:#0a0a0f; color:#eee; height:100%; overflow:hidden; }
   #particles-js { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; }
   #app { display:flex; height:100vh; width:100vw; }
   nav { width:72px; background: rgba(20,18,34,0.8); display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px); z-index:10; }
   nav img.logo { width:36px; height:36px; margin-bottom:1rem; border-radius:8px; cursor:default; user-select:none; }
-  nav button { background:transparent; border:none; color:#999; margin:0.7rem 0; cursor:pointer; font-size:1.25rem; transition: color 0.2s; }
-  nav button:hover { color:#8b5cf6; }
   main { flex:1; position:relative; display:flex; flex-direction:column; align-items:center; padding:1.5rem 2rem; overflow:auto; z-index:1; }
   .search-bar { position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; z-index:15; }
   .search-bar:focus-within { border-color:#a78bfa; color:#eee; }
@@ -59,44 +57,51 @@
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
 (() => {
-  const services = ["xen","nb","tb","ddx","lunar","space"];
-  const domains = ["blocksi.lol","deltamath.icu","desmosgraphing.xyz","desmos.lol","edpuzzle.icu","goguardian.pro","googledrive.icu","nearpod.lol","prodigy.it.com","stayinschooleducation.org","studentvue.my","chat.openai.com"];
+  const services = [
+    {id:'xen', label:'Xen OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'nb', label:'Nebula', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'tb', label:'Terbium OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'ddx', label:'DaydreamX', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'lunar', label:'Lunar', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
+    {id:'prodigy', label:'Prodigy', domains:['prodigy.it.com']},
+    {id:'chatgpt', label:'ChatGPT', domains:['chat.openai.com']}
+  ];
+
   const cardsContainer = document.getElementById('cards-container');
   const iframeOverlay = document.getElementById('iframe-overlay');
   const iframe = document.getElementById('iframe');
   const iframeTitle = document.getElementById('iframe-title');
   const closeBtn = document.getElementById('close-btn');
   const refreshBtn = document.getElementById('refresh-btn');
-  let currentUrl = "";
+  let currentService = null;
+  let currentUrl = '';
 
-  // Generate cards
-  domains.forEach(domain => {
-    if(domain==="prodigy.it.com"||domain==="chat.openai.com"){
-      createCard(domain.toUpperCase(),`https://${domain}`,domain);
-    } else {
-      services.forEach(service=>{
-        createCard(`${service.toUpperCase()} • ${domain}`,`https://${service}.${domain}.cdn.cloudflare.net`,domain);
-      });
-    }
-  });
+  function randomString(len=5){const chars='abcdefghijklmnopqrstuvwxyz0123456789';let str='';for(let i=0;i<len;i++)str+=chars.charAt(Math.floor(Math.random()*chars.length));return str;}
 
-  function createCard(label,url,domain){
-    const btn=document.createElement('div');
-    btn.className='card';
-    btn.innerHTML=`<img src="https://www.google.com/s2/favicons?sz=64&domain=${domain}" alt=""><div class="label">${label}</div>`;
-    btn.onclick=()=>{
-      currentUrl=url;
-      iframe.src=currentUrl;
-      iframeTitle.textContent=label;
-      iframeOverlay.style.display='flex';
-    };
-    cardsContainer.appendChild(btn);
+  function generateUrl(service){
+    if(service.id==='prodigy'||service.id==='chatgpt') return `https://${service.domains[0]}`;
+    const domain = service.domains[Math.floor(Math.random()*service.domains.length)];
+    return `https://${service.id}.${randomString(6)}.${domain}.cdn.cloudflare.net`;
   }
 
-  closeBtn.onclick=()=>{iframeOverlay.style.display='none'; iframe.src='';};
-  refreshBtn.onclick=()=>{if(currentUrl) iframe.src=currentUrl;};
+  services.forEach(s=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<img src="https://www.google.com/s2/favicons?sz=64&domain=${s.domains[0]}" alt=""><div class="label">${s.label}</div>`;
+    card.onclick=()=>{
+      currentService=s;
+      currentUrl=generateUrl(s);
+      iframe.src=currentUrl;
+      iframeTitle.textContent=s.label;
+      iframeOverlay.style.display='flex';
+    };
+    cardsContainer.appendChild(card);
+  });
 
-  // Search filter
+  closeBtn.onclick=()=>{iframeOverlay.style.display='none'; iframe.src=''; currentService=null;};
+  refreshBtn.onclick=()=>{if(currentService){currentUrl=generateUrl(currentService); iframe.src=currentUrl;}};
+
   document.getElementById('search-input').addEventListener('input',e=>{
     const filter=e.target.value.toLowerCase();
     [...cardsContainer.children].forEach(c=>{
@@ -104,9 +109,9 @@
     });
   });
 
-  // Particles
+  // Particles optimized for performance
   particlesJS('particles-js',{
-    particles:{number:{value:40},color:{value:"#8b5cf6"},shape:{type:"circle"},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.5,random:true}},
+    particles:{number:{value:35},color:{value:"#8b5cf6"},shape:{type:"circle"},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.2,random:true}},
     interactivity:{detect_on:"canvas",events:{onhover:{enable:false},onclick:{enable:false}}},retina_detect:true
   });
 })();
