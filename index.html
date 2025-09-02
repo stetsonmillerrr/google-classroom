@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FlareLink - Infinite Unblocked Links</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body, html {margin:0; padding:0; height:100%; background:#0a0a0f; font-family:'Inter',sans-serif; color:#eee; overflow:hidden;}
 #app {display:flex; height:100vh; width:100vw; flex-direction:row;}
-nav {background: rgba(20, 18, 34, 0.85); width:72px; display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px);}
+nav {background: rgba(20,18,34,0.85); width:72px; display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px);}
 nav img.logo {width:36px; height:36px; margin-bottom:1rem; border-radius:8px; cursor:default; user-select:none;}
 main {flex:1; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; padding:2rem;}
 .search-bar {position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); backdrop-filter:blur(14px); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; font-size:1rem; z-index:15;}
@@ -64,15 +64,6 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
 
 <script>
 (() => {
-  const cardsData = [
-    { id:'space', label:'Space', wildcards:['*.space'], domains:['blocksi.lol','deltamath.icu','desmos.lol','studentvue.my']},
-    { id:'daydreamx', label:'DaydreamX', wildcards:['*.ddx'], domains:['blocksi.lol','desmosgraphing.xyz']},
-    { id:'terbium', label:'Terbium OS', wildcards:['*.tb'], domains:['deltamath.icu','googledrive.icu']},
-    { id:'nebula', label:'Nebula', wildcards:['*.nb'], domains:['nearpod.lol','stayinschooleducation.org']},
-    { id:'xen', label:'Xen OS', wildcards:['*.xen'], domains:['prodigy.it.com','goguardian.pro']},
-    { id:'chatgpt', label:'ChatGPT', wildcards:[''], domains:['chat.openai.com']}
-  ];
-
   const cardsContainer = document.getElementById('cards-container');
   const iframeOverlay = document.getElementById('iframe-overlay');
   const iframe = document.getElementById('iframe');
@@ -84,28 +75,43 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
   let currentCard = null;
   let currentIframeUrl = '';
 
-  function randomString(len=5){ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
+  const domains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
+  const wildcards = ['*.space','*.ddx','*.tb','*.nb','*.xen'];
 
-  function generateIframeUrl(card){
-    if(card.id==='chatgpt') return `https://${card.domains[0]}`;
-    const domain = card.domains[Math.floor(Math.random()*card.domains.length)];
-    const wildcard = card.wildcards[Math.floor(Math.random()*card.wildcards.length)];
+  // Generate random string
+  const randomString = (len=5)=>{ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
+
+  // Generate randomized fake CDN URL for a domain + wildcard
+  const generateIframeUrl = (domain,wildcard,label) => {
+    if(domain==='chat.openai.com') return `https://chat.openai.com`;
     const subdomain = randomString();
     const fakeUrl = `${subdomain}.${wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
-    // Use data URL to simulate fast loading
-    return `data:text/html,<h1 style="color:#fff;font-family:Inter;text-align:center;margin-top:40vh;">Simulated ${card.label} URL:<br>${fakeUrl}</h1>`;
+    return `data:text/html,<h1 style="color:#fff;font-family:Inter;text-align:center;margin-top:40vh;">Simulated ${label} URL:<br>${fakeUrl}</h1>`;
   }
 
-  async function fetchFavicon(domain){
+  // Generate infinite cards
+  const cardsData = [];
+  domains.forEach(domain=>{
+    if(domain==='chat.openai.com'){
+      cardsData.push({label:'ChatGPT',domain:'chat.openai.com',wildcard:''});
+    } else {
+      wildcards.forEach(wc=>{
+        cardsData.push({label:`${wc.split('.')[1].toUpperCase()} - ${domain}`,domain:domain,wildcard:wc});
+      });
+    }
+  });
+
+  // Fetch favicon
+  const fetchFavicon = async (domain)=>{
     const urls=[`https://${domain}/favicon.ico`,`https://www.google.com/s2/favicons?domain=${domain}`];
-    for(const url of urls){ try{ await new Promise((res,rej)=>{ const img=new Image(); img.src=url; img.onload=()=>res(true); img.onerror=()=>rej(false); }); return url;}catch{}}
+    for(const url of urls){ try{ await new Promise((res,rej)=>{ const img=new Image(); img.src=url; img.onload=()=>res(true); img.onerror=()=>rej(false); }); return url;}catch{} }
     return 'https://via.placeholder.com/64?text=?';
   }
 
-  async function renderCards(){
+  const renderCards = async ()=>{
     cardsContainer.innerHTML='';
     for(const card of cardsData){
-      const cardEl=document.createElement('div');
+      const cardEl = document.createElement('div');
       cardEl.className='card';
       cardEl.setAttribute('role','button');
       cardEl.setAttribute('tabindex','0');
@@ -116,38 +122,36 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
       img.src='https://via.placeholder.com/64?text=?';
       cardEl.appendChild(img);
 
-      const label=document.createElement('div');
+      const label = document.createElement('div');
       label.className='label';
-      label.textContent=card.label;
+      label.textContent = card.label;
       cardEl.appendChild(label);
 
       cardEl.addEventListener('click',()=>openCard(card));
-      cardEl.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); cardEl.click(); } });
-      cardsContainer.appendChild(cardEl);
+      cardEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cardEl.click(); } });
 
-      fetchFavicon(card.domains[0]).then(url=>{ img.src=url; });
+      cardsContainer.appendChild(cardEl);
+      fetchFavicon(card.domain).then(url=>{ img.src=url; });
     }
   }
 
-  function openCard(card){
+  const openCard = (card)=>{
     currentCard = card;
-    currentIframeUrl = generateIframeUrl(card);
-
+    currentIframeUrl = generateIframeUrl(card.domain,card.wildcard,card.label);
     iframe.src = currentIframeUrl;
     iframeOverlay.hidden = false;
     iframeTitle.textContent = `${card.label} — ${currentIframeUrl}`;
     iframeTitle.title = currentIframeUrl;
   }
 
-  closeBtn.addEventListener('click', ()=>{ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; });
-  refreshBtn.addEventListener('click', ()=>{ if(currentCard) openCard(currentCard); });
-  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden) { iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
-
-  searchInput.addEventListener('input', ()=>{
+  closeBtn.addEventListener('click',()=>{iframe.src='about:blank';iframeOverlay.hidden=true;currentCard=null;});
+  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard); });
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden){ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
+  searchInput.addEventListener('input',()=>{
     const filter=searchInput.value.toLowerCase().trim();
     [...cardsContainer.children].forEach(cardEl=>{
-      const label = cardEl.querySelector('.label').textContent.toLowerCase();
-      cardEl.style.display = label.includes(filter)?'':'none';
+      const label=cardEl.querySelector('.label').textContent.toLowerCase();
+      cardEl.style.display=label.includes(filter)?'':'none';
     });
   });
 
