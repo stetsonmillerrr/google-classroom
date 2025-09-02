@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random StudentVue Viewer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
 <style>
   html, body {
     margin: 0;
@@ -37,85 +41,315 @@
     loading: lazy;
   }
 
-  /* Loading overlay */
-  #loadingOverlay {
+  #topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(51, 51, 51, 0.85);
+    color: white;
+    z-index: 20;
+    transition: top 0.3s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    box-sizing: border-box;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+  }
+
+  #topbar.hidden {
+    top: -60px;
+  }
+
+  #tabs button {
+    background: #666;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  #tabs button:hover {
+    background: #888;
+    transform: translateY(-2px);
+  }
+
+  #tabs button.active {
+    background: #999;
+    transform: translateY(0);
+  }
+
+  #fps {
+    margin-right: 15px;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+
+  #goguardian-icon {
+    display: none;
+    width: 24px;
+    height: 24px;
+    margin: 0 10px;
+  }
+
+  #goguardian-icon.active {
+    display: block;
+  }
+
+  .tab-content {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    z-index: 10;
-    pointer-events: none;
+    display: none;
+    z-index: 1;
   }
 
-  .spinner {
-    border: 6px solid #333;
-    border-top: 6px solid #ffffff;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
+  .tab-content.active {
+    display: block;
   }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  #tab3 {
+    overflow: auto;
   }
 
-  /* Smart loading text */
-  #loadingText {
-    font-size: 1.4em;
-    font-weight: 300;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-  }
-
-  .dot {
-    animation: blink 1.4s infinite both;
-    margin-left: 2px;
-  }
-  .dot:nth-child(1) { animation-delay: 0s; }
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes blink {
-    0%, 80%, 100% { opacity: 0; }
-    40% { opacity: 1; }
+  #tab3 .wiki-links-tool {
+    height: 100%;
+    width: 100%;
   }
 </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
-
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-  <div id="loadingText">
-    Loading
-    <span class="dot">.</span>
-    <span class="dot">.</span>
-    <span class="dot">.</span>
+<div id="topbar">
+  <div id="tabs">
+    <button onclick="switchTab(1)" class="active">🎮</button>
+    <button onclick="switchTab(2)">✨</button>
+    <button onclick="switchTab(3)">🌐</button>
   </div>
+  <img id="goguardian-icon" src="https://images.prismic.io/lbpsedtech/e8df77cd-6293-4e91-b614-2c240dfc21f2_GoGuardianTool.png?ixlib=gatsbyFP&auto=compress%2Cformat&fit=max&q=50&rect=0%2C0%2C512%2C512&w=441&h=441" alt="GoGuardian Monitoring">
+  <span id="fps">FPS: 0</span>
 </div>
 
-<iframe id="viewer" allowfullscreen></iframe>
+<canvas id="particles"></canvas>
+
+<div id="tab1" class="tab-content active">
+  <iframe id="viewerTab1" allow="fullscreen" allowfullscreen></iframe>
+</div>
+
+<div id="tab2" class="tab-content">
+  <iframe id="viewerTab2" allow="fullscreen" allowfullscreen></iframe>
+</div>
+
+<div id="tab3" class="tab-content">
+  <div class="wiki-links-tool">
+    <div class="max-w-4xl mx-auto p-4">
+      <h2 class="text-3xl font-bold text-center mb-6 text-white">🌐 Ꮲrоху Finder 🌐</h2>
+      <h3 class="text-1xl font-light text-center mb-3 text-gray-400">made by stetson</h3>
+      <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+        <label class="flex flex-col w-full md:w-1/3">
+          <span class="text-sm font-semibold mb-1 text-gray-300">Filter by Name</span>
+          <select id="filter-name" class="rounded border-gray-600 bg-gray-800 text-gray-100 p-2 focus:ring-blue-500">
+            <option value="">All</option>
+          </select>
+        </label>
+
+        <label class="flex flex-col w-full md:w-1/3">
+          <span class="text-sm font-semibold mb-1 text-gray-300">Filter by Date</span>
+          <select id="filter-date" class="rounded border-gray-600 bg-gray-800 text-gray-100 p-2 focus:ring-blue-500">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="last7">Last 7 Days</option>
+            <option value="thisMonth">This Month</option>
+            <option value="lastMonth">Last Month</option>
+            <option value="thisYear">This Year</option>
+            <option value="all" selected>All Time</option>
+          </select>
+        </label>
+
+        <button id="search-btn" class="w-full md:w-auto bg-blue-700 text-white px-4 py-2 mt-2 md:mt-0 rounded hover:bg-blue-800 transition">
+          🔍 Search
+        </button>
+      </div>
+
+      <div class="text-right mb-3 hidden" id="copy-all-container">
+        <button id="copy-all-btn" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">
+          📋 Copy All Visible URLs
+        </button>
+      </div>
+
+      <div id="results" class="space-y-4"></div>
+
+      <div class="flex justify-between items-center mt-6 hidden" id="pagination-controls">
+        <button id="prev-links" class="bg-gray-700 text-white px-5 py-2 rounded hover:bg-gray-800 transition">⬅️ Previous Links</button>
+        <button id="next-links" class="bg-gray-700 text-white px-5 py-2 rounded hover:bg-gray-800 transition">Next Links ➡️</button>
+      </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-700 text-white px-4 py-2 rounded shadow-lg hidden z-50">
+      ✅ Rated successfully!
+    </div>
+  </div>
+</div>
+<script src="https://minnit.chat/js/chaticon.js" defer></script>
+<span
+data-icon-pixel-size="80"
+data-chat-small-medium-or-large="small"
+data-circle-or-square="circle"
+data-left-or-right="right"
+data-chaturl="https://organizations.minnit.chat/878547462864938/c/Main"
+data-hex-color-code="ff0000"
+data-icon-url=""
+class="minnit-chat-icon-sembed"
+style="display:block">
+</span>
 
 <script>
-const iframe = document.getElementById('viewer');
-const overlay = document.getElementById('loadingOverlay');
+const iframeTab1 = document.getElementById('viewerTab1');
+const iframeTab2 = document.getElementById('viewerTab2');
 const STORAGE_KEY = 'usedStudentVueStrings';
+const topbar = document.getElementById('topbar');
+const goguardianIcon = document.getElementById('goguardian-icon');
+let hideTimeout;
 
-/* ------------------ Particle Background ------------------ */
+function detectGoGuardianMonitoring() {
+  let isMonitoringLikely = false;
+
+  const checkExtension = () => {
+    return new Promise((resolve) => {
+      if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+        const possibleExtensionIds = [
+          'haldlgldplgngkkjaafhelgiaglafanh',
+          'bglgmmhhdpnmkcahfolkbfflbgffnocd'
+        ];
+        let extensionFound = false;
+        possibleExtensionIds.forEach(id => {
+          chrome.runtime.sendMessage(id, { ping: true }, response => {
+            if (response) extensionFound = true;
+          });
+        });
+        setTimeout(() => resolve(extensionFound), 500);
+      } else {
+        resolve(false);
+      }
+    });
+  };
+
+  // 2. Monitor network activity for GoGuardian-related requests
+  const checkNetworkActivity = () => {
+    return new Promise((resolve) => {
+      let goGuardianTraffic = false;
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+          if (entry.name.includes('goguardian.com') || entry.name.includes('websocket') || entry.name.includes('cloudfront.net')) {
+            goGuardianTraffic = true;
+          }
+        });
+      });
+      observer.observe({ entryTypes: ['resource'] });
+      setTimeout(() => {
+        observer.disconnect();
+        resolve(goGuardianTraffic);
+      }, 1000);
+    });
+  };
+
+  // 3. Monitor browser performance (CPU/memory spikes)
+  const checkPerformance = () => {
+    return new Promise((resolve) => {
+      let highUsage = false;
+      if (window.performance && window.performance.memory) {
+        const memoryUsage = window.performance.memory.usedJSHeapSize / window.performance.memory.jsHeapSizeLimit;
+        if (memoryUsage > 0.8) highUsage = true; // Arbitrary threshold for potential screen capture
+      }
+      resolve(highUsage);
+    });
+  };
+
+  // 4. Check if signed into school-managed Google account
+  const checkGoogleAccount = () => {
+    return new Promise((resolve) => {
+      fetch('https://accounts.google.com/o/oauth2/auth')
+        .then(response => response.text())
+        .then(text => {
+          const isSchoolAccount = text.includes('gsuite') || text.includes('edu');
+          resolve(isSchoolAccount);
+        })
+        .catch(() => resolve(false));
+    });
+  };
+
+  // 5. Check for GoGuardian "Scene" indicators (heuristic)
+  const checkSceneIndicators = () => {
+    return new Promise((resolve) => {
+      let sceneActive = false;
+      const originalOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        if (url.includes('goguardian.com') || url.includes('scene')) {
+          sceneActive = true;
+        }
+        return originalOpen.apply(this, arguments);
+      };
+      setTimeout(() => {
+        XMLHttpRequest.prototype.open = originalOpen;
+        resolve(sceneActive);
+      }, 1000);
+    });
+  };
+
+  // Combine all checks
+  Promise.all([
+    checkExtension(),
+    checkNetworkActivity(),
+    checkPerformance(),
+    checkGoogleAccount(),
+    checkSceneIndicators()
+  ]).then(([hasExtension, hasTraffic, highUsage, isSchoolAccount, sceneActive]) => {
+    // Smart decision logic: Monitoring is likely if extension is present, school account is active, and at least one other signal is positive
+    isMonitoringLikely = hasExtension && isSchoolAccount && (hasTraffic || highUsage || sceneActive);
+    goguardianIcon.classList.toggle('active', isMonitoringLikely);
+  });
+
+  return isMonitoringLikely;
+}
+
+/* ------------------ Auto-hide top bar ------------------ */
+document.addEventListener('mousemove', (e) => {
+  if (e.clientY < 50) {
+    topbar.classList.remove('hidden');
+    clearTimeout(hideTimeout);
+  } else {
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      topbar.classList.add('hidden');
+    }, 2000);
+  }
+});
+
+// Initially hide after 2s
+setTimeout(() => {
+  topbar.classList.add('hidden');
+}, 2000);
+
+/* ------------------ Tab switching ------------------ */
+function switchTab(tabNumber) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(`tab${tabNumber}`).classList.add('active');
+  document.querySelectorAll('#tabs button').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`#tabs button:nth-child(${tabNumber})`).classList.add('active');
+}
+
+/* ------------------ Particle Background with FPS ------------------ */
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -139,6 +373,10 @@ for(let i = 0; i < PARTICLE_COUNT; i++) {
   });
 }
 
+let lastTime = performance.now();
+let frames = 0;
+let fps = 0;
+
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach(p => {
@@ -153,6 +391,16 @@ function animateParticles() {
     ctx.fillStyle = '#fff';
     ctx.fill();
   });
+
+  frames++;
+  const now = performance.now();
+  if (now - lastTime >= 1000) {
+    fps = frames;
+    frames = 0;
+    lastTime = now;
+    document.getElementById('fps').textContent = `FPS: ${fps}`;
+  }
+
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
@@ -187,19 +435,308 @@ function generateUniqueSubdomain() {
   return subdomain;
 }
 
-/* ------------------ Load iframe ------------------ */
+/* ------------------ Load iframes ------------------ */
+function loadTab1Iframe() {
+  iframeTab1.src = 'https://nullxiety.com/';
+}
+
 function loadRandomStudentVue() {
   const subdomain = generateUniqueSubdomain();
   const url = `https://${subdomain}.studentvue.my.cdn.cloudflare.net`;
-  iframe.src = url;
-
-  iframe.onload = () => {
-    overlay.style.display = 'none';
-  };
+  iframeTab2.src = url;
 }
 
+loadTab1Iframe();
 loadRandomStudentVue();
+
+/* ------------------ Run GoGuardian Detector Periodically ------------------ */
+setInterval(detectGoGuardianMonitoring, 5000); // Check every 5 seconds
+detectGoGuardianMonitoring(); // Initial check
+
+const supabase = window.supabase.createClient(
+  'https://ylbeucokkfotgghbveuv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
+);
+
+let page = 0;
+const pageSize = 5;
+let currentFilter = { name: '', range: 'all' };
+let totalLinks = 0;
+
+document.getElementById('search-btn').addEventListener('click', applyFilters);
+document.getElementById('next-links').addEventListener('click', () => { page++; fetchLinks(); });
+document.getElementById('prev-links').addEventListener('click', () => { page--; fetchLinks(); });
+document.getElementById('copy-all-btn').addEventListener('click', copyAllVisibleLinks);
+
+function showToast(message = 'Action completed!') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 2000);
+}
+
+async function loadNames() {
+  const { data } = await supabase.from('link_names').select('name');
+  const select = document.getElementById('filter-name');
+  select.innerHTML = `<option value="">All</option>`;
+  data?.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.name;
+    opt.textContent = d.name;
+    select.appendChild(opt);
+  });
+}
+
+function getDateRange(rangeType) {
+  const now = new Date();
+  const start = new Date();
+  const end = new Date();
+  switch (rangeType) {
+    case 'today': start.setHours(0, 0, 0, 0); return { start, end: now };
+    case 'yesterday': start.setDate(start.getDate() - 1); end.setDate(end.getDate() - 1); start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999); return { start, end };
+    case 'last7': start.setDate(start.getDate() - 6); return { start, end: now };
+    case 'thisMonth': start.setDate(1); return { start, end: now };
+    case 'lastMonth': start.setMonth(start.getMonth() - 1); start.setDate(1); end.setMonth(end.getMonth() - 1); end.setDate(new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate()); end.setHours(23, 59, 59, 999); return { start, end };
+    case 'thisYear': start.setMonth(0, 1); start.setHours(0, 0, 0, 0); return { start, end: now };
+    default: return null;
+  }
+}
+
+async function applyFilters() {
+  page = 0;
+  currentFilter.name = document.getElementById('filter-name').value;
+  currentFilter.range = document.getElementById('filter-date').value;
+  await countTotalLinks();
+  await fetchLinks();
+}
+
+async function countTotalLinks() {
+  let query = supabase.from('links').select('*', { count: 'exact', head: true });
+  if (currentFilter.name) query = query.eq('name', currentFilter.name);
+  const range = getDateRange(currentFilter.range);
+  if (range) {
+    query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  }
+  const { count } = await query;
+  totalLinks = count || 0;
+}
+
+async function fetchLinks() {
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+
+  let query = supabase
+    .from('links')
+    .select('*')
+    .order('date', { ascending: false })
+    .range(page * pageSize, (page + 1) * pageSize - 1);
+
+  if (currentFilter.name) query = query.eq('name', currentFilter.name);
+  const range = getDateRange(currentFilter.range);
+  if (range) {
+    query = query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = `<div class="bg-yellow-800 text-yellow-200 p-4 rounded shadow text-center">⚠️ No links found.</div>`;
+    document.getElementById('copy-all-container').classList.add('hidden');
+    document.getElementById('pagination-controls').classList.add('hidden');
+    return;
+  }
+
+  for (const link of data) {
+    const { count: upCount } = await supabase.from('ratings_up').select('*', { count: 'exact', head: true }).eq('link_id', link.id);
+    const { count: downCount } = await supabase.from('ratings_down').select('*', { count: 'exact', head: true }).eq('link_id', link.id);
+    const formattedDate = new Date(link.date).toISOString().split('T')[0];
+
+    const div = document.createElement('div');
+    div.className = 'bg-gray-800 p-4 rounded shadow hover:shadow-lg transition';
+    div.innerHTML = `
+      <h3 class="text-lg font-semibold mb-1 text-white">${link.name} (${formattedDate})</h3>
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <a href="${link.url}" target="_blank" class="text-blue-400 underline break-words max-w-full">${link.url}</a>
+        <button onclick="copySingleLink('${link.url}')" class="text-sm bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-gray-200">📋 Copy</button>
+      </div>
+      <div class="flex items-center gap-4 mt-3 text-sm">
+        <button onclick="rateLink('${link.id}', 'up', this)" class="flex items-center gap-1 bg-green-800 hover:bg-green-900 text-green-200 px-3 py-1 rounded">✅ <span>${upCount || 0}</span></button>
+        <button onclick="rateLink('${link.id}', 'down', this)" class="flex items-center gap-1 bg-red-800 hover:bg-red-900 text-red-200 px-3 py-1 rounded">❌ <span>${downCount || 0}</span></button>
+      </div>`;
+    container.appendChild(div);
+  }
+
+  document.getElementById('copy-all-container').classList.remove('hidden');
+  const prevBtn = document.getElementById('prev-links');
+  const nextBtn = document.getElementById('next-links');
+  const pagination = document.getElementById('pagination-controls');
+  pagination.classList.remove('hidden');
+  prevBtn.disabled = page === 0;
+  nextBtn.disabled = (page + 1) * pageSize >= totalLinks;
+}
+
+async function rateLink(linkId, direction, btn) {
+  const table = direction === 'up' ? 'ratings_up' : 'ratings_down';
+  await supabase.from(table).insert({ link_id: linkId });
+  const countSpan = btn.querySelector('span');
+  countSpan.textContent = parseInt(countSpan.textContent) + 1;
+  showToast(direction === 'up' ? '✅ Upvoted!' : '❌ Downvoted!');
+}
+
+function copySingleLink(url) {
+  navigator.clipboard.writeText(url);
+  showToast('📋 Link copied!');
+}
+
+function copyAllVisibleLinks() {
+  const links = document.querySelectorAll('#results a');
+  const urls = Array.from(links).map(a => a.href).join('\n');
+  navigator.clipboard.writeText(urls);
+  showToast('📋 All visible links copied!');
+}
+
+loadNames();
+applyFilters();
 </script>
 
+<script>
+(function(){
+  const _k = btoa("siteUnlocked_XYZ123");
+  const _p = "SGE2NzY1NDM=";
+  const PASSWORD = atob(_p);
+  const MAX_ATTEMPTS = 3;
+  const COOLDOWN = 60*60*1000;
+
+  const isUnlocked = localStorage.getItem(atob(_k)) === "true";
+
+  if(isUnlocked) return;
+
+  const lastAttempt = parseInt(localStorage.getItem("passwordLastAttempt")||"0");
+  const attemptCount = parseInt(localStorage.getItem("passwordAttempts")||"0");
+  const now = Date.now();
+
+  if(lastAttempt && attemptCount >= MAX_ATTEMPTS && now - lastAttempt < COOLDOWN){
+    showCooldownMessage(COOLDOWN-(now-lastAttempt));
+  } else {
+    showPasswordOverlay();
+  }
+
+  function showPasswordOverlay(){
+    let attempts = parseInt(localStorage.getItem("passwordAttempts")||"0");
+
+    const pageContent = document.createElement("div");
+    while(document.body.firstChild) pageContent.appendChild(document.body.firstChild);
+    document.body.appendChild(pageContent);
+    Object.assign(pageContent.style,{
+      filter:"blur(100px) brightness(0.4)",
+      pointerEvents:"none",
+      userSelect:"none",
+      width:"100%", height:"100%"
+    });
+
+    const bgImage = document.createElement("div");
+    Object.assign(bgImage.style,{
+      position:"fixed", top:0, left:0, width:"100%", height:"100%",
+      backgroundImage:"url('https://i.postimg.cc/x1SFP897/mail-google.png')",
+      backgroundSize:"cover", backgroundPosition:"center",
+      filter:"blur(50px) brightness(0.5)", zIndex:998, pointerEvents:"none"
+    });
+    document.body.appendChild(bgImage);
+
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style,{
+      position:"fixed", top:0, left:0, width:"100%", height:"100%",
+      display:"flex", justifyContent:"center", alignItems:"center",
+      zIndex:999, flexDirection:"column", pointerEvents:"all", backgroundColor:"rgba(0,0,0,0.2)"
+    });
+
+    const box = document.createElement("div");
+    Object.assign(box.style,{
+      backgroundColor:"rgba(0,0,0,0.5)",
+      backdropFilter:"blur(12px)",
+      padding:"40px 30px", borderRadius:"16px", textAlign:"center",
+      color:"#fff", maxWidth:"90%", width:"360px", boxShadow:"0 10px 30px rgba(0,0,0,0.7)",
+      pointerEvents:"all"
+    });
+
+    const title = document.createElement("h2");
+    title.textContent = "🔒 Enter Password"; title.style.marginBottom="15px";
+
+    const input = document.createElement("input");
+    input.type="password"; input.placeholder="Password";
+    Object.assign(input.style,{
+      padding:"12px 14px", fontSize:"1rem", borderRadius:"8px",
+      border:"1px solid #444", backgroundColor:"#222", color:"#fff",
+      width:"100%", marginBottom:"15px", textAlign:"center", transition:"border-color 0.2s"
+    });
+
+    const button = document.createElement("button");
+    button.textContent="Unlock";
+    Object.assign(button.style,{
+      padding:"12px 26px", fontSize:"1rem", borderRadius:"8px",
+      border:"none", cursor:"pointer", backgroundColor:"#4F46E5",
+      color:"#fff", transition:"background 0.2s"
+    });
+
+    const message = document.createElement("p");
+    Object.assign(message.style,{
+      marginTop:"12px", color:"#F87171", fontSize:"0.9rem", minHeight:"1em"
+    });
+
+    box.append(title,input,button,message);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    function shake(el){
+      el.animate([{transform:"translateX(0)"},
+                  {transform:"translateX(-12px)"},
+                  {transform:"translateX(12px)"},
+                  {transform:"translateX(-8px)"},
+                  {transform:"translateX(8px)"},
+                  {transform:"translateX(0)"}],
+                 {duration:400, iterations:1});
+    }
+
+    function unlock(){
+      if(input.value===PASSWORD){
+        overlay.remove(); bgImage.remove();
+        pageContent.style.filter=""; pageContent.style.pointerEvents="auto";
+        localStorage.setItem(atob(_k),"true");
+      } else {
+        attempts++; localStorage.setItem("passwordAttempts",attempts);
+        localStorage.setItem("passwordLastAttempt",Date.now());
+        input.value=""; shake(input);
+        message.textContent=`Incorrect password! (${attempts}/${MAX_ATTEMPTS})`;
+        if(attempts>=MAX_ATTEMPTS){
+          input.remove(); button.remove();
+          message.textContent="Too many attempts. Try again in 1 hour.";
+        }
+      }
+    }
+
+    button.addEventListener("click",unlock);
+    input.addEventListener("keyup",(e)=>{if(e.key==="Enter") unlock();});
+    input.focus();
+  }
+
+  function showCooldownMessage(msLeft){
+    const seconds = Math.ceil(msLeft/1000);
+    const msg = document.createElement("div");
+    Object.assign(msg.style,{
+      position:"fixed", top:0, left:0, width:"100%", height:"100%",
+      display:"flex", justifyContent:"center", alignItems:"center",
+      backgroundImage:"url('https://i.postimg.cc/x1SFP897/mail-google.png')",
+      backgroundSize:"cover", backgroundPosition:"center",
+      filter:"blur(50px) brightness(0.5)", zIndex:9999,
+      color:"#fff", fontSize:"1.7rem", textAlign:"center"
+    });
+    msg.textContent=`⏳ Too many attempts. Try again in ${Math.floor(seconds/60)}m ${seconds%60}s.`;
+    document.body.appendChild(msg);
+  }
+
+})();
+</script>
 </body>
 </html>
