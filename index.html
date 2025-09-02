@@ -73,35 +73,19 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
   const searchInput = document.getElementById('search-input');
 
   let currentCard = null;
-  let currentIframeUrl = '';
 
-  const domains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
-  const wildcards = ['*.space','*.ddx','*.tb','*.nb','*.xen'];
+  // Main domains
+  const mainCards = [
+    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmos.lol','studentvue.my']},
+    {id:'daydreamx', label:'DaydreamX', domains:['blocksi.lol','desmosgraphing.xyz']},
+    {id:'terbium', label:'Terbium OS', domains:['deltamath.icu','googledrive.icu']},
+    {id:'nebula', label:'Nebula', domains:['nearpod.lol','stayinschooleducation.org']},
+    {id:'xen', label:'Xen OS', domains:['prodigy.it.com','goguardian.pro']},
+    {id:'chatgpt', label:'ChatGPT', domains:['chat.openai.com']}
+  ];
 
-  // Generate random string
-  const randomString = (len=5)=>{ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
+  const randomDomain = (domains) => domains[Math.floor(Math.random()*domains.length)];
 
-  // Generate randomized fake CDN URL for a domain + wildcard
-  const generateIframeUrl = (domain,wildcard,label) => {
-    if(domain==='chat.openai.com') return `https://chat.openai.com`;
-    const subdomain = randomString();
-    const fakeUrl = `${subdomain}.${wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
-    return `data:text/html,<h1 style="color:#fff;font-family:Inter;text-align:center;margin-top:40vh;">Simulated ${label} URL:<br>${fakeUrl}</h1>`;
-  }
-
-  // Generate infinite cards
-  const cardsData = [];
-  domains.forEach(domain=>{
-    if(domain==='chat.openai.com'){
-      cardsData.push({label:'ChatGPT',domain:'chat.openai.com',wildcard:''});
-    } else {
-      wildcards.forEach(wc=>{
-        cardsData.push({label:`${wc.split('.')[1].toUpperCase()} - ${domain}`,domain:domain,wildcard:wc});
-      });
-    }
-  });
-
-  // Fetch favicon
   const fetchFavicon = async (domain)=>{
     const urls=[`https://${domain}/favicon.ico`,`https://www.google.com/s2/favicons?domain=${domain}`];
     for(const url of urls){ try{ await new Promise((res,rej)=>{ const img=new Image(); img.src=url; img.onload=()=>res(true); img.onerror=()=>rej(false); }); return url;}catch{} }
@@ -110,7 +94,7 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
 
   const renderCards = async ()=>{
     cardsContainer.innerHTML='';
-    for(const card of cardsData){
+    for(const card of mainCards){
       const cardEl = document.createElement('div');
       cardEl.className='card';
       cardEl.setAttribute('role','button');
@@ -122,7 +106,7 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
       img.src='https://via.placeholder.com/64?text=?';
       cardEl.appendChild(img);
 
-      const label = document.createElement('div');
+      const label=document.createElement('div');
       label.className='label';
       label.textContent = card.label;
       cardEl.appendChild(label);
@@ -131,22 +115,23 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
       cardEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cardEl.click(); } });
 
       cardsContainer.appendChild(cardEl);
-      fetchFavicon(card.domain).then(url=>{ img.src=url; });
+      fetchFavicon(randomDomain(card.domains)).then(url=>img.src=url);
     }
   }
 
   const openCard = (card)=>{
-    currentCard = card;
-    currentIframeUrl = generateIframeUrl(card.domain,card.wildcard,card.label);
-    iframe.src = currentIframeUrl;
+    const domain = randomDomain(card.domains);
+    currentCard = {card, domain};
+    iframe.src = `https://${domain}`;
     iframeOverlay.hidden = false;
-    iframeTitle.textContent = `${card.label} — ${currentIframeUrl}`;
-    iframeTitle.title = currentIframeUrl;
+    iframeTitle.textContent = `${card.label} — ${domain}`;
+    iframeTitle.title = domain;
   }
 
-  closeBtn.addEventListener('click',()=>{iframe.src='about:blank';iframeOverlay.hidden=true;currentCard=null;});
-  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard); });
+  closeBtn.addEventListener('click',()=>{iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null;});
+  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard.card); });
   window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden){ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
+
   searchInput.addEventListener('input',()=>{
     const filter=searchInput.value.toLowerCase().trim();
     [...cardsContainer.children].forEach(cardEl=>{
