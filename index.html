@@ -7,93 +7,177 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0a0a0a;
-      color: white;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: radial-gradient(circle at top, #0d0d0d, #000);
+      color: #fff;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
       padding: 20px;
     }
+
     h1 {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
+      font-size: 2.5rem;
+      margin-bottom: 25px;
+      color: #00f0ff;
+      text-shadow: 0 0 12px #00f0ff88;
     }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 20px;
+      margin-bottom: 25px;
     }
+
     .card {
-      background-color: #111;
+      background: rgba(20, 20, 20, 0.9);
       border: 1px solid #222;
-      border-radius: 16px;
-      padding: 30px;
+      border-radius: 18px;
+      padding: 40px 20px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.3rem;
+      font-weight: 600;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 0 12px rgba(0,0,0,0.6);
     }
     .card:hover {
-      background-color: #1c1c1c;
-      transform: scale(1.05);
+      background: rgba(30, 30, 30, 0.95);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 0 20px #00f0ff55;
+      border-color: #00f0ff88;
     }
-    iframe {
+
+    .iframe-container {
       margin-top: 20px;
+      position: relative;
+      display: none;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    iframe {
       width: 100%;
       height: 600px;
       border: none;
       border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    iframe.loaded {
+      opacity: 1;
+    }
+
+    .controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #00f0ff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+      background: #00f0ff22;
+      border-color: #00f0ff;
+      box-shadow: 0 0 8px #00f0ff66;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <h1>🌌 FlareLink Portal</h1>
+
   <div class="grid">
-    <div class="card" onclick="openRandomLink('space')">Space</div>
-    <div class="card" onclick="openRandomLink('xen')">Xen</div>
-    <div class="card" onclick="openRandomLink('nebula')">Nebula</div>
-    <div class="card" onclick="openRandomLink('terbium')">Terbium</div>
-    <div class="card" onclick="openRandomLink('lunar')">Lunar</div>
+    <div class="card" onclick="openRandomLink('space')">🚀 Space</div>
+    <div class="card" onclick="openRandomLink('xen')">⚡ Xen</div>
+    <div class="card" onclick="openRandomLink('nebula')">✨ Nebula</div>
+    <div class="card" onclick="openRandomLink('terbium')">🛰️ Terbium</div>
+    <div class="card" onclick="openRandomLink('lunar')">🌙 Lunar</div>
   </div>
 
-  <iframe id="viewer" src="" style="display:none;"></iframe>
+  <div class="iframe-container" id="iframeContainer">
+    <div class="controls">
+      <button class="btn" onclick="shuffle()">🔀 Shuffle</button>
+      <button class="btn" onclick="closeIframe()">❌ Close</button>
+    </div>
+    <iframe id="viewer" src=""></iframe>
+  </div>
 
   <script>
+    // Categories with example subdomains
     const categories = {
-      space: [
-        "*.space.desmos.lol.cdn.cloudflare.net",
-        "*.space.blocksi.lol.cdn.cloudflare.net",
-        "*.space.stayinschooleducation.org.cdn.cloudflare.net"
-      ],
-      xen: [
-        "*.xen.deltamath.icu.cdn.cloudflare.net",
-        "*.xen.desmosgraphing.xyz.cdn.cloudflare.net"
-      ],
-      nebula: [
-        "*.nb.goguardian.pro.cdn.cloudflare.net",
-        "*.nb.googledrive.icu.cdn.cloudflare.net"
-      ],
-      terbium: [
-        "*.tb.nearpod.lol.cdn.cloudflare.net",
-        "*.tb.prodigy.it.com.cdn.cloudflare.net"
-      ],
-      lunar: [
-        "*.lunar.studentvue.my.cdn.cloudflare.net",
-        "*.lunar.desmos.lol.cdn.cloudflare.net"
-      ]
+      space: ["alpha", "beta", "gamma"],
+      xen: ["x1", "x2", "x3"],
+      nebula: ["n1", "n2", "n3"],
+      terbium: ["t1", "t2", "t3"],
+      lunar: ["l1", "l2", "l3"]
     };
 
+    const domains = {
+      space: "space.desmos.lol.cdn.cloudflare.net",
+      xen: "xen.desmosgraphing.xyz.cdn.cloudflare.net",
+      nebula: "nb.goguardian.pro.cdn.cloudflare.net",
+      terbium: "tb.nearpod.lol.cdn.cloudflare.net",
+      lunar: "lunar.studentvue.my.cdn.cloudflare.net"
+    };
+
+    let currentCategory = null;
+    let lastLink = null;
+
+    function getRandomSubdomain(category) {
+      const subs = categories[category];
+      if (!subs || subs.length === 0) return "";
+      let sub;
+      do {
+        sub = subs[Math.floor(Math.random() * subs.length)];
+      } while (sub === lastLink && subs.length > 1);
+      lastLink = sub;
+      return sub;
+    }
+
     function openRandomLink(category) {
-      const links = categories[category];
-      if (!links || links.length === 0) return;
-      const random = links[Math.floor(Math.random() * links.length)];
-      const iframe = document.getElementById("viewer");
-      iframe.src = "https://" + random;
-      iframe.style.display = "block";
+      currentCategory = category;
+      setRandomLink();
+      document.getElementById("iframeContainer").style.display = "block";
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function setRandomLink() {
+      if (!currentCategory) return;
+      const sub = getRandomSubdomain(currentCategory);
+      const domain = domains[currentCategory];
+      const url = `https://${sub}.${domain}`;
+
+      const iframe = document.getElementById("viewer");
+      iframe.classList.remove("loaded");
+      iframe.src = url;
+      iframe.onload = () => iframe.classList.add("loaded");
+    }
+
+    function shuffle() {
+      setRandomLink();
+    }
+
+    function closeIframe() {
+      document.getElementById("iframeContainer").style.display = "none";
+      document.getElementById("viewer").src = "";
     }
   </script>
 </body>
