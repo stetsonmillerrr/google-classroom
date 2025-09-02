@@ -24,7 +24,6 @@ body::before {
   opacity:0.15;
   pointer-events:none;
 }
-
 main {
   flex:1;
   display:grid;
@@ -34,7 +33,6 @@ main {
   z-index:1;
   position:relative;
 }
-
 button.card {
   border:none;
   border-radius:1rem;
@@ -50,12 +48,10 @@ button.card {
   font-weight:500;
   font-size:1.2rem;
 }
-
 button.card:hover {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.1);
 }
-
 .iframe-overlay {
   position:fixed;
   inset:0;
@@ -68,12 +64,10 @@ button.card:hover {
   pointer-events:none;
   transition: opacity 0.4s ease;
 }
-
 .iframe-overlay.active {
   opacity:1;
   pointer-events:all;
 }
-
 .iframe-header {
   display:flex;
   justify-content:space-between;
@@ -82,7 +76,6 @@ button.card:hover {
   background: rgba(20,20,20,0.7);
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
-
 .iframe-header span {
   flex:1;
   margin-left:0.5rem;
@@ -90,7 +83,6 @@ button.card:hover {
   overflow:hidden;
   text-overflow:ellipsis;
 }
-
 .iframe-header button {
   background:none;
   border:none;
@@ -98,7 +90,6 @@ button.card:hover {
   font-size:1.1rem;
   cursor:pointer;
 }
-
 .iframe-overlay iframe {
   flex:1;
   border:none;
@@ -106,11 +97,9 @@ button.card:hover {
   opacity:0;
   transition: opacity 0.5s ease;
 }
-
 .iframe-overlay iframe.loaded {
   opacity:1;
 }
-
 .controls {
   margin-top:0.5rem;
   display:flex;
@@ -118,7 +107,6 @@ button.card:hover {
   justify-content:flex-end;
   padding:0.5rem 1rem;
 }
-
 .controls button {
   background: rgba(255,255,255,0.1);
   border:none;
@@ -128,7 +116,6 @@ button.card:hover {
   cursor:pointer;
   transition:0.2s;
 }
-
 .controls button:hover {
   background: rgba(255,255,255,0.2);
 }
@@ -150,17 +137,16 @@ button.card:hover {
 </div>
 
 <script>
-// FlareLink services configuration
+// Define services with real working domains
 const services = {
-  Xen: { wildcard:"xen", domains:["deltamath.icu"] },
-  Nebula: { wildcard:"nb", domains:["goguardian.pro"] },
-  Terbium: { wildcard:"tb", domains:["terbium.site","nearpod.lol"] },
-  DaydreamX: { wildcard:"ddx", domains:["blocksi.lol","daydreamx.net"] },
-  Lunar: { wildcard:"lunar", domains:["lunar.gg","studentvue.my"] },
-  Space: { wildcard:"space", domains:["desmos.lol","desmosgraphing.xyz"] }
+  Lunar: ["https://lunar.gg", "https://studentvue.my"],
+  DaydreamX: ["https://daydreamx.net", "https://blocksi.lol"],
+  Terbium: ["https://terbium.site", "https://nearpod.lol"],
+  Space: ["https://desmos.lol", "https://desmosgraphing.xyz"],
+  Xen: ["https://deltamath.icu"],
+  Nebula: ["https://goguardian.pro"]
 };
 
-// DOM elements
 const cardGrid = document.getElementById("cardGrid");
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeViewer = document.getElementById("iframeViewer");
@@ -171,26 +157,7 @@ const shuffleBtn = document.getElementById("shuffleBtn");
 let currentService = null;
 let lastIndex = -1;
 
-// Random subdomain generator
-function randomSubdomain(len=4) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let str;
-  do {
-    str = Array.from({length: len}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
-  } while(str === lastIndex);
-  lastIndex = str;
-  return str;
-}
-
-// Build wildcard CDN URL
-function buildFlareLink(serviceName) {
-  const service = services[serviceName];
-  const domain = service.domains[Math.floor(Math.random()*service.domains.length)];
-  const sub = randomSubdomain();
-  return `${sub}.${service.wildcard}.${domain}.cdn.cloudflare.net`;
-}
-
-// Create cards
+// Create service cards
 Object.keys(services).forEach(name => {
   const btn = document.createElement("button");
   btn.className = "card";
@@ -199,22 +166,29 @@ Object.keys(services).forEach(name => {
   cardGrid.appendChild(btn);
 });
 
-// Open a service in the iframe
+// Open selected service
 function openService(name) {
   currentService = name;
-  showRandomLink();
+  showRandomURL();
   iframeOverlay.classList.add("active");
 }
 
-function showRandomLink() {
+// Show a random real URL for the current service
+function showRandomURL() {
   if (!currentService) return;
-  iframeViewer.classList.remove("loaded");
-  iframeViewer.src = buildFlareLink(currentService);
+  const urls = services[currentService];
+  let index;
+  do {
+    index = Math.floor(Math.random() * urls.length);
+  } while(index === lastIndex && urls.length > 1);
+  lastIndex = index;
   iframeTitle.textContent = currentService;
+  iframeViewer.classList.remove("loaded");
+  iframeViewer.src = urls[index];
 }
 
 // Shuffle button
-shuffleBtn.onclick = showRandomLink;
+shuffleBtn.onclick = showRandomURL;
 
 // Close iframe
 closeBtn.onclick = () => {
@@ -222,6 +196,7 @@ closeBtn.onclick = () => {
   iframeViewer.src = "";
 };
 
+// Animate iframe load
 iframeViewer.onload = () => iframeViewer.classList.add("loaded");
 </script>
 
