@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlareLink</title>
+<title>FlareLink Portal</title>
 <style>
 body {
   margin:0;
@@ -24,15 +24,17 @@ body::before {
   opacity:0.15;
   pointer-events:none;
 }
+
 main {
   flex:1;
   display:grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap:1.2rem;
   padding:2rem;
-  position:relative;
   z-index:1;
+  position:relative;
 }
+
 button.card {
   border:none;
   border-radius:1rem;
@@ -48,10 +50,12 @@ button.card {
   font-weight:500;
   font-size:1.2rem;
 }
+
 button.card:hover {
   transform: translateY(-4px);
   background: rgba(255,255,255,0.1);
 }
+
 .iframe-overlay {
   position:fixed;
   inset:0;
@@ -64,10 +68,12 @@ button.card:hover {
   pointer-events:none;
   transition: opacity 0.4s ease;
 }
+
 .iframe-overlay.active {
   opacity:1;
   pointer-events:all;
 }
+
 .iframe-header {
   display:flex;
   justify-content:space-between;
@@ -76,6 +82,7 @@ button.card:hover {
   background: rgba(20,20,20,0.7);
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
+
 .iframe-header span {
   flex:1;
   margin-left:0.5rem;
@@ -83,6 +90,7 @@ button.card:hover {
   overflow:hidden;
   text-overflow:ellipsis;
 }
+
 .iframe-header button {
   background:none;
   border:none;
@@ -90,6 +98,7 @@ button.card:hover {
   font-size:1.1rem;
   cursor:pointer;
 }
+
 .iframe-overlay iframe {
   flex:1;
   border:none;
@@ -97,8 +106,31 @@ button.card:hover {
   opacity:0;
   transition: opacity 0.5s ease;
 }
+
 .iframe-overlay iframe.loaded {
   opacity:1;
+}
+
+.controls {
+  margin-top:0.5rem;
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  padding:0.5rem 1rem;
+}
+
+.controls button {
+  background: rgba(255,255,255,0.1);
+  border:none;
+  color:white;
+  padding:5px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.controls button:hover {
+  background: rgba(255,255,255,0.2);
 }
 </style>
 </head>
@@ -112,32 +144,45 @@ button.card:hover {
     <button id="closeBtn">✕</button>
   </div>
   <iframe id="iframeViewer" src=""></iframe>
+  <div class="controls">
+    <button id="shuffleBtn">🔀 Shuffle</button>
+  </div>
 </div>
 
 <script>
-// Service configuration
+// FlareLink services configuration
 const services = {
-  Lunar: { wildcard: "lunar", domains: ["studentvue.my","lunar.gg"] },
-  DaydreamX: { wildcard: "ddx", domains: ["blocksi.lol","daydreamx.net"] },
-  Terbium: { wildcard: "tb", domains: ["terbium.site","nearpod.lol"] },
-  Space: { wildcard: "space", domains: ["desmos.lol","desmosgraphing.xyz"] },
-  Xen: { wildcard: "xen", domains: ["deltamath.icu"] },
-  Nebula: { wildcard: "nb", domains: ["goguardian.pro"] }
+  Xen: { wildcard:"xen", domains:["deltamath.icu"] },
+  Nebula: { wildcard:"nb", domains:["goguardian.pro"] },
+  Terbium: { wildcard:"tb", domains:["terbium.site","nearpod.lol"] },
+  DaydreamX: { wildcard:"ddx", domains:["blocksi.lol","daydreamx.net"] },
+  Lunar: { wildcard:"lunar", domains:["lunar.gg","studentvue.my"] },
+  Space: { wildcard:"space", domains:["desmos.lol","desmosgraphing.xyz"] }
 };
 
+// DOM elements
 const cardGrid = document.getElementById("cardGrid");
 const iframeOverlay = document.getElementById("iframeOverlay");
 const iframeViewer = document.getElementById("iframeViewer");
 const iframeTitle = document.getElementById("iframeTitle");
 const closeBtn = document.getElementById("closeBtn");
+const shuffleBtn = document.getElementById("shuffleBtn");
 
-// Helper: generate random 3-5 character subdomain
+let currentService = null;
+let lastIndex = -1;
+
+// Random subdomain generator
 function randomSubdomain(len=4) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  return Array.from({length: len}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+  let str;
+  do {
+    str = Array.from({length: len}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+  } while(str === lastIndex);
+  lastIndex = str;
+  return str;
 }
 
-// Build the full FlareLink URL
+// Build wildcard CDN URL
 function buildFlareLink(serviceName) {
   const service = services[serviceName];
   const domain = service.domains[Math.floor(Math.random()*service.domains.length)];
@@ -150,16 +195,28 @@ Object.keys(services).forEach(name => {
   const btn = document.createElement("button");
   btn.className = "card";
   btn.textContent = name;
-  btn.onclick = () => {
-    iframeTitle.textContent = name;
-    iframeViewer.classList.remove("loaded");
-    iframeViewer.src = buildFlareLink(name);
-    iframeOverlay.classList.add("active");
-  };
+  btn.onclick = () => openService(name);
   cardGrid.appendChild(btn);
 });
 
-// Close overlay
+// Open a service in the iframe
+function openService(name) {
+  currentService = name;
+  showRandomLink();
+  iframeOverlay.classList.add("active");
+}
+
+function showRandomLink() {
+  if (!currentService) return;
+  iframeViewer.classList.remove("loaded");
+  iframeViewer.src = buildFlareLink(currentService);
+  iframeTitle.textContent = currentService;
+}
+
+// Shuffle button
+shuffleBtn.onclick = showRandomLink;
+
+// Close iframe
 closeBtn.onclick = () => {
   iframeOverlay.classList.remove("active");
   iframeViewer.src = "";
