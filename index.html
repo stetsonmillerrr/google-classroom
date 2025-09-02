@@ -1,127 +1,750 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlareLink</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body,html { font-family:'Inter',sans-serif; background:#0a0a0f; color:#eee; height:100%; overflow:hidden; }
-  #particles-js { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; }
-  #app { display:flex; height:100vh; width:100vw; }
-  nav { width:72px; background: rgba(20,18,34,0.8); display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px); z-index:10; }
-  nav img.logo { width:36px; height:36px; margin-bottom:1rem; border-radius:8px; cursor:default; user-select:none; }
-  main { flex:1; position:relative; display:flex; flex-direction:column; align-items:center; padding:1.5rem 2rem; overflow:auto; z-index:1; }
-  .search-bar { position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; z-index:15; }
-  .search-bar:focus-within { border-color:#a78bfa; color:#eee; }
-  .search-bar input { flex:1; background:transparent; border:none; color:#eee; outline:none; font-weight:500; font-size:1rem; }
-  .search-bar button { background:transparent; border:none; color:#ccc; cursor:pointer; font-size:1.15rem; }
-  .search-bar button:hover { color:#a78bfa; }
-  .cards-grid { margin-top:5rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1rem; width:100%; max-width:960px; }
-  .card { background: rgba(255 255 255 / 0.05); border-radius:1rem; padding:1rem; box-shadow:0 0 8px rgb(135 85 239 / 0.3); backdrop-filter: blur(12px); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:0.3s; }
-  .card:hover { background: rgba(255 255 255 / 0.15); box-shadow:0 0 15px #8b5cf6aa; }
-  .card img { width:48px; height:48px; margin-bottom:0.6rem; border-radius:12px; background:#222; object-fit:contain; filter: drop-shadow(0 0 4px #7c3aedaa); }
-  .card .label { font-weight:600; font-size:1rem; text-align:center; color:#ddd; }
-  .iframe-overlay { position:fixed; inset:0; background:rgba(10,10,15,0.97); backdrop-filter: blur(18px); display:flex; flex-direction:column; z-index:50; display:none; }
-  .iframe-header { height:48px; background: rgba(30,20,50,0.8); backdrop-filter: blur(20px); display:flex; align-items:center; padding:0 1rem; gap:0.75rem; user-select:none; }
-  .iframe-header button { border:none; background: rgba(255 255 255 / 0.1); border-radius:8px; width:36px; height:36px; cursor:pointer; color:#ddd; font-size:1.2rem; transition:0.25s; }
-  .iframe-header button:hover { background: rgba(255 255 255 / 0.25); }
-  .iframe-header .title { flex:1; color:#ccc; font-weight:600; font-size:1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  iframe { flex:1; border:none; width:100%; background:#0a0a0f; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlareLink with Tabs & Dynamic Themes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      background: #0a0a0f;
+      font-family: 'Inter', sans-serif;
+      color: #eee;
+      overflow: hidden;
+    }
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      flex-direction: row;
+      backdrop-filter: none;
+    }
+    /* Sidebar */
+    nav {
+      background: rgba(20, 18, 34, 0.9);
+      width: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      border-right: 1px solid #2c2a42;
+      backdrop-filter: blur(15px);
+      z-index: 20;
+    }
+    nav img.logo {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      cursor: default;
+      user-select: none;
+    }
+    nav button.tab-btn {
+      background: transparent;
+      border: none;
+      color: #999;
+      margin: 0.7rem 0;
+      cursor: pointer;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      font-size: 1.25rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      user-select: none;
+    }
+    nav button.tab-btn.active {
+      color: #8b5cf6;
+      background: rgba(135 85 239 / 0.15);
+      box-shadow: 0 0 8px #8b5cf6aa;
+    }
+    nav button.tab-btn:focus-visible {
+      outline-offset: 3px;
+      outline: 2px solid #8b5cf6;
+    }
+
+    /* Main area */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      backdrop-filter: none;
+    }
+
+    /* Search bar */
+    .search-bar {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(95vw, 480px);
+      background: rgba(30, 25, 50, 0.4);
+      backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      border: 1px solid #6b21a8;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      gap: 0.75rem;
+      color: #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      z-index: 15;
+    }
+    .search-bar:focus-within {
+      border-color: #a78bfa;
+      color: #eee;
+    }
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #eee;
+      font-size: 1rem;
+      outline: none;
+      font-weight: 500;
+    }
+    .search-bar button {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: color 0.2s ease;
+    }
+    .search-bar button:hover {
+      color: #a78bfa;
+    }
+
+    /* Cards grid */
+    .cards-grid {
+      margin-top: 5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 960px;
+      z-index: 12;
+    }
+    .card {
+      color: #eee;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 0 8px rgb(135 85 239 / 0.3);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition:
+        box-shadow 0.3s ease,
+        background-color 0.5s ease,
+        color 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      filter: drop-shadow(0 0 5px rgb(135 85 239 / 0.35));
+    }
+    .card:hover {
+      box-shadow: 0 0 18px #8b5cf6dd;
+      filter: drop-shadow(0 0 8px #8b5cf6dd);
+    }
+    .card .favicon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 0.8rem;
+      border-radius: 14px;
+      background: #222;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px #7c3aedaa);
+      transition: filter 0.5s ease;
+    }
+    .card .label {
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      user-select: none;
+      text-shadow: 0 0 4px rgba(0 0 0 / 0.6);
+      transition: color 0.5s ease;
+    }
+
+    /* Iframe container & controls */
+    .iframe-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,15,0.98);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+    }
+    .iframe-header {
+      height: 48px;
+      background: rgba(30, 20, 50, 0.8);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.75rem;
+      user-select: none;
+    }
+    .iframe-header button {
+      border: none;
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      color: #ddd;
+      font-size: 1.2rem;
+      transition: background-color 0.25s ease;
+    }
+    .iframe-header button:hover {
+      background: rgba(255 255 255 / 0.25);
+    }
+    .iframe-header .title {
+      flex: 1;
+      color: #ccc;
+      font-weight: 600;
+      font-size: 1.1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: #0a0a0f;
+    }
+
+    /* Games tab iframe */
+    #games-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 0 15px #8b5cf6aa;
+      background: #000;
+      flex-shrink: 0;
+      user-select: none;
+      pointer-events: auto;
+    }
+
+    /* Particles canvas */
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Scrollbar hidden */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none; /* Firefox */
+  </style>
 </head>
 <body>
+
 <div id="particles-js"></div>
+
 <div id="app">
-  <nav aria-label="Sidebar">
+  <nav aria-label="Sidebar Tabs">
     <img src="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" alt="Logo" class="logo" draggable="false" />
+    <button class="tab-btn" id="tab-games" aria-selected="false" aria-label="Games" title="Games" tabindex="0">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
+    </button>
+    <button class="tab-btn" id="tab-flarelink" aria-selected="false" aria-label="FlareLink" title="FlareLink" tabindex="0">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2L2 7v8l10 5 10-5V7l-10-5z"/></svg>
+    </button>
   </nav>
+
   <main>
-    <div class="search-bar">
-      <input type="text" placeholder="Search FlareLink..." id="search-input" autocomplete="off">
-      <button id="search-btn">🔍</button>
+    <!-- Search bar only on FlareLink tab -->
+    <div class="search-bar" role="search" id="search-bar" style="display:none;">
+      <input type="text" placeholder="Search FlareLink..." aria-label="Search FlareLink" id="search-input" autocomplete="off" spellcheck="false" />
+      <button aria-label="Clear search" id="clear-search" title="Clear Search">&times;</button>
     </div>
-    <div class="cards-grid" id="cards-container"></div>
+
+    <!-- Cards container -->
+    <div class="cards-grid" id="cards-container" aria-live="polite" aria-atomic="true" role="list" style="display:none;"></div>
+
+    <!-- Games iframe -->
+    <iframe id="games-iframe" src="https://nullxiety.com/" title="Games" style="display:none;" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+
+    <!-- Iframe Overlay for FlareLink -->
+    <section class="iframe-overlay" id="iframe-overlay" hidden aria-modal="true" role="dialog" aria-label="FlareLink site viewer">
+      <div class="iframe-header">
+        <button id="refresh-btn" aria-label="Refresh iframe" title="Refresh iframe">&#x21bb;</button>
+        <button id="close-btn" aria-label="Close iframe" title="Close iframe">&times;</button>
+        <div class="title" id="iframe-title" aria-live="polite" aria-atomic="true"></div>
+      </div>
+      <iframe id="iframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+    </section>
   </main>
 </div>
-<div class="iframe-overlay" id="iframe-overlay">
-  <div class="iframe-header">
-    <button id="refresh-btn">🔄</button>
-    <button id="close-btn">❌</button>
-    <div class="title" id="iframe-title"></div>
-  </div>
-  <iframe id="iframe"></iframe>
-</div>
 
+<!-- Particles.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
 <script>
 (() => {
-  const services = [
-    {id:'xen', label:'Xen OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'nb', label:'Nebula', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'tb', label:'Terbium OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'ddx', label:'DaydreamX', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'lunar', label:'Lunar', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','stayinschooleducation.org','studentvue.my']},
-    {id:'prodigy', label:'Prodigy', domains:['prodigy.it.com']},
-    {id:'chatgpt', label:'ChatGPT', domains:['chat.openai.com']}
-  ];
-
+  const tabs = {
+    games: document.getElementById('tab-games'),
+    flarelink: document.getElementById('tab-flarelink'),
+  };
+  const gamesIframe = document.getElementById('games-iframe');
   const cardsContainer = document.getElementById('cards-container');
+  const searchBar = document.getElementById('search-bar');
+  const searchInput = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
   const iframeOverlay = document.getElementById('iframe-overlay');
   const iframe = document.getElementById('iframe');
   const iframeTitle = document.getElementById('iframe-title');
   const closeBtn = document.getElementById('close-btn');
   const refreshBtn = document.getElementById('refresh-btn');
-  let currentService = null;
-  let currentUrl = '';
 
-  function randomString(len=5){
-    const chars='abcdefghijklmnopqrstuvwxyz0123456789';
-    let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length));
-    return str;
+  // FlareLink cards data
+  const cardsData = [
+    {
+      id: 'space',
+      label: 'Space',
+      wildcard: '*.space',
+      favicon: 'https://googleslides.global.ssl.fastly.net/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'daydreamx',
+      label: 'DayDreamX',
+      wildcard: '*.ddx',
+      favicon: 'https://daydreamx.pro/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'terbium',
+      label: 'Terbium',
+      wildcard: '*.tb',
+      favicon: 'https://terbium-46q.pages.dev/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'nebula',
+      label: 'Nebula',
+      wildcard: '*.nb',
+      favicon: null,
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'daydreamx2',
+      label: 'DayDreamX (Alt)',
+      wildcard: '*.ddx',
+      favicon: 'https://daydreamx.pro/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'lunar',
+      label: 'Lunar',
+      wildcard: '*.lunar',
+      favicon: null,
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'prodigy',
+      label: 'Prodigy',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['prodigy.it.com'],
+    },
+    {
+      id: 'blocksi',
+      label: 'Blocksi',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['blocksi.lol'],
+    },
+    {
+      id: 'deltamath',
+      label: 'Deltamath',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['deltamath.icu'],
+    },
+    {
+      id: 'desmosgraphing',
+      label: 'Desmos Graphing',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['desmosgraphing.xyz'],
+    },
+    {
+      id: 'desmos',
+      label: 'Desmos',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['desmos.lol'],
+    },
+    {
+      id: 'edpuzzle',
+      label: 'Edpuzzle',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['edpuzzle.icu'],
+    },
+    {
+      id: 'goguardian',
+      label: 'GoGuardian',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['goguardian.pro'],
+    },
+    {
+      id: 'googledrive',
+      label: 'Google Drive',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['googledrive.icu'],
+    },
+    {
+      id: 'nearpod',
+      label: 'Nearpod',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['nearpod.lol'],
+    },
+    {
+      id: 'stayinschool',
+      label: 'Stay In School',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['stayinschooleducation.org'],
+    },
+    {
+      id: 'studentvue',
+      label: 'StudentVue',
+      wildcard: null,
+      favicon: null,
+      baseUrl: null,
+      domains: ['studentvue.my'],
+    }
+  ];
+
+  // Supported domains for wildcard cards (to choose randomly from)
+  const supportedDomains = [
+    'blocksi.lol',
+    'deltamath.icu',
+    'desmosgraphing.xyz',
+    'desmos.lol',
+    'edpuzzle.icu',
+    'goguardian.pro',
+    'googledrive.icu',
+    'nearpod.lol',
+    'prodigy.it.com',
+    'stayinschooleducation.org',
+    'studentvue.my',
+  ];
+
+  let currentTab = null;
+  let currentCard = null;
+  let currentIframeUrl = '';
+
+  // Utility: Generate random alphanumeric string (length 8)
+  function randStr() {
+    return Math.random().toString(36).slice(2, 10);
   }
 
-  function generateUrl(service){
-    if(service.id==='prodigy'||service.id==='chatgpt') return `https://${service.domains[0]}`;
-    const domain = service.domains[Math.floor(Math.random()*service.domains.length)];
-    return `https://${service.id}.${randomString(6)}.${domain}.cdn.cloudflare.net`;
+  // Generate unique FlareLink URL based on card & domains
+  function generateIframeUrl(card) {
+    let domain = '';
+    // If card has domains explicitly (no wildcard)
+    if (card.domains && card.domains.length) {
+      domain = card.domains[Math.floor(Math.random() * card.domains.length)];
+      return `https://${domain}.cdn.cloudflare.net/`;
+    }
+    // Else pick random domain from supportedDomains for wildcard cards
+    domain = supportedDomains[Math.floor(Math.random() * supportedDomains.length)];
+
+    // Compose URL: random subdomain + wildcard + domain + cloudflare.net
+    let subdomain = randStr();
+    return `https://${subdomain}${card.wildcard}.${domain}.cdn.cloudflare.net/`;
   }
 
-  // Create one card per service
-  services.forEach(s=>{
-    const card=document.createElement('div');
-    card.className='card';
-    card.innerHTML=`<img src="https://www.google.com/s2/favicons?sz=64&domain=${s.domains[0]}" alt=""><div class="label">${s.label}</div>`;
-    card.onclick=()=>{
-      currentService=s;
-      currentUrl=generateUrl(s);
-      // Try iframe, fallback to new tab for blocked sites
-      iframe.src=currentUrl;
-      iframeTitle.textContent=s.label;
-      iframeOverlay.style.display='flex';
-    };
-    cardsContainer.appendChild(card);
-  });
+  // Cache for card dominant colors to prevent multiple reads
+  const dominantColorCache = {};
 
-  closeBtn.onclick=()=>{iframeOverlay.style.display='none'; iframe.src=''; currentService=null;};
-  refreshBtn.onclick=()=>{if(currentService){currentUrl=generateUrl(currentService); iframe.src=currentUrl;}};
-
-  // Search
-  document.getElementById('search-input').addEventListener('input',e=>{
-    const filter=e.target.value.toLowerCase();
-    [...cardsContainer.children].forEach(c=>{
-      c.style.display=c.querySelector('.label').textContent.toLowerCase().includes(filter)?'':'none';
+  // Extract dominant color from image (favicon) using canvas
+  // Returns promise<string> as rgb hex string or fallback
+  function getDominantColorFromImage(img) {
+    return new Promise((resolve) => {
+      if (!img.complete) {
+        img.onload = () => resolve(process());
+        img.onerror = () => resolve('#7c3aed'); // fallback purple
+      } else {
+        resolve(process());
+      }
+      function process() {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgData.data;
+          let r=0,g=0,b=0,count=0;
+          for (let i=0; i < data.length; i+=4) {
+            const alpha = data[i+3];
+            if (alpha > 128) {
+              r += data[i];
+              g += data[i+1];
+              b += data[i+2];
+              count++;
+            }
+          }
+          if (count === 0) return '#7c3aed';
+          r = Math.round(r/count);
+          g = Math.round(g/count);
+          b = Math.round(b/count);
+          return `rgb(${r},${g},${b})`;
+        } catch {
+          return '#7c3aed';
+        }
+      }
     });
+  }
+
+  // Save and load last used tab from localStorage
+  function saveLastTab(tabId) {
+    try {
+      localStorage.setItem('lastTab', tabId);
+    } catch {}
+  }
+  function loadLastTab() {
+    try {
+      return localStorage.getItem('lastTab');
+    } catch {
+      return null;
+    }
+  }
+
+  // Save and load card usage order from localStorage
+  function saveCardOrder(order) {
+    try {
+      localStorage.setItem('cardOrder', JSON.stringify(order));
+    } catch {}
+  }
+  function loadCardOrder() {
+    try {
+      const raw = localStorage.getItem('cardOrder');
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Reorder cards by stored usage order (most recent to left)
+  function orderCards(cards) {
+    const order = loadCardOrder();
+    if (!order.length) return cards;
+    const map = new Map(cards.map(c => [c.id, c]));
+    const ordered = [];
+    for (const id of order) {
+      if (map.has(id)) {
+        ordered.push(map.get(id));
+        map.delete(id);
+      }
+    }
+    // Append leftovers in original order
+    return [...ordered, ...map.values()];
+  }
+
+  // Render FlareLink cards
+  async function renderCards() {
+    cardsContainer.innerHTML = '';
+    let cards = [...cardsData];
+    cards = cards.filter(c => c.id !== 'xen'); // remove Xen OS if present
+    cards = orderCards(cards);
+
+    for (const card of cards) {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card';
+      cardEl.setAttribute('role', 'listitem');
+      cardEl.tabIndex = 0;
+      cardEl.dataset.id = card.id;
+
+      // Favicon element
+      const faviconImg = document.createElement('img');
+      faviconImg.className = 'favicon';
+      faviconImg.draggable = false;
+      faviconImg.alt = `${card.label} icon`;
+
+      // Determine favicon source with fallbacks
+      let faviconUrl = card.favicon;
+      if (!faviconUrl && card.domains && card.domains.length) {
+        // Use first domain favicon
+        faviconUrl = `https://${card.domains[0]}/favicon.ico`;
+      } else if (!faviconUrl && card.wildcard) {
+        // Try base domain favicon
+        faviconUrl = `https://${card.wildcard.replace('*.', '')}.favicon.ico`; // fallback broken but try
+      }
+      // Set src and fallback transparent svg if fails
+      faviconImg.src = faviconUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
+      faviconImg.onerror = () => {
+        faviconImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
+      };
+
+      cardEl.appendChild(faviconImg);
+
+      // Label
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = card.label;
+      cardEl.appendChild(label);
+
+      // Wait for favicon to load and extract dominant color for card bg
+      faviconImg.onload = async () => {
+        if (dominantColorCache[card.id]) {
+          cardEl.style.backgroundColor = dominantColorCache[card.id];
+          return;
+        }
+        const color = await getDominantColorFromImage(faviconImg);
+        dominantColorCache[card.id] = color;
+        cardEl.style.backgroundColor = color.replace('rgb', 'rgba').replace(')', ', 0.15)');
+      };
+
+      cardEl.onclick = () => openCard(card);
+      cardEl.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openCard(card);
+        }
+      };
+
+      cardsContainer.appendChild(cardEl);
+    }
+  }
+
+  // Open FlareLink iframe overlay and reorder cards
+  function openCard(card) {
+    currentCard = card;
+    loadIframe(card);
+    iframeOverlay.hidden = false;
+
+    // reorder cards (most recent first)
+    let order = loadCardOrder();
+    order = order.filter(id => id !== card.id);
+    order.unshift(card.id);
+    saveCardOrder(order);
+    renderCards();
+  }
+
+  // Load iframe with new generated URL for current card
+  function loadIframe(card) {
+    currentIframeUrl = generateIframeUrl(card);
+    iframe.src = currentIframeUrl;
+    iframeTitle.textContent = card.label;
+  }
+
+  // Tab management
+  function setActiveTab(tabId) {
+    if (currentTab === tabId) return;
+    currentTab = tabId;
+
+    // Deactivate all tabs and content
+    Object.values(tabs).forEach(t => t.classList.remove('active'));
+    cardsContainer.style.display = 'none';
+    gamesIframe.style.display = 'none';
+    iframeOverlay.hidden = true;
+
+    // Activate selected tab & content
+    if (tabId === 'games') {
+      tabs.games.classList.add('active');
+      gamesIframe.style.display = 'block';
+      searchBar.style.display = 'none';
+    } else if (tabId === 'flarelink') {
+      tabs.flarelink.classList.add('active');
+      cardsContainer.style.display = 'grid';
+      searchBar.style.display = 'block';
+      searchInput.value = '';
+      filterCards('');
+    }
+
+    saveLastTab(tabId);
+  }
+
+  // Filter cards by search input
+  function filterCards(query) {
+    const q = query.trim().toLowerCase();
+    const cards = cardsContainer.children;
+    for (const cardEl of cards) {
+      const label = cardEl.querySelector('.label').textContent.toLowerCase();
+      if (label.includes(q)) {
+        cardEl.style.display = '';
+      } else {
+        cardEl.style.display = 'none';
+      }
+    }
+  }
+
+  // Event listeners
+  tabs.games.addEventListener('click', () => setActiveTab('games'));
+  tabs.flarelink.addEventListener('click', () => setActiveTab('flarelink'));
+
+  searchInput.addEventListener('input', () => filterCards(searchInput.value));
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    filterCards('');
   });
 
-  // Particles
-  particlesJS('particles-js',{
-    particles:{number:{value:35},color:{value:"#8b5cf6"},shape:{type:"circle"},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.2,random:true}},
-    interactivity:{detect_on:"canvas",events:{onhover:{enable:false},onclick:{enable:false}}},retina_detect:true
+  closeBtn.addEventListener('click', () => {
+    iframeOverlay.hidden = true;
+    iframe.src = '';
   });
+
+  refreshBtn.addEventListener('click', () => {
+    if (currentIframeUrl) {
+      iframe.src = currentIframeUrl;
+    }
+  });
+
+  // Init particles.js
+  particlesJS.load('particles-js', null, function() {
+    console.log('particles.js loaded');
+  });
+
+  // Initial render & tab state
+  renderCards();
+  const lastTab = loadLastTab() || 'games';
+  setActiveTab(lastTab);
+
 })();
 </script>
+
 </body>
 </html>
