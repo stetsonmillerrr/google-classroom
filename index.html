@@ -7,11 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body, html {margin:0; padding:0; height:100%; background:#0a0a0f; font-family:'Inter',sans-serif; color:#eee; overflow:hidden;}
-#app {display:flex; height:100vh; width:100vw; flex-direction:row;}
+body, html {margin:0;padding:0;height:100%;background:#0a0a0f;font-family:'Inter',sans-serif;color:#eee;overflow:hidden;}
+#app {display:flex;height:100vh;width:100vw;flex-direction:row;}
 nav {background: rgba(20,18,34,0.85); width:72px; display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px);}
-nav img.logo {width:36px; height:36px; margin-bottom:1rem; border-radius:8px; cursor:default; user-select:none;}
-main {flex:1; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; padding:2rem;}
+nav img.logo {width:36px;height:36px;margin-bottom:1rem;border-radius:8px;cursor:default;user-select:none;}
+main {flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:2rem;}
 .search-bar {position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); backdrop-filter:blur(14px); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; font-size:1rem; z-index:15;}
 .search-bar:focus-within {border-color:#a78bfa; color:#eee;}
 .search-bar input {flex:1; background:transparent; border:none; color:#eee; font-size:1rem; outline:none; font-weight:500;}
@@ -20,15 +20,15 @@ main {flex:1; position:relative; overflow:hidden; display:flex; flex-direction:c
 .cards-grid {margin-top:6rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1.5rem; width:100%; max-width:1024px; z-index:12;}
 .card {background: rgba(255 255 255 / 0.05); border-radius:1rem; padding:1.25rem; box-shadow:0 0 10px rgb(135 85 239 / 0.25); backdrop-filter:blur(16px); cursor:pointer; user-select:none; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: all 0.3s ease; position:relative;}
 .card:hover {background: rgba(255 255 255 / 0.15); box-shadow: 0 0 20px #8b5cf6aa; transform: translateY(-3px);}
-.card .favicon {width:56px; height:56px; margin-bottom:0.8rem; border-radius:14px; background:#222; object-fit:contain; filter:drop-shadow(0 0 6px #7c3aedaa); transition: filter 0.3s;}
-.card .label {font-weight:600; font-size:1.1rem; text-align:center; color:#ddd; user-select:none;}
-.iframe-overlay {position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(10,10,15,0.98); backdrop-filter: blur(18px); display:flex; flex-direction:column; z-index:50;}
+.card .favicon {width:56px;height:56px;margin-bottom:0.8rem;border-radius:14px;background:#222;object-fit:contain;filter:drop-shadow(0 0 6px #7c3aedaa);transition: filter 0.3s;}
+.card .label {font-weight:600;font-size:1.1rem;text-align:center;color:#ddd;user-select:none;}
+.iframe-overlay {position:fixed;top:0;left:0;right:0;bottom:0;background: rgba(10,10,15,0.98); backdrop-filter: blur(18px); display:flex; flex-direction:column; z-index:50;}
 .iframe-header {height:48px; background: rgba(30,20,50,0.85); backdrop-filter:blur(20px); display:flex; align-items:center; padding:0 1rem; gap:0.75rem; user-select:none;}
 .iframe-header button {border:none; background: rgba(255 255 255 / 0.1); border-radius:8px; width:36px; height:36px; cursor:pointer; color:#ddd; font-size:1.2rem; transition:background-color 0.25s ease;}
 .iframe-header button:hover {background: rgba(255 255 255 / 0.25);}
-.iframe-header .title {flex:1; color:#ccc; font-weight:600; font-size:1.1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
-#particles-js {position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; pointer-events:none;}
+.iframe-header .title {flex:1;color:#ccc;font-weight:600;font-size:1.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
+#particles-js {position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;}
 ::-webkit-scrollbar {display:none;} scrollbar-width:none;
 </style>
 </head>
@@ -74,17 +74,28 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
 
   let currentCard = null;
 
-  // Main domains
-  const mainCards = [
-    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmos.lol','studentvue.my']},
-    {id:'daydreamx', label:'DaydreamX', domains:['blocksi.lol','desmosgraphing.xyz']},
-    {id:'terbium', label:'Terbium OS', domains:['deltamath.icu','googledrive.icu']},
-    {id:'nebula', label:'Nebula', domains:['nearpod.lol','stayinschooleducation.org']},
-    {id:'xen', label:'Xen OS', domains:['prodigy.it.com','goguardian.pro']},
-    {id:'chatgpt', label:'ChatGPT', domains:['chat.openai.com']}
+  // Supported domains
+  const domains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
+
+  // Wildcards per service
+  const services = [
+    {id:'space', label:'Space', wildcard:'*.space'},
+    {id:'daydreamx', label:'DaydreamX', wildcard:'*.ddx'},
+    {id:'terbium', label:'Terbium OS', wildcard:'*.tb'},
+    {id:'nebula', label:'Nebula', wildcard:'*.nb'},
+    {id:'xen', label:'Xen OS', wildcard:'*.xen'},
+    {id:'chatgpt', label:'ChatGPT', wildcard:''}
   ];
 
-  const randomDomain = (domains) => domains[Math.floor(Math.random()*domains.length)];
+  const randomString = (len=5)=>{ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
+
+  const generateUrl = (service) => {
+    if(service.id==='chatgpt') return 'https://chat.openai.com';
+    const domain = domains[Math.floor(Math.random()*domains.length)];
+    const subdomain = randomString();
+    const url = `${subdomain}.${service.wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
+    return {url, domain};
+  }
 
   const fetchFavicon = async (domain)=>{
     const urls=[`https://${domain}/favicon.ico`,`https://www.google.com/s2/favicons?domain=${domain}`];
@@ -92,44 +103,47 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
     return 'https://via.placeholder.com/64?text=?';
   }
 
-  const renderCards = async ()=>{
+  const renderCards = async () => {
     cardsContainer.innerHTML='';
-    for(const card of mainCards){
-      const cardEl = document.createElement('div');
+    for(const service of services){
+      const cardEl=document.createElement('div');
       cardEl.className='card';
       cardEl.setAttribute('role','button');
       cardEl.setAttribute('tabindex','0');
 
       const img=document.createElement('img');
       img.className='favicon';
-      img.alt=`${card.label} favicon`;
+      img.alt=`${service.label} favicon`;
       img.src='https://via.placeholder.com/64?text=?';
       cardEl.appendChild(img);
 
       const label=document.createElement('div');
       label.className='label';
-      label.textContent = card.label;
+      label.textContent=service.label;
       cardEl.appendChild(label);
 
-      cardEl.addEventListener('click',()=>openCard(card));
+      cardEl.addEventListener('click',()=>openCard(service));
       cardEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cardEl.click(); } });
 
       cardsContainer.appendChild(cardEl);
-      fetchFavicon(randomDomain(card.domains)).then(url=>img.src=url);
+
+      // Preload favicon with random domain
+      const domain = domains[Math.floor(Math.random()*domains.length)];
+      fetchFavicon(domain).then(url=>img.src=url);
     }
   }
 
-  const openCard = (card)=>{
-    const domain = randomDomain(card.domains);
-    currentCard = {card, domain};
-    iframe.src = `https://${domain}`;
+  const openCard = (service) => {
+    const {url, domain} = generateUrl(service);
+    currentCard = service;
+    iframe.src = 'https://' + domain; // Use the actual domain to load iframe (CDN URLs may 404)
     iframeOverlay.hidden = false;
-    iframeTitle.textContent = `${card.label} — ${domain}`;
-    iframeTitle.title = domain;
+    iframeTitle.textContent = `${service.label} — ${url}`;
+    iframeTitle.title = url;
   }
 
   closeBtn.addEventListener('click',()=>{iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null;});
-  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard.card); });
+  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard); });
   window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden){ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
 
   searchInput.addEventListener('input',()=>{
