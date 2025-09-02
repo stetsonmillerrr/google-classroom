@@ -82,6 +82,8 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
   const searchInput = document.getElementById('search-input');
 
   let currentCard = null;
+  let currentIframeUrl = '';
+  let preloadedIframe = null;
 
   function randomString(len = 5){ 
     const chars='abcdefghijklmnopqrstuvwxyz0123456789'; 
@@ -130,35 +132,45 @@ iframe {flex:1; border:none; width:100%; background:#0a0a0f;}
       label.textContent=card.label;
       cardEl.appendChild(label);
 
-      cardEl.addEventListener('click',()=>{
-        currentCard = card;
-        const url = generateIframeUrl(card);
-        iframe.src = url;
-        iframeTitle.textContent = `${card.label} — ${url}`;
-        iframeTitle.title = url;
-        iframeOverlay.hidden = false;
-      });
-
-      cardEl.addEventListener('keydown', e=>{
-        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cardEl.click(); }
-      });
-
+      cardEl.addEventListener('click',()=>openCard(card));
+      cardEl.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); cardEl.click(); } });
       cardsContainer.appendChild(cardEl);
 
       fetchFavicon(card.domains[0]).then(url=>{ img.src = url; });
     }
   }
 
+  function openCard(card){
+    currentCard = card;
+    currentIframeUrl = generateIframeUrl(card);
+
+    // Remove old preloaded iframe
+    if(preloadedIframe){ preloadedIframe.remove(); preloadedIframe=null; }
+
+    // Preload off-screen iframe
+    preloadedIframe = document.createElement('iframe');
+    preloadedIframe.style.display='none';
+    preloadedIframe.src = currentIframeUrl;
+    document.body.appendChild(preloadedIframe);
+
+    // Show overlay immediately with placeholder
+    iframe.srcdoc = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-family:Inter;">Loading ${card.label}...</div>`;
+    iframeOverlay.hidden = false;
+    iframeTitle.textContent = `${card.label} — ${currentIframeUrl}`;
+    iframeTitle.title = currentIframeUrl;
+
+    preloadedIframe.onload = () => {
+      iframe.src = currentIframeUrl;
+      preloadedIframe.remove();
+      preloadedIframe = null;
+    };
+  }
+
   closeBtn.addEventListener('click', ()=>{ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; });
-  refreshBtn.addEventListener('click', ()=>{ 
-    if(currentCard){
-      const url = generateIframeUrl(currentCard);
-      iframe.src = url;
-      iframeTitle.textContent = `${currentCard.label} — ${url}`;
-      iframeTitle.title = url;
-    }
-  });
+  refreshBtn.addEventListener('click', ()=>{ if(currentCard) openCard(currentCard); });
+
   window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden) { iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
+
   searchInput.addEventListener('input', ()=>{
     const filter=searchInput.value.toLowerCase().trim();
     [...cardsContainer.children].forEach(cardEl=>{
