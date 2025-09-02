@@ -1,163 +1,541 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlareLink Fullscreen</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
-  html, body { height:100%; background:#0a0a0a; overflow:hidden; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlareLink - Infinite Unblocked Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Reset and base */
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      background: #0a0a0f;
+      font-family: 'Inter', sans-serif;
+      color: #eee;
+      overflow: hidden;
+    }
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      flex-direction: row;
+      backdrop-filter: none;
+    }
+    /* Sidebar */
+    nav {
+      background: rgba(20, 18, 34, 0.8);
+      width: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      border-right: 1px solid #2c2a42;
+      backdrop-filter: blur(15px);
+      z-index: 10;
+    }
+    nav button {
+      background: transparent;
+      border: none;
+      color: #999;
+      margin: 0.7rem 0;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      font-size: 1.25rem;
+    }
+    nav button:hover, nav button:focus {
+      color: #8b5cf6;
+      outline: none;
+    }
+    nav img.logo {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      cursor: default;
+      user-select: none;
+    }
 
-  /* Particles */
-  #particles-js { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; }
+    /* Main area */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      backdrop-filter: none;
+    }
 
-  /* Top Bar */
-  .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(20,0,40,0.5); backdrop-filter:blur(15px); border-bottom:1px solid rgba(255,255,255,0.05); z-index:100; }
-  .top-bar h1 { color:#ff6ec7; font-size:1.8rem; letter-spacing:1px; }
-  nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
-  nav a:hover { color:#ff6ec7; }
+    /* Search bar */
+    .search-bar {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(95vw, 480px);
+      background: rgba(30, 25, 50, 0.4);
+      backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      border: 1px solid #6b21a8;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      gap: 0.75rem;
+      color: #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      z-index: 15;
+    }
+    .search-bar:focus-within {
+      border-color: #a78bfa;
+      color: #eee;
+    }
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #eee;
+      font-size: 1rem;
+      outline: none;
+      font-weight: 500;
+    }
+    .search-bar button {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: color 0.2s ease;
+    }
+    .search-bar button:hover {
+      color: #a78bfa;
+    }
 
-  /* Controls */
-  .controls { position:fixed; top:100px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(20,0,40,0.25); backdrop-filter:blur(20px); border-radius:20px; z-index:101; box-shadow:0 0 20px rgba(255,110,199,0.2); transition:0.3s; }
-  .controls:hover { background:rgba(20,0,40,0.35); }
+    /* Cards grid */
+    .cards-grid {
+      margin-top: 5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 960px;
+      z-index: 12;
+    }
+    .card {
+      background: rgba(255 255 255 / 0.05);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 0 8px rgb(135 85 239 / 0.3);
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition:
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+      position: relative;
+    }
+    .card:hover {
+      background: rgba(255 255 255 / 0.15);
+      box-shadow: 0 0 15px #8b5cf6aa;
+    }
+    .card .favicon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 0.8rem;
+      border-radius: 14px;
+      background: #222;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px #7c3aedaa);
+    }
+    .card .label {
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      color: #ddd;
+      user-select: none;
+    }
 
-  select, button, .search-container input {
-    padding:12px 18px; border-radius:15px; border:none; background:rgba(255,255,255,0.05);
-    color:#fff; font-size:1rem; backdrop-filter:blur(15px); cursor:pointer; transition:all 0.3s;
-  }
+    /* Iframe container & controls */
+    .iframe-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,15,0.98);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+    }
+    .iframe-header {
+      height: 48px;
+      background: rgba(30, 20, 50, 0.8);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.75rem;
+      user-select: none;
+    }
+    .iframe-header button {
+      border: none;
+      background: rgba(255 255 255 / 0.1);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      color: #ddd;
+      font-size: 1.2rem;
+      transition: background-color 0.25s ease;
+    }
+    .iframe-header button:hover {
+      background: rgba(255 255 255 / 0.25);
+    }
+    .iframe-header .title {
+      flex: 1;
+      color: #ccc;
+      font-weight: 600;
+      font-size: 1.1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: #0a0a0f;
+    }
 
-  select:hover, .search-container input:hover { background:rgba(255,255,255,0.1); }
-  select option { background:#1a0a2a; color:#fff; }
+    /* Particles canvas */
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-  button { background:rgba(255,110,199,0.4); font-weight:600; cursor:pointer; box-shadow:0 0 15px rgba(255,110,199,0.2); }
-  button:hover { background:rgba(255,110,199,0.7); }
-
-  .search-container { position:relative; display:flex; align-items:center; }
-  .search-container input { width:0; opacity:0; margin-left:10px; transition:all 0.3s; }
-  .search-container input.show { width:180px; opacity:1; margin-left:10px; }
-  .search-container .icon { cursor:pointer; font-size:1.2rem; color:#fff; transition:0.3s; }
-  .search-container .icon:hover { color:#ff6ec7; }
-
-  /* Fullscreen Iframe */
-  #iframeContainer { position:fixed; top:0; left:0; width:100%; height:100%; z-index:50; display:none; }
-  iframe { width:100%; height:100%; border:none; border-radius:0; }
-
-</style>
+    /* Scrollbar hidden for better look */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none; /* Firefox */
+  </style>
 </head>
 <body>
 
-<!-- Particles Background -->
 <div id="particles-js"></div>
 
-<!-- Top Bar -->
-<div class="top-bar">
-  <h1>FlareLink</h1>
-  <nav>
-    <a href="#services">Services</a>
-    <a href="#domains">Domains</a>
-    <a href="#about">About</a>
+<div id="app">
+  <nav aria-label="Sidebar">
+    <img src="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" alt="Logo" class="logo" draggable="false" />
+    <!-- You can add sidebar buttons here if you want -->
   </nav>
+
+  <main>
+    <div class="search-bar" role="search">
+      <input type="text" placeholder="Search FlareLink..." aria-label="Search FlareLink" id="search-input" autocomplete="off" spellcheck="false" />
+      <button aria-label="Search" id="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="cards-grid" id="cards-container" aria-live="polite" aria-relevant="additions removals"></div>
+  </main>
 </div>
 
-<!-- Controls -->
-<div class="controls">
-  <div class="search-container">
-    <select id="serviceDropdown">
-      <option value="xen">Xen OS (*.xen)</option>
-      <option value="nb">Nebula (*.nb)</option>
-      <option value="tb">Terbium OS (*.tb)</option>
-      <option value="ddx">DaydreamX (*.ddx)</option>
-      <option value="lunar">Lunar (*.lunar)</option>
-      <option value="space">Space (*.space)</option>
-    </select>
-    <span class="icon" id="searchToggle">&#128269;</span>
-    <input type="text" id="serviceSearch" placeholder="Search services...">
+<!-- Iframe overlay -->
+<div class="iframe-overlay" id="iframe-overlay" hidden>
+  <div class="iframe-header">
+    <button id="close-btn" aria-label="Close iframe"><i class="fas fa-times"></i></button>
+    <button id="refresh-btn" aria-label="Refresh iframe"><i class="fas fa-redo"></i></button>
+    <div class="title" id="iframe-title" title=""></div>
   </div>
-
-  <select id="domainDropdown">
-    <option>blocksi.lol</option>
-    <option>deltamath.icu</option>
-    <option>desmosgraphing.xyz</option>
-    <option>desmos.lol</option>
-    <option>edpuzzle.icu</option>
-    <option>goguardian.pro</option>
-    <option>googledrive.icu</option>
-    <option>nearpod.lol</option>
-    <option>prodigy.it.com</option>
-    <option>stayinschooleducation.org</option>
-    <option>studentvue.my</option>
-  </select>
-
-  <button id="generateBtn">Open Fullscreen</button>
+  <iframe id="iframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
 </div>
 
-<!-- Iframe -->
-<div id="iframeContainer">
-  <iframe id="linkFrame" allowfullscreen></iframe>
-</div>
+<!-- FontAwesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-<!-- Particles.js -->
+<!-- Particles.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-<script>
-particlesJS('particles-js', {
-  particles: {
-    number: { value:80, density:{enable:true,value_area:800} },
-    color:{value:'#ff6ec7'},
-    shape:{type:'circle'},
-    opacity:{value:0.8, random:true},
-    size:{value:2, random:true},
-    line_linked:{enable:false},
-    move:{enable:true, speed:0.5, direction:'top', out_mode:'out'}
-  },
-  interactivity:{detect_on:'window', events:{onclick:{enable:true, mode:'push'}}},
-  retina_detect:true
-});
-</script>
 
 <script>
-const serviceDropdown = document.getElementById('serviceDropdown');
-const serviceSearch = document.getElementById('serviceSearch');
-const searchToggle = document.getElementById('searchToggle');
-const domainDropdown = document.getElementById('domainDropdown');
-const iframeContainer = document.getElementById('iframeContainer');
-const iframe = document.getElementById('linkFrame');
-let usedLinks = new Set();
+(() => {
+  // Domains & service wildcards mapping
+  const cardsData = [
+    { id: 'space', label: 'Space', wildcard: '*.space', domains: [
+      'blocksi.lol', 'deltamath.icu', 'desmosgraphing.xyz', 'desmos.lol',
+      'edpuzzle.icu', 'goguardian.pro', 'googledrive.icu', 'nearpod.lol',
+      'prodigy.it.com', 'stayinschooleducation.org', 'studentvue.my'
+    ]},
+    { id: 'daydreamx', label: 'DaydreamX', wildcard: '*.ddx', domains: [
+      'blocksi.lol', 'deltamath.icu', 'desmosgraphing.xyz', 'desmos.lol',
+      'edpuzzle.icu', 'goguardian.pro', 'googledrive.icu', 'nearpod.lol',
+      'stayinschooleducation.org', 'studentvue.my'
+    ]},
+    { id: 'terbium', label: 'Terbium OS', wildcard: '*.tb', domains: [
+      'blocksi.lol', 'deltamath.icu', 'desmosgraphing.xyz', 'desmos.lol',
+      'edpuzzle.icu', 'goguardian.pro', 'googledrive.icu', 'nearpod.lol',
+      'stayinschooleducation.org', 'studentvue.my'
+    ]},
+    { id: 'nebula', label: 'Nebula', wildcard: '*.nb', domains: [
+      'blocksi.lol', 'deltamath.icu', 'desmosgraphing.xyz', 'desmos.lol',
+      'edpuzzle.icu', 'goguardian.pro', 'googledrive.icu', 'nearpod.lol',
+      'stayinschooleducation.org', 'studentvue.my'
+    ]},
+    { id: 'xen', label: 'Xen OS', wildcard: '*.xen', domains: [
+      'blocksi.lol', 'deltamath.icu', 'desmosgraphing.xyz', 'desmos.lol',
+      'edpuzzle.icu', 'goguardian.pro', 'googledrive.icu', 'nearpod.lol',
+      'stayinschooleducation.org', 'studentvue.my'
+    ]},
+    { id: 'chatgpt', label: 'ChatGPT', wildcard: '', domains: [
+      'chat.openai.com'
+    ]},
+  ];
 
-// Toggle search box
-searchToggle.addEventListener('click', () => {
-  serviceSearch.classList.toggle('show');
-  serviceSearch.focus();
-});
+  // Store recent cards order in localStorage key:
+  const STORAGE_KEY = 'flarelink-recent-order';
 
-// Filter dropdown
-serviceSearch.addEventListener('input', () => {
-  const filter = serviceSearch.value.toLowerCase();
-  Array.from(serviceDropdown.options).forEach(opt => {
-    opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
+  // Cached elements
+  const cardsContainer = document.getElementById('cards-container');
+  const iframeOverlay = document.getElementById('iframe-overlay');
+  const iframe = document.getElementById('iframe');
+  const iframeTitle = document.getElementById('iframe-title');
+  const closeBtn = document.getElementById('close-btn');
+  const refreshBtn = document.getElementById('refresh-btn');
+
+  // Current card + iframe url state
+  let currentCard = null;
+  let currentIframeUrl = '';
+
+  // Generate random string for subdomain
+  function randomString(length = 6) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let str = '';
+    for (let i = 0; i < length; i++) {
+      str += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return str;
+  }
+
+  // Generate iframe URL based on card and domain
+  function generateIframeUrl(card) {
+    // Special case ChatGPT: direct to chat.openai.com without wildcards
+    if (card.id === 'chatgpt') {
+      return `https://${card.domains[0]}`;
+    }
+    // For others, pick a random domain and generate wildcard subdomain
+    const domain = card.domains[Math.floor(Math.random() * card.domains.length)];
+    const subdomain = randomString(5);
+    // Build URL:
+    // wildcard format: subdomain.wildcard.domain.cdn.cloudflare.net
+    // wildcard string example: *.space.blocksi.lol.cdn.cloudflare.net
+    // The wildcard in cardsData is like '*.space', so remove '*' and prepend subdomain
+    const wildcardPart = card.wildcard.replace('*', subdomain);
+    return `https://${wildcardPart}.${domain}.cdn.cloudflare.net`;
+  }
+
+  // Smart favicon fetch with multiple methods fallback
+  async function fetchFavicon(domain) {
+    // Try favicon.ico at root first
+    const faviconUrls = [
+      `https://${domain}/favicon.ico`,
+      `https://www.google.com/s2/favicons?domain=${domain}`,
+      `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+      `https://www.google.com/s2/favicons?sz=64&domain_url=${domain}`
+    ];
+
+    for (const url of faviconUrls) {
+      try {
+        // Test if image loads successfully by creating Image element and awaiting load/error
+        await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.src = url;
+          img.onload = () => resolve(true);
+          img.onerror = () => reject(false);
+        });
+        return url; // first successful favicon url
+      } catch {}
+    }
+    return 'https://via.placeholder.com/64?text=?'; // fallback blank icon
+  }
+
+  // Save recent card order to localStorage
+  function saveOrder(order) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+    } catch (e) {
+      // no-op
+    }
+  }
+
+  // Load recent card order from localStorage or default
+  function loadOrder() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Validate keys:
+        if (Array.isArray(parsed) && parsed.every(id => cardsData.find(c => c.id === id))) {
+          return parsed;
+        }
+      }
+    } catch {}
+    // default: order of cardsData
+    return cardsData.map(c => c.id);
+  }
+
+  // Render cards with current order
+  async function renderCards() {
+    cardsContainer.innerHTML = '';
+    const order = loadOrder();
+
+    // Render in order: most recent left = first
+    for (const cardId of order) {
+      const card = cardsData.find(c => c.id === cardId);
+      if (!card) continue;
+
+      // Create card element
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card';
+      cardEl.setAttribute('role', 'button');
+      cardEl.setAttribute('tabindex', '0');
+      cardEl.setAttribute('aria-label', `Open ${card.label}`);
+      cardEl.dataset.cardId = card.id;
+
+      // Favicon (async fetch)
+      const faviconUrl = await fetchFavicon(card.domains[0]);
+      const img = document.createElement('img');
+      img.className = 'favicon';
+      img.alt = `${card.label} favicon`;
+      img.draggable = false;
+      img.src = faviconUrl;
+      cardEl.appendChild(img);
+
+      // Label
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = card.label;
+      cardEl.appendChild(label);
+
+      // Click and keyboard handlers
+      cardEl.addEventListener('click', () => openCard(card));
+      cardEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openCard(card);
+        }
+      });
+
+      cardsContainer.appendChild(cardEl);
+    }
+  }
+
+  // Open a card iframe and reorder cards (move clicked to leftmost)
+  function openCard(card) {
+    currentCard = card;
+    loadIframe(card);
+
+    // Update order: move card.id to front
+    let order = loadOrder();
+    order = order.filter(id => id !== card.id);
+    order.unshift(card.id);
+    saveOrder(order);
+    renderCards();
+
+    // Show overlay
+    iframeOverlay.hidden = false;
+  }
+
+  // Load iframe with generated url for current card
+  function loadIframe(card) {
+    currentIframeUrl = generateIframeUrl(card);
+    iframe.src = currentIframeUrl;
+    iframeTitle.textContent = card.label + ' — ' + currentIframeUrl;
+    iframeTitle.title = currentIframeUrl;
+  }
+
+  // Close iframe overlay
+  function closeIframe() {
+    iframe.src = 'about:blank';
+    iframeOverlay.hidden = true;
+    currentCard = null;
+    currentIframeUrl = '';
+  }
+
+  // Refresh iframe (generate new url and reload)
+  function refreshIframe() {
+    if (!currentCard) return;
+    loadIframe(currentCard);
+  }
+
+  // Setup event listeners
+  closeBtn.addEventListener('click', closeIframe);
+  refreshBtn.addEventListener('click', refreshIframe);
+
+  // Keyboard shortcut: Escape closes iframe
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !iframeOverlay.hidden) {
+      closeIframe();
+    }
   });
-});
 
-// Random string
-function randomStr(len=5){return [...Array(len)].map(_=>'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*36)]).join('');}
+  // Search box (just filter cards by label, fast local filtering)
+  const searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('input', () => {
+    const filter = searchInput.value.toLowerCase().trim();
+    [...cardsContainer.children].forEach(cardEl => {
+      const label = cardEl.querySelector('.label').textContent.toLowerCase();
+      cardEl.style.display = label.includes(filter) ? '' : 'none';
+    });
+  });
 
-// Generate fullscreen link
-function openFullscreenLink(){
-  const service = serviceDropdown.value;
-  const domain = domainDropdown.value;
-  let url = '';
-  do{
-    const sub = randomStr();
-    url = `${sub}.${service}.${domain}.cdn.cloudflare.net`;
-  } while(usedLinks.has(url));
-  usedLinks.add(url);
+  // Particle background config
+  particlesJS('particles-js', {
+    "particles": {
+      "number": {
+        "value": 45,
+        "density": { "enable": true, "value_area": 900 }
+      },
+      "color": { "value": "#8b5cf6" },
+      "shape": { "type": "circle" },
+      "opacity": {
+        "value": 0.2,
+        "random": true
+      },
+      "size": {
+        "value": 4,
+        "random": true
+      },
+      "move": {
+        "enable": true,
+        "speed": 1.2,
+        "direction": "none",
+        "random": true,
+        "straight": false,
+        "out_mode": "bounce",
+        "bounce": true
+      }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": { "enable": false },
+        "onclick": { "enable": false }
+      }
+    },
+    "retina_detect": true
+  });
 
-  iframe.src = 'https://' + url;
-  iframeContainer.style.display = 'block';
-}
-
-// Button click
-document.getElementById('generateBtn').addEventListener('click', openFullscreenLink);
+  // Initialize
+  renderCards();
+})();
 </script>
 
 </body>
