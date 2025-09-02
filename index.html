@@ -75,14 +75,14 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
   let currentCard = null;
   let currentUrl = '';
 
-  // Services with real domains
+  // Services with full URLs
   const services = [
-    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu']},
-    {id:'daydreamx', label:'DaydreamX', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz']},
-    {id:'terbium', label:'Terbium OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz']},
-    {id:'nebula', label:'Nebula', domains:['desmos.lol','edpuzzle.icu','nearpod.lol']},
-    {id:'xen', label:'Xen OS', domains:['goguardian.pro','googledrive.icu','stayinschooleducation.org']},
-    {id:'chatgpt', label:'ChatGPT', domains:['https://chat.openai.com']}
+    {id:'space', label:'Space', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz','https://desmos.lol','https://edpuzzle.icu']},
+    {id:'daydreamx', label:'DaydreamX', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz']},
+    {id:'terbium', label:'Terbium OS', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz']},
+    {id:'nebula', label:'Nebula', urls:['https://desmos.lol','https://edpuzzle.icu','https://nearpod.lol']},
+    {id:'xen', label:'Xen OS', urls:['https://goguardian.pro','https://googledrive.icu','https://stayinschooleducation.org']},
+    {id:'chatgpt', label:'ChatGPT', urls:['https://chat.openai.com']}
   ];
 
   const randomPick = arr => arr[Math.floor(Math.random()*arr.length)];
@@ -111,17 +111,18 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
 
       cardsContainer.appendChild(card);
 
-      // fetch favicon from a random real domain
-      const domain = randomPick(service.domains);
+      // fetch favicon from a random full URL
+      const url = randomPick(service.urls);
+      const domain = (new URL(url)).hostname;
       img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
     }
   };
 
   const openCard = (service) => {
-    const url = randomPick(service.domains);
+    const url = randomPick(service.urls);
     currentCard = service;
     currentUrl = url;
-    iframe.src = url; // iframe loads a real, reachable URL
+    iframe.src = url; // iframe loads full URL
     iframeOverlay.hidden = false;
     iframeTitle.textContent = url;
     iframeTitle.title = url;
