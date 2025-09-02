@@ -3,222 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlareLink - Infinite Unblocked Links</title>
+<title>FlareLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  body {
-    margin: 0;
-    font-family: system-ui, sans-serif;
-    background: #0f172a;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  #particles-js {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    top: 0;
-    left: 0;
-  }
-  header {
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(10px);
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    letter-spacing: 1px;
-  }
-  main {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.25rem;
-    padding: 1.5rem;
-    z-index: 1;
-    position: relative;
-  }
-  button.card {
-    background: rgba(30, 41, 59, 0.85);
-    border: none;
-    border-radius: 1rem;
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    color: white;
-    backdrop-filter: blur(6px);
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
-  }
-  button.card:hover {
-    background: rgba(51, 65, 85, 0.95);
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 0 20px rgba(59,130,246,0.6);
-  }
-  button.card img {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0.75rem;
-    border-radius: 8px;
-  }
-  .iframe-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.97);
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease forwards;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-  }
-  .iframe-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(17, 24, 39, 0.95);
-    backdrop-filter: blur(8px);
-    padding: 0.75rem 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  }
-  .iframe-header span {
-    flex: 1;
-    margin-left: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 500;
-  }
-  .iframe-header button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background 0.2s;
-    font-size: 1.4rem;
-  }
-  .iframe-header button:hover {
-    background: rgba(59,130,246,0.2);
-  }
-  .iframe-overlay iframe {
-    flex: 1;
-    border: none;
-    width: 100%;
-  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body, html { font-family: 'Inter', sans-serif; background:#0a0a0f; color:#eee; height:100%; overflow:hidden; }
+  #particles-js { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; }
+  #app { display:flex; height:100vh; width:100vw; }
+  nav { width:72px; background: rgba(20,18,34,0.8); display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px); z-index:10; }
+  nav img.logo { width:36px; height:36px; margin-bottom:1rem; border-radius:8px; cursor:default; user-select:none; }
+  nav button { background:transparent; border:none; color:#999; margin:0.7rem 0; cursor:pointer; font-size:1.25rem; transition: color 0.2s; }
+  nav button:hover { color:#8b5cf6; }
+  main { flex:1; position:relative; display:flex; flex-direction:column; align-items:center; padding:1.5rem 2rem; overflow:auto; z-index:1; }
+  .search-bar { position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; z-index:15; }
+  .search-bar:focus-within { border-color:#a78bfa; color:#eee; }
+  .search-bar input { flex:1; background:transparent; border:none; color:#eee; outline:none; font-weight:500; font-size:1rem; }
+  .search-bar button { background:transparent; border:none; color:#ccc; cursor:pointer; font-size:1.15rem; }
+  .search-bar button:hover { color:#a78bfa; }
+  .cards-grid { margin-top:5rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1rem; width:100%; max-width:960px; }
+  .card { background: rgba(255 255 255 / 0.05); border-radius:1rem; padding:1rem; box-shadow:0 0 8px rgb(135 85 239 / 0.3); backdrop-filter: blur(12px); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:0.3s; }
+  .card:hover { background: rgba(255 255 255 / 0.15); box-shadow:0 0 15px #8b5cf6aa; }
+  .card img { width:48px; height:48px; margin-bottom:0.6rem; border-radius:12px; background:#222; object-fit:contain; filter: drop-shadow(0 0 4px #7c3aedaa); }
+  .card .label { font-weight:600; font-size:1rem; text-align:center; color:#ddd; }
+  .iframe-overlay { position:fixed; inset:0; background:rgba(10,10,15,0.97); backdrop-filter: blur(18px); display:flex; flex-direction:column; z-index:50; display:none; }
+  .iframe-header { height:48px; background: rgba(30,20,50,0.8); backdrop-filter: blur(20px); display:flex; align-items:center; padding:0 1rem; gap:0.75rem; user-select:none; }
+  .iframe-header button { border:none; background: rgba(255 255 255 / 0.1); border-radius:8px; width:36px; height:36px; cursor:pointer; color:#ddd; font-size:1.2rem; transition:0.25s; }
+  .iframe-header button:hover { background: rgba(255 255 255 / 0.25); }
+  .iframe-header .title { flex:1; color:#ccc; font-weight:600; font-size:1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  iframe { flex:1; border:none; width:100%; background:#0a0a0f; }
 </style>
 </head>
 <body>
 <div id="particles-js"></div>
-<header>🌐 FlareLink</header>
-<main id="cardGrid"></main>
-
-<div id="iframeOverlay" class="iframe-overlay" style="display:none;">
+<div id="app">
+  <nav aria-label="Sidebar">
+    <img src="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" alt="Logo" class="logo" draggable="false" />
+  </nav>
+  <main>
+    <div class="search-bar">
+      <input type="text" placeholder="Search FlareLink..." id="search-input" autocomplete="off">
+      <button id="search-btn">🔍</button>
+    </div>
+    <div class="cards-grid" id="cards-container"></div>
+  </main>
+</div>
+<div class="iframe-overlay" id="iframe-overlay">
   <div class="iframe-header">
-    <span id="iframeTitle"></span>
-    <button id="refreshBtn" title="Refresh">🔄</button>
-    <button id="closeBtn" title="Close">❌</button>
+    <button id="refresh-btn">🔄</button>
+    <button id="close-btn">❌</button>
+    <div class="title" id="iframe-title"></div>
   </div>
-  <iframe id="iframeViewer" src=""></iframe>
+  <iframe id="iframe"></iframe>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
 <script>
-  // Wildcard Services
-  const services = ["xen", "nb", "tb", "ddx", "lunar", "space"];
-
-  // Domains (all you had before)
-  const domains = [
-    "blocksi.lol",
-    "deltamath.icu",
-    "desmosgraphing.xyz",
-    "desmos.lol",
-    "edpuzzle.icu",
-    "goguardian.pro",
-    "googledrive.icu",
-    "nearpod.lol",
-    "prodigy.it.com",
-    "stayinschooleducation.org",
-    "studentvue.my",
-    "chat.openai.com"
-  ];
-
-  const cardGrid = document.getElementById("cardGrid");
-  const iframeOverlay = document.getElementById("iframeOverlay");
-  const iframeViewer = document.getElementById("iframeViewer");
-  const iframeTitle = document.getElementById("iframeTitle");
-  const closeBtn = document.getElementById("closeBtn");
-  const refreshBtn = document.getElementById("refreshBtn");
+(() => {
+  const services = ["xen","nb","tb","ddx","lunar","space"];
+  const domains = ["blocksi.lol","deltamath.icu","desmosgraphing.xyz","desmos.lol","edpuzzle.icu","goguardian.pro","googledrive.icu","nearpod.lol","prodigy.it.com","stayinschooleducation.org","studentvue.my","chat.openai.com"];
+  const cardsContainer = document.getElementById('cards-container');
+  const iframeOverlay = document.getElementById('iframe-overlay');
+  const iframe = document.getElementById('iframe');
+  const iframeTitle = document.getElementById('iframe-title');
+  const closeBtn = document.getElementById('close-btn');
+  const refreshBtn = document.getElementById('refresh-btn');
   let currentUrl = "";
 
-  // Build cards for all services and domains
+  // Generate cards
   domains.forEach(domain => {
-    if(domain === "prodigy.it.com" || domain === "chat.openai.com") {
-      // No wildcard
-      createCard(domain.toUpperCase(), `https://${domain}`, domain);
+    if(domain==="prodigy.it.com"||domain==="chat.openai.com"){
+      createCard(domain.toUpperCase(),`https://${domain}`,domain);
     } else {
-      services.forEach(service => {
-        createCard(`${service.toUpperCase()} • ${domain}`, `https://${service}.${domain}.cdn.cloudflare.net`, domain);
+      services.forEach(service=>{
+        createCard(`${service.toUpperCase()} • ${domain}`,`https://${service}.${domain}.cdn.cloudflare.net`,domain);
       });
     }
   });
 
-  function createCard(label, url, domain) {
-    const btn = document.createElement("button");
-    btn.className = "card";
-    btn.innerHTML = `<img src="https://www.google.com/s2/favicons?sz=64&domain=${domain}" alt=""><span>${label}</span>`;
-    btn.onclick = () => {
-      currentUrl = url;
-      iframeViewer.src = currentUrl;
-      iframeTitle.textContent = label;
-      iframeOverlay.style.display = "flex";
+  function createCard(label,url,domain){
+    const btn=document.createElement('div');
+    btn.className='card';
+    btn.innerHTML=`<img src="https://www.google.com/s2/favicons?sz=64&domain=${domain}" alt=""><div class="label">${label}</div>`;
+    btn.onclick=()=>{
+      currentUrl=url;
+      iframe.src=currentUrl;
+      iframeTitle.textContent=label;
+      iframeOverlay.style.display='flex';
     };
-    cardGrid.appendChild(btn);
+    cardsContainer.appendChild(btn);
   }
 
-  closeBtn.onclick = () => {
-    iframeOverlay.style.display = "none";
-    iframeViewer.src = "";
-  };
+  closeBtn.onclick=()=>{iframeOverlay.style.display='none'; iframe.src='';};
+  refreshBtn.onclick=()=>{if(currentUrl) iframe.src=currentUrl;};
 
-  refreshBtn.onclick = () => {
-    if(currentUrl) iframeViewer.src = currentUrl;
-  };
-
-  // Particles.js
-  particlesJS("particles-js", {
-    particles: {
-      number: { value: 80 },
-      color: { value: "#3b82f6" },
-      shape: { type: "circle" },
-      opacity: { value: 0.6 },
-      size: { value: 3 },
-      line_linked: { enable: true, distance: 150, color: "#3b82f6", opacity: 0.4, width: 1 },
-      move: { enable: true, speed: 2 }
-    },
-    interactivity: {
-      detect_on: "canvas",
-      events: {
-        onhover: { enable: true, mode: "repulse" },
-        onclick: { enable: true, mode: "push" }
-      },
-      modes: {
-        repulse: { distance: 100 },
-        push: { particles_nb: 4 }
-      }
-    },
-    retina_detect: true
+  // Search filter
+  document.getElementById('search-input').addEventListener('input',e=>{
+    const filter=e.target.value.toLowerCase();
+    [...cardsContainer.children].forEach(c=>{
+      c.style.display=c.querySelector('.label').textContent.toLowerCase().includes(filter)?'':'none';
+    });
   });
+
+  // Particles
+  particlesJS('particles-js',{
+    particles:{number:{value:40},color:{value:"#8b5cf6"},shape:{type:"circle"},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.5,random:true}},
+    interactivity:{detect_on:"canvas",events:{onhover:{enable:false},onclick:{enable:false}}},retina_detect:true
+  });
+})();
 </script>
 </body>
 </html>
