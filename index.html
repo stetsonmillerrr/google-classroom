@@ -5,62 +5,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Random StudentVue Viewer</title>
 <style>
-  /* Universal dark theme */
-  * {
-    background-color: #121212 !important;
-    color: #ffffff !important;
-    box-sizing: border-box;
-  }
-
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #121212;
     font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  header {
-    padding: 10px;
-    background-color: #1f1f1f;
-    text-align: center;
-    font-size: 1.5em;
+    overflow: hidden;
   }
 
   iframe {
-    flex: 1;
-    border: none;
     width: 100%;
     height: 100%;
+    border: none;
+    display: block;
     background-color: #121212;
   }
 
-  button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
+  /* Loading overlay */
+  #loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    z-index: 9999;
   }
 
-  button:hover {
-    background-color: #555;
+  /* Spinner */
+  .spinner {
+    border: 6px solid #333;
+    border-top: 6px solid #ffffff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  #loadingText {
+    font-size: 1.2em;
   }
 </style>
 </head>
 <body>
-<header>
-  Random StudentVue Viewer
-  <button id="newLinkBtn">Generate New</button>
-</header>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div id="loadingText">Estimating load time...</div>
+</div>
+
 <iframe id="viewer" allowfullscreen></iframe>
 
 <script>
 const iframe = document.getElementById('viewer');
-const newLinkBtn = document.getElementById('newLinkBtn');
+const overlay = document.getElementById('loadingOverlay');
+const loadingText = document.getElementById('loadingText');
 const STORAGE_KEY = 'usedStudentVueStrings';
 
+// Random string generator
 function generateRandomString(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -90,17 +105,48 @@ function generateUniqueSubdomain() {
   return subdomain;
 }
 
+// Estimate loading time based on device
+function estimateLoadTime() {
+  const ua = navigator.userAgent;
+  const isMobile = /Mobi|Android/i.test(ua);
+  const baseTime = isMobile ? 25 : 15; // Mobile slower
+  const variation = Math.floor(Math.random() * 10); // Random small variation
+  return baseTime + variation;
+}
+
+// Update loading text countdown
+function startCountdown(seconds) {
+  let remaining = seconds;
+  loadingText.textContent = `Loading... ~${remaining} seconds remaining`;
+  const interval = setInterval(() => {
+    remaining--;
+    if (remaining > 0) {
+      loadingText.textContent = `Loading... ~${remaining} seconds remaining`;
+    }
+  }, 1000);
+  return interval;
+}
+
+// Load iframe
 function loadRandomStudentVue() {
   const subdomain = generateUniqueSubdomain();
   const url = `https://${subdomain}.studentvue.my.cdn.cloudflare.net`;
   iframe.src = url;
+
+  // Estimate load time and start countdown
+  const estimatedTime = estimateLoadTime();
+  const countdownInterval = startCountdown(estimatedTime);
+
+  // Hide overlay when iframe is loaded
+  iframe.onload = () => {
+    clearInterval(countdownInterval);
+    overlay.style.display = 'none';
+  };
 }
 
-// Button click generates a new random link
-newLinkBtn.addEventListener('click', loadRandomStudentVue);
-
-// Automatically load a random link on page load
+// Auto load on page load
 loadRandomStudentVue();
 </script>
+
 </body>
 </html>
