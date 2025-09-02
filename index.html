@@ -3,36 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FlareLink Dashboard</title>
+  <title>FlareLink</title>
   <link rel="icon" href="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; width: 100%; overflow: hidden; background: #000; font-family: 'Inter', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: #000;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
     #particles-bg { position: fixed; inset: 0; z-index: 0; }
-    .cards { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(5, 192px); gap: 24px; width: 1000px; margin: 380px auto 0; }
+    .cards {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      margin: 300px auto 0;
+    }
     .card {
-      width: 192px; height: 100px;
-      background: rgba(0,0,0,0.35); backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.15);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
     }
-    .card:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,1); }
-    .card img { width: 48px; height: 48px; object-fit: contain; pointer-events: none; }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+    }
+    .card img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
     #iframeOverlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-      display: none; z-index: 2; flex-direction: column;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 2;
+      display: none;
+      flex-direction: column;
     }
-    #iframeOverlay iframe { flex: 1; width: 100%; border: none; }
-    #closeBtn {
-      align-self: flex-end; margin: 1rem; padding: 0.5rem 1rem;
-      background: rgba(255,255,255,0.15); border: none; color: white;
-      cursor: pointer; border-radius: 8px; font-size: 1.2rem;
+    #iframeOverlay iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+
+    .overlay-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 1rem;
+    }
+    .overlay-controls button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      padding: 10px 16px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
       transition: background 0.2s ease;
     }
-    #closeBtn:hover { background: rgba(255,255,255,0.3); }
+    .overlay-controls button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -42,25 +88,26 @@
   <div class="cards" id="cards"></div>
 
   <div id="iframeOverlay">
-    <button id="closeBtn" aria-label="Close Overlay">✕ Close</button>
+    <div class="overlay-controls">
+      <button id="refreshBtn">🔄 Refresh</button>
+      <button id="closeBtn">✖ Close</button>
+    </div>
     <iframe id="serviceIframe" allowfullscreen sandbox="allow-same-origin allow-scripts allow-forms allow-popups"></iframe>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
   <script>
+    // Particle background
     tsParticles.load("particles-bg", {
-      fpsLimit: 60,
       background: { color: { value: "#000" } },
       particles: {
         number: { value: 70, density: { enable: true, area: 800 } },
         color: { value: "#b388ff" },
         shape: { type: "circle" },
-        opacity: { value: 0.6, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
-        size: { value: 2, random: { enable: true, minimumValue: 1 } },
-        move: { enable: true, speed: 0.6, random: true, outModes: "out" }
-      },
-      interactivity: { events: { onHover: { enable: false }, onClick: { enable: false }, resize: true } },
-      detectRetina: true
+        opacity: { value: 0.6, random: true },
+        size: { value: 2, random: true },
+        move: { enable: true, speed: 0.6, outModes: "out" }
+      }
     });
 
     const domains = [
@@ -80,33 +127,56 @@
     ];
 
     const usedLinks = new Set();
-    function randomSub() { return Math.random().toString(36).substring(2, 10); }
+    const randomSub = () => Math.random().toString(36).substring(2, 10);
+    let currentWildcard = "";
 
     function generateFlareLink(wildcard) {
-      let url;
       for (let i = 0; i < 10; i++) {
         const sub = randomSub();
         const domain = domains[Math.floor(Math.random() * domains.length)];
-        const service = wildcard.replace('*.', '');
-        url = `https://${sub}.${service}.${domain}.cdn.cloudflare.net`;
+        const service = wildcard.replace("*.", "");
+        const url = `https://${sub}.${service}.${domain}.cdn.cloudflare.net`;
         if (!usedLinks.has(url)) {
           usedLinks.add(url);
           return url;
         }
       }
-      return url;
+      return null;
+    }
+
+    function getFavicon(label) {
+      const domain = label.toLowerCase() + ".com";
+      return [
+        `https://www.google.com/s2/favicons?sz=64&domain_url=${domain}`,
+        `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+        `https://${domain}/favicon.ico`
+      ];
     }
 
     const cardsContainer = document.getElementById("cards");
+
     cardsConfig.forEach(({ label, wildcard }) => {
       const card = document.createElement("div");
       card.className = "card";
-      const img = document.createElement("img");
-      img.src = `https://www.google.com/s2/favicons?sz=64&domain_url=${label.toLowerCase()}.com`;
-      img.alt = label;
-      card.appendChild(img);
 
+      const img = document.createElement("img");
+      const fallbacks = getFavicon(label);
+      let attempt = 0;
+
+      const tryNextFavicon = () => {
+        if (attempt < fallbacks.length) {
+          img.src = fallbacks[attempt++];
+        } else {
+          img.src = "https://via.placeholder.com/48?text=?";
+        }
+      };
+
+      img.onerror = tryNextFavicon;
+      tryNextFavicon();
+
+      card.appendChild(img);
       card.onclick = () => {
+        currentWildcard = wildcard;
         const url = generateFlareLink(wildcard);
         document.getElementById("serviceIframe").src = url;
         document.getElementById("iframeOverlay").style.display = "flex";
@@ -118,6 +188,13 @@
     document.getElementById("closeBtn").onclick = () => {
       document.getElementById("iframeOverlay").style.display = "none";
       document.getElementById("serviceIframe").src = "";
+    };
+
+    document.getElementById("refreshBtn").onclick = () => {
+      if (currentWildcard) {
+        const url = generateFlareLink(currentWildcard);
+        document.getElementById("serviceIframe").src = url;
+      }
     };
 
     window.addEventListener("keydown", (e) => {
