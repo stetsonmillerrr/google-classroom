@@ -73,11 +73,12 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
   const searchInput = document.getElementById('search-input');
 
   let currentCard = null;
+  let currentUrl = '';
 
-  // Supported domains
+  // Domains
   const domains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
 
-  // Wildcards per service
+  // Services and wildcards
   const services = [
     {id:'space', label:'Space', wildcard:'*.space'},
     {id:'daydreamx', label:'DaydreamX', wildcard:'*.ddx'},
@@ -89,12 +90,12 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
 
   const randomString = (len=5)=>{ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
 
+  // Generate a full Cloudflare CDN URL
   const generateUrl = (service) => {
     if(service.id==='chatgpt') return 'https://chat.openai.com';
     const domain = domains[Math.floor(Math.random()*domains.length)];
     const subdomain = randomString();
-    const url = `${subdomain}.${service.wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
-    return {url, domain};
+    return `https://${subdomain}.${service.wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
   }
 
   const fetchFavicon = async (domain)=>{
@@ -127,18 +128,18 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
 
       cardsContainer.appendChild(cardEl);
 
-      // Preload favicon with random domain
       const domain = domains[Math.floor(Math.random()*domains.length)];
       fetchFavicon(domain).then(url=>img.src=url);
     }
   }
 
   const openCard = (service) => {
-    const {url, domain} = generateUrl(service);
+    const url = generateUrl(service);
     currentCard = service;
-    iframe.src = 'https://' + domain; // Use the actual domain to load iframe (CDN URLs may 404)
+    currentUrl = url;
+    iframe.src = url; // Now the iframe loads the full generated Cloudflare URL
     iframeOverlay.hidden = false;
-    iframeTitle.textContent = `${service.label} — ${url}`;
+    iframeTitle.textContent = url;
     iframeTitle.title = url;
   }
 
