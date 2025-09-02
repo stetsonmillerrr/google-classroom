@@ -75,73 +75,57 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
   let currentCard = null;
   let currentUrl = '';
 
-  // Domains
-  const domains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
-
-  // Services and wildcards
+  // Services with real domains
   const services = [
-    {id:'space', label:'Space', wildcard:'*.space'},
-    {id:'daydreamx', label:'DaydreamX', wildcard:'*.ddx'},
-    {id:'terbium', label:'Terbium OS', wildcard:'*.tb'},
-    {id:'nebula', label:'Nebula', wildcard:'*.nb'},
-    {id:'xen', label:'Xen OS', wildcard:'*.xen'},
-    {id:'chatgpt', label:'ChatGPT', wildcard:''}
+    {id:'space', label:'Space', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu']},
+    {id:'daydreamx', label:'DaydreamX', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz']},
+    {id:'terbium', label:'Terbium OS', domains:['blocksi.lol','deltamath.icu','desmosgraphing.xyz']},
+    {id:'nebula', label:'Nebula', domains:['desmos.lol','edpuzzle.icu','nearpod.lol']},
+    {id:'xen', label:'Xen OS', domains:['goguardian.pro','googledrive.icu','stayinschooleducation.org']},
+    {id:'chatgpt', label:'ChatGPT', domains:['https://chat.openai.com']}
   ];
 
-  const randomString = (len=5)=>{ const chars='abcdefghijklmnopqrstuvwxyz0123456789'; let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length)); return str;}
-
-  // Generate a full Cloudflare CDN URL
-  const generateUrl = (service) => {
-    if(service.id==='chatgpt') return 'https://chat.openai.com';
-    const domain = domains[Math.floor(Math.random()*domains.length)];
-    const subdomain = randomString();
-    return `https://${subdomain}.${service.wildcard.replace('*','')}.${domain}.cdn.cloudflare.net`;
-  }
-
-  const fetchFavicon = async (domain)=>{
-    const urls=[`https://${domain}/favicon.ico`,`https://www.google.com/s2/favicons?domain=${domain}`];
-    for(const url of urls){ try{ await new Promise((res,rej)=>{ const img=new Image(); img.src=url; img.onload=()=>res(true); img.onerror=()=>rej(false); }); return url;}catch{} }
-    return 'https://via.placeholder.com/64?text=?';
-  }
+  const randomPick = arr => arr[Math.floor(Math.random()*arr.length)];
 
   const renderCards = async () => {
-    cardsContainer.innerHTML='';
+    cardsContainer.innerHTML = '';
     for(const service of services){
-      const cardEl=document.createElement('div');
-      cardEl.className='card';
-      cardEl.setAttribute('role','button');
-      cardEl.setAttribute('tabindex','0');
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.setAttribute('role','button');
+      card.setAttribute('tabindex','0');
 
-      const img=document.createElement('img');
-      img.className='favicon';
-      img.alt=`${service.label} favicon`;
-      img.src='https://via.placeholder.com/64?text=?';
-      cardEl.appendChild(img);
+      const img = document.createElement('img');
+      img.className = 'favicon';
+      img.alt = `${service.label} favicon`;
+      img.src = 'https://via.placeholder.com/64?text=?';
+      card.appendChild(img);
 
-      const label=document.createElement('div');
-      label.className='label';
-      label.textContent=service.label;
-      cardEl.appendChild(label);
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = service.label;
+      card.appendChild(label);
 
-      cardEl.addEventListener('click',()=>openCard(service));
-      cardEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cardEl.click(); } });
+      card.addEventListener('click',()=>openCard(service));
+      card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.click(); } });
 
-      cardsContainer.appendChild(cardEl);
+      cardsContainer.appendChild(card);
 
-      const domain = domains[Math.floor(Math.random()*domains.length)];
-      fetchFavicon(domain).then(url=>img.src=url);
+      // fetch favicon from a random real domain
+      const domain = randomPick(service.domains);
+      img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
     }
-  }
+  };
 
   const openCard = (service) => {
-    const url = generateUrl(service);
+    const url = randomPick(service.domains);
     currentCard = service;
     currentUrl = url;
-    iframe.src = url; // Now the iframe loads the full generated Cloudflare URL
+    iframe.src = url; // iframe loads a real, reachable URL
     iframeOverlay.hidden = false;
     iframeTitle.textContent = url;
     iframeTitle.title = url;
-  }
+  };
 
   closeBtn.addEventListener('click',()=>{iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null;});
   refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard); });
@@ -149,12 +133,13 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
 
   searchInput.addEventListener('input',()=>{
     const filter=searchInput.value.toLowerCase().trim();
-    [...cardsContainer.children].forEach(cardEl=>{
-      const label=cardEl.querySelector('.label').textContent.toLowerCase();
-      cardEl.style.display=label.includes(filter)?'':'none';
+    [...cardsContainer.children].forEach(card=>{
+      const label = card.querySelector('.label').textContent.toLowerCase();
+      card.style.display = label.includes(filter)?'':'none';
     });
   });
 
+  // particles
   particlesJS('particles-js',{
     "particles":{"number":{"value":45,"density":{"enable":true,"value_area":900}},"color":{"value":"#8b5cf6"},"shape":{"type":"circle"},"opacity":{"value":0.2,"random":true},"size":{"value":4,"random":true},"move":{"enable":true,"speed":1.2,"direction":"none","random":true,"straight":false,"out_mode":"bounce","bounce":true}},
     "interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":false},"onclick":{"enable":false}}},
@@ -164,5 +149,6 @@ iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
   renderCards();
 })();
 </script>
+
 </body>
 </html>
