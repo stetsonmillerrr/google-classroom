@@ -3,89 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FlareLink - Infinite Cloudflare Links</title>
+  <title>FlareLink - Dark Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.min.js"></script>
+  <style>
+    body, html { height: 100%; margin: 0; }
+    #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; }
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-900 text-white flex items-center justify-center font-sans">
 
-  <header class="bg-blue-600 text-white p-6 text-center shadow-md">
-    <h1 class="text-3xl font-bold">FlareLink</h1>
-    <p class="mt-2">Generate infinite unblocked links instantly 🌐✨</p>
-  </header>
+<div id="particles-js"></div>
 
-  <main class="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+<main class="glass p-8 max-w-md w-full text-center space-y-6 shadow-xl">
+  <h1 class="text-3xl font-bold mb-4">FlareLink 🌐</h1>
+  <p class="text-gray-300 mb-6">Step-by-step link generator — fast & infinite!</p>
 
-    <!-- Service Selector -->
-    <div class="mb-6">
-      <label for="service" class="block mb-2 font-semibold">Select Service:</label>
-      <select id="service" class="w-full p-2 border rounded-md">
+  <div id="step-container" class="space-y-4">
+    <!-- Step 1: Text Box Input -->
+    <div id="step1">
+      <label class="block text-left mb-2">Enter domain:</label>
+      <input id="domainInput" type="text" placeholder="e.g., blocksi.lol" class="w-full p-3 rounded-md text-black focus:outline-none">
+      <button id="step1Btn" class="mt-2 w-full bg-blue-600 p-2 rounded-md hover:bg-blue-700 transition">Next</button>
+    </div>
+
+    <!-- Step 2: Select Unblocker -->
+    <div id="step2" class="hidden">
+      <label class="block text-left mb-2">Select Unblocker:</label>
+      <select id="serviceSelect" class="w-full p-3 rounded-md text-black">
         <option value="xen">Xen OS (*.xen)</option>
         <option value="nb">Nebula (*.nb)</option>
         <option value="tb">Terbium OS (*.tb)</option>
         <option value="ddx">DaydreamX (*.ddx)</option>
         <option value="lunar">Lunar (*.lunar)</option>
         <option value="space">Space (*.space)</option>
+        <option value="none">No Wildcard</option>
       </select>
+      <button id="step2Btn" class="mt-2 w-full bg-blue-600 p-2 rounded-md hover:bg-blue-700 transition">Next</button>
     </div>
 
-    <!-- Domain Selector -->
-    <div class="mb-6">
-      <label for="domain" class="block mb-2 font-semibold">Select Domain:</label>
-      <select id="domain" class="w-full p-2 border rounded-md">
-        <option value="blocksi.lol">blocksi.lol</option>
-        <option value="deltamath.icu">deltamath.icu</option>
-        <option value="desmosgraphing.xyz">desmosgraphing.xyz</option>
-        <option value="desmos.lol">desmos.lol</option>
-        <option value="edpuzzle.icu">edpuzzle.icu</option>
-        <option value="goguardian.pro">goguardian.pro</option>
-        <option value="googledrive.icu">googledrive.icu</option>
-        <option value="nearpod.lol">nearpod.lol</option>
-        <option value="prodigy.it.com">prodigy.it.com</option>
-        <option value="stayinschooleducation.org">stayinschooleducation.org</option>
-        <option value="studentvue.my">studentvue.my</option>
+    <!-- Step 3: Optional Wildcard (if needed) -->
+    <div id="step3" class="hidden">
+      <label class="block text-left mb-2">Select Wildcard (optional):</label>
+      <select id="wildcardSelect" class="w-full p-3 rounded-md text-black">
+        <option value="*.xen">*.xen</option>
+        <option value="*.nb">*.nb</option>
+        <option value="*.tb">*.tb</option>
+        <option value="*.ddx">*.ddx</option>
+        <option value="*.lunar">*.lunar</option>
+        <option value="*.space">*.space</option>
+        <option value="">None</option>
       </select>
+      <button id="step3Btn" class="mt-2 w-full bg-blue-600 p-2 rounded-md hover:bg-blue-700 transition">Generate Link</button>
     </div>
 
-    <!-- Generate Button -->
-    <div class="text-center mb-6">
-      <button id="generateBtn" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">Generate Link</button>
-    </div>
+    <!-- Step 4: Output -->
+    <div id="outputStep" class="hidden p-4 bg-gray-800 rounded-md font-mono text-blue-400 break-all"></div>
+  </div>
+</main>
 
-    <!-- Output -->
-    <div id="output" class="p-4 bg-gray-100 border rounded-md text-center font-mono text-blue-800 break-all hidden">
-      Your generated link will appear here
-    </div>
+<script>
+  const serviceMap = {
+    xen: "*.xen",
+    nb: "*.nb",
+    tb: "*.tb",
+    ddx: "*.ddx",
+    lunar: "*.lunar",
+    space: "*.space"
+  };
 
-  </main>
+  const step1Btn = document.getElementById('step1Btn');
+  const step2Btn = document.getElementById('step2Btn');
+  const step3Btn = document.getElementById('step3Btn');
 
-  <footer class="mt-10 text-center text-gray-500 text-sm">
-    FlareLink &copy; 2025 — Powered by Cloudflare CDN
-  </footer>
+  let domainValue = '';
+  let serviceValue = '';
+  let wildcardValue = '';
 
-  <script>
-    const serviceMap = {
-      xen: "*.xen",
-      nb: "*.nb",
-      tb: "*.tb",
-      ddx: "*.ddx",
-      lunar: "*.lunar",
-      space: "*.space"
-    };
+  // Step 1 -> Step 2
+  step1Btn.addEventListener('click', () => {
+    const domainInput = document.getElementById('domainInput').value.trim();
+    if (!domainInput) return alert('Enter a domain!');
+    domainValue = domainInput;
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+  });
 
-    document.getElementById('generateBtn').addEventListener('click', () => {
-      const service = document.getElementById('service').value;
-      const domain = document.getElementById('domain').value;
+  // Step 2 -> Step 3 / Generate
+  step2Btn.addEventListener('click', () => {
+    serviceValue = document.getElementById('serviceSelect').value;
+    if (serviceValue === 'none') {
+      wildcardValue = '';
+      generateLink();
+      return;
+    }
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.remove('hidden');
+  });
 
-      let wildcard = serviceMap[service] || "";
-      let link = wildcard && domain
-        ? `${wildcard}.${domain}.cdn.cloudflare.net`
-        : `${domain}.cdn.cloudflare.net`;
+  // Step 3 -> Generate
+  step3Btn.addEventListener('click', () => {
+    wildcardValue = document.getElementById('wildcardSelect').value;
+    generateLink();
+  });
 
-      const output = document.getElementById('output');
-      output.textContent = link;
-      output.classList.remove('hidden');
-    });
-  </script>
+  function generateLink() {
+    const finalWildcard = wildcardValue || serviceMap[serviceValue] || '';
+    const link = finalWildcard ? `${finalWildcard}.${domainValue}.cdn.cloudflare.net` : `${domainValue}.cdn.cloudflare.net`;
+    const output = document.getElementById('outputStep');
+    output.textContent = link;
+    output.classList.remove('hidden');
+
+    // Hide step3 if visible
+    document.getElementById('step3').classList.add('hidden');
+  }
+
+  // Initialize particles
+  tsParticles.load("particles-js", {
+    background: { color: { value: "#111" } },
+    fpsLimit: 60,
+    interactivity: {
+      events: { onHover: { enable: true, mode: "repulse" } },
+      modes: { repulse: { distance: 100 } }
+    },
+    particles: {
+      color: { value: "#888" },
+      links: { color: "#555", distance: 120, enable: true, opacity: 0.3, width: 1 },
+      collisions: { enable: false },
+      move: { direction: "none", enable: true, outModes: "bounce", random: true, speed: 1 },
+      number: { density: { enable: true, area: 800 }, value: 60 },
+      opacity: { value: 0.4 },
+      shape: { type: "circle" },
+      size: { value: { min: 1, max: 3 } }
+    },
+    detectRetina: true
+  });
+</script>
 
 </body>
 </html>
