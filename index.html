@@ -77,7 +77,11 @@
   let currentService = null;
   let currentUrl = '';
 
-  function randomString(len=5){const chars='abcdefghijklmnopqrstuvwxyz0123456789';let str='';for(let i=0;i<len;i++)str+=chars.charAt(Math.floor(Math.random()*chars.length));return str;}
+  function randomString(len=5){
+    const chars='abcdefghijklmnopqrstuvwxyz0123456789';
+    let str=''; for(let i=0;i<len;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length));
+    return str;
+  }
 
   function generateUrl(service){
     if(service.id==='prodigy'||service.id==='chatgpt') return `https://${service.domains[0]}`;
@@ -85,6 +89,7 @@
     return `https://${service.id}.${randomString(6)}.${domain}.cdn.cloudflare.net`;
   }
 
+  // Create one card per service
   services.forEach(s=>{
     const card=document.createElement('div');
     card.className='card';
@@ -92,6 +97,7 @@
     card.onclick=()=>{
       currentService=s;
       currentUrl=generateUrl(s);
+      // Try iframe, fallback to new tab for blocked sites
       iframe.src=currentUrl;
       iframeTitle.textContent=s.label;
       iframeOverlay.style.display='flex';
@@ -102,6 +108,7 @@
   closeBtn.onclick=()=>{iframeOverlay.style.display='none'; iframe.src=''; currentService=null;};
   refreshBtn.onclick=()=>{if(currentService){currentUrl=generateUrl(currentService); iframe.src=currentUrl;}};
 
+  // Search
   document.getElementById('search-input').addEventListener('input',e=>{
     const filter=e.target.value.toLowerCase();
     [...cardsContainer.children].forEach(c=>{
@@ -109,7 +116,7 @@
     });
   });
 
-  // Particles optimized for performance
+  // Particles
   particlesJS('particles-js',{
     particles:{number:{value:35},color:{value:"#8b5cf6"},shape:{type:"circle"},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.2,random:true}},
     interactivity:{detect_on:"canvas",events:{onhover:{enable:false},onclick:{enable:false}}},retina_detect:true
