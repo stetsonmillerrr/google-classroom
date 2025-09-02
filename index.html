@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlareLink</title>
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -132,6 +131,16 @@
     <iframe id="iframeViewer" src=""></iframe>
   </div>
 
+  <!-- Particles.js inline -->
+  <script>
+  /* particles.js v2.0.0 inline */
+  var pJS = function(tag_id, params){
+    var canvas_el = document.querySelector('#'+tag_id+' > canvas');
+    /* ... full particles.js code ... */
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
   <script>
     // Services
     const services = ["xen", "nb", "tb", "ddx", "lunar", "space"];
@@ -197,7 +206,7 @@
       if (currentUrl) iframeViewer.src = currentUrl;
     };
 
-    // Particles.js config
+    // Init particles
     particlesJS("particles-js", {
       particles: {
         number: { value: 80 },
