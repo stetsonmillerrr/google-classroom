@@ -1,232 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlareLink</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at bottom, #2a0a4d, #000);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
-
-    body::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url("https://www.transparenttextures.com/patterns/stardust.png");
-      opacity: 0.15;
-      pointer-events: none;
-    }
-
-    header {
-      padding: 1.5rem;
-      display: flex;
-      justify-content: center;
-      z-index: 2;
-    }
-
-    .search-bar {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 0.7rem 1.2rem;
-      width: 100%;
-      max-width: 500px;
-    }
-    .search-bar input {
-      width: 100%;
-      background: none;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      color: white;
-    }
-
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1.2rem;
-      padding: 2rem;
-      z-index: 1;
-      position: relative;
-    }
-
-    button.card {
-      border: none;
-      border-radius: 1rem;
-      padding: 2rem 1rem;
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: white;
-      font-weight: 500;
-    }
-    button.card:hover {
-      transform: translateY(-6px) scale(1.05);
-      background: rgba(255,255,255,0.12);
-    }
-    button.card img {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 0.8rem;
-    }
-
-    .iframe-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: column;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    .iframe-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .iframe-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.6rem 1rem;
-      background: rgba(20,20,20,0.7);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .iframe-header span {
-      flex: 1;
-      margin-left: 0.5rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .iframe-header button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-    .iframe-overlay iframe {
-      flex: 1;
-      border: none;
-      width: 100%;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .iframe-overlay iframe.loaded {
-      opacity: 1;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlareLink</title>
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: radial-gradient(circle at bottom,#2a0a4d,#000);
+  color:white;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+body::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity:0.15;
+  pointer-events:none;
+}
+main {
+  flex:1;
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap:1.2rem;
+  padding:2rem;
+  position:relative;
+  z-index:1;
+}
+button.card {
+  border:none;
+  border-radius:1rem;
+  padding:2rem 1rem;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition: all 0.25s ease;
+  color:white;
+  font-weight:500;
+  font-size:1.2rem;
+}
+button.card:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.1);
+}
+.iframe-overlay {
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(20px);
+  display:flex;
+  flex-direction:column;
+  z-index:1000;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.4s ease;
+}
+.iframe-overlay.active {
+  opacity:1;
+  pointer-events:all;
+}
+.iframe-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0.6rem 1rem;
+  background: rgba(20,20,20,0.7);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.iframe-header span {
+  flex:1;
+  margin-left:0.5rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.iframe-header button {
+  background:none;
+  border:none;
+  color:white;
+  font-size:1.1rem;
+  cursor:pointer;
+}
+.iframe-overlay iframe {
+  flex:1;
+  border:none;
+  width:100%;
+  opacity:0;
+  transition: opacity 0.5s ease;
+}
+.iframe-overlay iframe.loaded {
+  opacity:1;
+}
+</style>
 </head>
 <body>
-  <header>
-    <div class="search-bar">
-      <input type="text" placeholder="Search FlareLink..." id="searchInput">
-    </div>
-  </header>
 
-  <main id="cardGrid"></main>
+<main id="cardGrid"></main>
 
-  <div id="iframeOverlay" class="iframe-overlay">
-    <div class="iframe-header">
-      <span id="iframeTitle"></span>
-      <button id="closeBtn">✕</button>
-    </div>
-    <iframe id="iframeViewer" src=""></iframe>
+<div id="iframeOverlay" class="iframe-overlay">
+  <div class="iframe-header">
+    <span id="iframeTitle"></span>
+    <button id="closeBtn">✕</button>
   </div>
+  <iframe id="iframeViewer" src=""></iframe>
+</div>
 
-  <script>
-    const websites = [
-      { name: "Terbium", domain: "terbium.site" },
-      { name: "Lunar", domain: "lunar.gg" },
-      { name: "Daydream X", domain: "daydreamx.net" },
-      { name: "Blocksi", domain: "blocksi.lol" },
-      { name: "DeltaMath", domain: "deltamath.icu" },
-      { name: "Desmos", domain: "desmos.lol" },
-      { name: "Edpuzzle", domain: "edpuzzle.icu" },
-      { name: "GoGuardian", domain: "goguardian.pro" },
-      { name: "Google Drive", domain: "googledrive.icu" },
-      { name: "Nearpod", domain: "nearpod.lol" },
-      { name: "Prodigy", domain: "prodigy.it.com" },
-      { name: "Stay In School", domain: "stayinschooleducation.org" },
-      { name: "StudentVUE", domain: "studentvue.my" }
-    ];
+<script>
+// Service configuration
+const services = {
+  Lunar: { wildcard: "lunar", domains: ["studentvue.my","lunar.gg"] },
+  DaydreamX: { wildcard: "ddx", domains: ["blocksi.lol","daydreamx.net"] },
+  Terbium: { wildcard: "tb", domains: ["terbium.site","nearpod.lol"] },
+  Space: { wildcard: "space", domains: ["desmos.lol","desmosgraphing.xyz"] },
+  Xen: { wildcard: "xen", domains: ["deltamath.icu"] },
+  Nebula: { wildcard: "nb", domains: ["goguardian.pro"] }
+};
 
-    const cardGrid = document.getElementById("cardGrid");
-    const iframeOverlay = document.getElementById("iframeOverlay");
-    const iframeViewer = document.getElementById("iframeViewer");
-    const iframeTitle = document.getElementById("iframeTitle");
-    const closeBtn = document.getElementById("closeBtn");
-    const searchInput = document.getElementById("searchInput");
+const cardGrid = document.getElementById("cardGrid");
+const iframeOverlay = document.getElementById("iframeOverlay");
+const iframeViewer = document.getElementById("iframeViewer");
+const iframeTitle = document.getElementById("iframeTitle");
+const closeBtn = document.getElementById("closeBtn");
 
-    let lastSubdomain = null;
+// Helper: generate random 3-5 character subdomain
+function randomSubdomain(len=4) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({length: len}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+}
 
-    function randomString(len=4) {
-      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-      let str;
-      do {
-        str = Array.from({length: len}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
-      } while(str === lastSubdomain);
-      lastSubdomain = str;
-      return str;
-    }
+// Build the full FlareLink URL
+function buildFlareLink(serviceName) {
+  const service = services[serviceName];
+  const domain = service.domains[Math.floor(Math.random()*service.domains.length)];
+  const sub = randomSubdomain();
+  return `${sub}.${service.wildcard}.${domain}.cdn.cloudflare.net`;
+}
 
-    function buildUrl(domain) {
-      if(domain === "prodigy.it.com") return `https://${domain}`;
-      return `https://${randomString(3)}.${domain}.cdn.cloudflare.net`;
-    }
+// Create cards
+Object.keys(services).forEach(name => {
+  const btn = document.createElement("button");
+  btn.className = "card";
+  btn.textContent = name;
+  btn.onclick = () => {
+    iframeTitle.textContent = name;
+    iframeViewer.classList.remove("loaded");
+    iframeViewer.src = buildFlareLink(name);
+    iframeOverlay.classList.add("active");
+  };
+  cardGrid.appendChild(btn);
+});
 
-    function openWebsite(site) {
-      iframeTitle.textContent = site.name;
-      iframeViewer.classList.remove("loaded");
-      iframeViewer.src = buildUrl(site.domain);
-      iframeOverlay.classList.add("active");
-    }
+// Close overlay
+closeBtn.onclick = () => {
+  iframeOverlay.classList.remove("active");
+  iframeViewer.src = "";
+};
 
-    closeBtn.onclick = () => {
-      iframeOverlay.classList.remove("active");
-      iframeViewer.src = "";
-    }
+iframeViewer.onload = () => iframeViewer.classList.add("loaded");
+</script>
 
-    iframeViewer.onload = () => iframeViewer.classList.add("loaded");
-
-    function renderCards(filter="") {
-      cardGrid.innerHTML = "";
-      websites
-        .filter(site => site.name.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(site => {
-          const btn = document.createElement("button");
-          btn.className = "card";
-          btn.innerHTML = `<img src="https://www.google.com/s2/favicons?sz=64&domain=${site.domain}" alt="">
-                           <span>${site.name}</span>`;
-          btn.onclick = () => openWebsite(site);
-          cardGrid.appendChild(btn);
-        });
-    }
-
-    renderCards();
-
-    searchInput.addEventListener("input", e => {
-      renderCards(e.target.value);
-    });
-  </script>
 </body>
 </html>
