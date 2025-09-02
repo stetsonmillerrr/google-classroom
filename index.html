@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlareLink</title>
+<title>FlareLink Fullscreen</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
@@ -13,42 +13,36 @@
   #particles-js { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; }
 
   /* Top Bar */
-  .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(20,0,40,0.5); backdrop-filter:blur(15px); border-bottom:1px solid rgba(255,255,255,0.05); z-index:100; transition:0.3s; }
+  .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(20,0,40,0.5); backdrop-filter:blur(15px); border-bottom:1px solid rgba(255,255,255,0.05); z-index:100; }
   .top-bar h1 { color:#ff6ec7; font-size:1.8rem; letter-spacing:1px; }
   nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
   nav a:hover { color:#ff6ec7; }
 
   /* Controls */
-  .controls { position:fixed; top:100px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(20,0,40,0.25); backdrop-filter:blur(20px); border-radius:20px; z-index:99; box-shadow:0 0 20px rgba(255,110,199,0.2); transition:0.3s; }
+  .controls { position:fixed; top:100px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(20,0,40,0.25); backdrop-filter:blur(20px); border-radius:20px; z-index:101; box-shadow:0 0 20px rgba(255,110,199,0.2); transition:0.3s; }
   .controls:hover { background:rgba(20,0,40,0.35); }
 
-  /* Glassmorphic Dropdowns */
-  select { padding:12px 18px; border-radius:15px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:1rem; backdrop-filter:blur(15px); cursor:pointer; transition:all 0.3s; outline:none; }
-  select:hover { background:rgba(255,255,255,0.1); }
+  select, button, .search-container input {
+    padding:12px 18px; border-radius:15px; border:none; background:rgba(255,255,255,0.05);
+    color:#fff; font-size:1rem; backdrop-filter:blur(15px); cursor:pointer; transition:all 0.3s;
+  }
+
+  select:hover, .search-container input:hover { background:rgba(255,255,255,0.1); }
   select option { background:#1a0a2a; color:#fff; }
 
-  /* Button */
-  button { padding:12px 20px; border-radius:15px; border:none; background:rgba(255,110,199,0.4); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 0 15px rgba(255,110,199,0.2); }
+  button { background:rgba(255,110,199,0.4); font-weight:600; cursor:pointer; box-shadow:0 0 15px rgba(255,110,199,0.2); }
   button:hover { background:rgba(255,110,199,0.7); }
 
-  /* Search Input Hidden by default */
   .search-container { position:relative; display:flex; align-items:center; }
-  .search-container input { padding:8px 14px; border-radius:15px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:0.95rem; backdrop-filter:blur(15px); width:0; opacity:0; transition:all 0.3s; margin-left:10px; }
+  .search-container input { width:0; opacity:0; margin-left:10px; transition:all 0.3s; }
   .search-container input.show { width:180px; opacity:1; margin-left:10px; }
   .search-container .icon { cursor:pointer; font-size:1.2rem; color:#fff; transition:0.3s; }
   .search-container .icon:hover { color:#ff6ec7; }
 
-  /* Iframe */
-  #iframeContainer { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; padding-top:240px; transition:all 0.3s; }
-  iframe { width:90%; height:80%; border:none; border-radius:25px; backdrop-filter:blur(15px); background:rgba(0,0,0,0.25); transition:opacity 0.5s ease, transform 0.3s ease; }
-  iframe.loading { opacity:0; transform:scale(0.98); }
-  iframe.loaded { opacity:1; transform:scale(1); }
+  /* Fullscreen Iframe */
+  #iframeContainer { position:fixed; top:0; left:0; width:100%; height:100%; z-index:50; display:none; }
+  iframe { width:100%; height:100%; border:none; border-radius:0; }
 
-  /* Responsive */
-  @media(max-width:768px){
-      .controls { top:80px; flex-direction:column; align-items:center; }
-      iframe { width:95%; height:70%; }
-  }
 </style>
 </head>
 <body>
@@ -95,12 +89,12 @@
     <option>studentvue.my</option>
   </select>
 
-  <button id="generateBtn">Generate & Open</button>
+  <button id="generateBtn">Open Fullscreen</button>
 </div>
 
 <!-- Iframe -->
 <div id="iframeContainer">
-  <iframe id="linkFrame" class="loading"></iframe>
+  <iframe id="linkFrame" allowfullscreen></iframe>
 </div>
 
 <!-- Particles.js -->
@@ -126,9 +120,9 @@ const serviceDropdown = document.getElementById('serviceDropdown');
 const serviceSearch = document.getElementById('serviceSearch');
 const searchToggle = document.getElementById('searchToggle');
 const domainDropdown = document.getElementById('domainDropdown');
+const iframeContainer = document.getElementById('iframeContainer');
 const iframe = document.getElementById('linkFrame');
 let usedLinks = new Set();
-let autoInterval = 10000;
 
 // Toggle search box
 searchToggle.addEventListener('click', () => {
@@ -140,35 +134,30 @@ searchToggle.addEventListener('click', () => {
 serviceSearch.addEventListener('input', () => {
   const filter = serviceSearch.value.toLowerCase();
   Array.from(serviceDropdown.options).forEach(opt => {
-      opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
+    opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
   });
 });
 
 // Random string
 function randomStr(len=5){return [...Array(len)].map(_=>'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*36)]).join('');}
 
-// Generate unique link
-function generateLink(){
+// Generate fullscreen link
+function openFullscreenLink(){
   const service = serviceDropdown.value;
   const domain = domainDropdown.value;
-  let url='';
+  let url = '';
   do{
     const sub = randomStr();
     url = `${sub}.${service}.${domain}.cdn.cloudflare.net`;
   } while(usedLinks.has(url));
   usedLinks.add(url);
 
-  navigator.clipboard.writeText(url).catch(()=>{});
-
-  iframe.classList.remove('loaded'); iframe.classList.add('loading');
-  iframe.src = 'https://'+url;
-  iframe.onload = ()=>{ iframe.classList.remove('loading'); iframe.classList.add('loaded'); };
+  iframe.src = 'https://' + url;
+  iframeContainer.style.display = 'block';
 }
 
-// Auto-generate
-setInterval(generateLink, autoInterval);
-document.getElementById('generateBtn').addEventListener('click', generateLink);
-window.addEventListener('load', generateLink);
+// Button click
+document.getElementById('generateBtn').addEventListener('click', openFullscreenLink);
 </script>
 
 </body>
