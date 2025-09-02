@@ -10,9 +10,20 @@
     padding: 0;
     height: 100%;
     width: 100%;
-    background-color: #121212;
-    font-family: Arial, sans-serif;
+    background-color: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     overflow: hidden;
+  }
+
+  /* Particle canvas */
+  #particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 0;
   }
 
   iframe {
@@ -21,6 +32,9 @@
     border: none;
     display: block;
     background-color: #121212;
+    will-change: transform;
+    z-index: 1;
+    loading: lazy;
   }
 
   /* Loading overlay */
@@ -30,16 +44,15 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #121212;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    z-index: 9999;
+    z-index: 10;
+    pointer-events: none;
   }
 
-  /* Spinner */
   .spinner {
     border: 6px solid #333;
     border-top: 6px solid #ffffff;
@@ -55,16 +68,44 @@
     100% { transform: rotate(360deg); }
   }
 
+  /* Smart loading text */
   #loadingText {
-    font-size: 1.2em;
+    font-size: 1.4em;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+  }
+
+  .dot {
+    animation: blink 1.4s infinite both;
+    margin-left: 2px;
+  }
+  .dot:nth-child(1) { animation-delay: 0s; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0; }
+    40% { opacity: 1; }
   }
 </style>
 </head>
 <body>
 
+<canvas id="particles"></canvas>
+
 <div id="loadingOverlay">
   <div class="spinner"></div>
-  <div id="loadingText">Estimating load time...</div>
+  <div id="loadingText">
+    Loading
+    <span class="dot">.</span>
+    <span class="dot">.</span>
+    <span class="dot">.</span>
+  </div>
 </div>
 
 <iframe id="viewer" allowfullscreen></iframe>
@@ -72,10 +113,51 @@
 <script>
 const iframe = document.getElementById('viewer');
 const overlay = document.getElementById('loadingOverlay');
-const loadingText = document.getElementById('loadingText');
 const STORAGE_KEY = 'usedStudentVueStrings';
 
-// Random string generator
+/* ------------------ Particle Background ------------------ */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const particles = [];
+const PARTICLE_COUNT = 80;
+
+for(let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 1,
+    dx: (Math.random() - 0.5) * 0.5,
+    dy: (Math.random() - 0.5) * 0.5
+  });
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ------------------ Random Subdomain Logic ------------------ */
 function generateRandomString(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -105,46 +187,17 @@ function generateUniqueSubdomain() {
   return subdomain;
 }
 
-// Estimate loading time based on device
-function estimateLoadTime() {
-  const ua = navigator.userAgent;
-  const isMobile = /Mobi|Android/i.test(ua);
-  const baseTime = isMobile ? 25 : 15; // Mobile slower
-  const variation = Math.floor(Math.random() * 10); // Random small variation
-  return baseTime + variation;
-}
-
-// Update loading text countdown
-function startCountdown(seconds) {
-  let remaining = seconds;
-  loadingText.textContent = `Loading... ~${remaining} seconds remaining`;
-  const interval = setInterval(() => {
-    remaining--;
-    if (remaining > 0) {
-      loadingText.textContent = `Loading... ~${remaining} seconds remaining`;
-    }
-  }, 1000);
-  return interval;
-}
-
-// Load iframe
+/* ------------------ Load iframe ------------------ */
 function loadRandomStudentVue() {
   const subdomain = generateUniqueSubdomain();
   const url = `https://${subdomain}.studentvue.my.cdn.cloudflare.net`;
   iframe.src = url;
 
-  // Estimate load time and start countdown
-  const estimatedTime = estimateLoadTime();
-  const countdownInterval = startCountdown(estimatedTime);
-
-  // Hide overlay when iframe is loaded
   iframe.onload = () => {
-    clearInterval(countdownInterval);
     overlay.style.display = 'none';
   };
 }
 
-// Auto load on page load
 loadRandomStudentVue();
 </script>
 
