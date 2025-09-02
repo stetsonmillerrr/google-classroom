@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlareLink</title>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      letter-spacing: 1px;
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1.25rem;
+      padding: 1.5rem;
+      z-index: 1;
+      position: relative;
+    }
+    button.card {
+      background: rgba(30, 41, 59, 0.85);
+      border: none;
+      border-radius: 1rem;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: white;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+    button.card:hover {
+      background: rgba(51, 65, 85, 0.95);
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 0 20px rgba(59,130,246,0.6);
+    }
+    button.card img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.75rem;
+      border-radius: 8px;
+    }
+    .iframe-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.97);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease forwards;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    .iframe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 0.75rem 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+    .iframe-header span {
+      flex: 1;
+      margin-left: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+    .iframe-header button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: background 0.2s;
+      font-size: 1.4rem;
+    }
+    .iframe-header button:hover {
+      background: rgba(59,130,246,0.2);
+    }
+    .iframe-overlay iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <header>🌐 FlareLink</header>
+  <main id="cardGrid"></main>
+
+  <div id="iframeOverlay" class="iframe-overlay" style="display:none;">
+    <div class="iframe-header">
+      <span id="iframeTitle"></span>
+      <button id="refreshBtn" title="Refresh">🔄</button>
+      <button id="closeBtn" title="Close">❌</button>
+    </div>
+    <iframe id="iframeViewer" src=""></iframe>
+  </div>
+
+  <script>
+    // Services
+    const services = ["xen", "nb", "tb", "ddx", "lunar", "space"];
+
+    // Domains
+    const domains = [
+      "blocksi.lol",
+      "deltamath.icu",
+      "desmosgraphing.xyz",
+      "desmos.lol",
+      "edpuzzle.icu",
+      "goguardian.pro",
+      "googledrive.icu",
+      "nearpod.lol",
+      "prodigy.it.com", // no wildcards
+      "stayinschooleducation.org",
+      "studentvue.my"
+    ];
+
+    // Elements
+    const cardGrid = document.getElementById("cardGrid");
+    const iframeOverlay = document.getElementById("iframeOverlay");
+    const iframeViewer = document.getElementById("iframeViewer");
+    const iframeTitle = document.getElementById("iframeTitle");
+    const closeBtn = document.getElementById("closeBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    let currentUrl = "";
+
+    // Build cards
+    domains.forEach(domain => {
+      if (domain === "prodigy.it.com") {
+        createCard("Prodigy", `https://${domain}`, domain);
+      } else {
+        services.forEach(service => {
+          const label = `${service.toUpperCase()} • ${domain}`;
+          const url = `https://${service}.${domain}.cdn.cloudflare.net`;
+          createCard(label, url, domain);
+        });
+      }
+    });
+
+    function createCard(label, url, domain) {
+      const btn = document.createElement("button");
+      btn.className = "card";
+      btn.innerHTML = `
+        <img src="https://www.google.com/s2/favicons?sz=64&domain=${domain}" alt="">
+        <span>${label}</span>
+      `;
+      btn.onclick = () => {
+        currentUrl = url;
+        iframeViewer.src = currentUrl;
+        iframeTitle.textContent = label;
+        iframeOverlay.style.display = "flex";
+      };
+      cardGrid.appendChild(btn);
+    }
+
+    closeBtn.onclick = () => {
+      iframeOverlay.style.display = "none";
+      iframeViewer.src = "";
+    };
+    refreshBtn.onclick = () => {
+      if (currentUrl) iframeViewer.src = currentUrl;
+    };
+
+    // Particles.js config
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80 },
+        color: { value: "#3b82f6" },
+        shape: { type: "circle" },
+        opacity: { value: 0.6 },
+        size: { value: 3 },
+        line_linked: { enable: true, distance: 150, color: "#3b82f6", opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2 }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" }
+        },
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
+</body>
+</html>
