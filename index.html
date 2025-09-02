@@ -2,166 +2,176 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FlareLink with Tabs & Dynamic Themes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlareLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-body, html {margin:0; padding:0; height:100%; background:#0a0a0f; font-family:'Inter', sans-serif; color:#eee; overflow:hidden;}
-#particles-js {position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; pointer-events:none;}
-iframe {border:none; width:100%; background:#0a0a0f;}
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+    html, body { height:100%; background:#0a0a0a; overflow:hidden; }
+    #particles-js { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; }
+
+    /* Top Bar */
+    .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(30,0,60,0.4); backdrop-filter:blur(10px); border-bottom:1px solid rgba(255,255,255,0.1); z-index:100; }
+    .top-bar h1 { color:#ff6ec7; font-size:1.8rem; letter-spacing:1px; }
+    nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
+    nav a:hover { color:#ff6ec7; }
+
+    /* Controls Container */
+    .controls { position:fixed; top:80px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(30,0,60,0.25); backdrop-filter:blur(15px); border-radius:15px; z-index:99; transition:all 0.3s; }
+    .controls:hover { background:rgba(30,0,60,0.35); }
+
+    /* Dropdowns */
+    select { padding:10px 15px; border-radius:12px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:1rem; backdrop-filter:blur(10px); cursor:pointer; transition:0.3s; }
+    select:hover { background:rgba(255,255,255,0.1); }
+
+    /* Button */
+    button { padding:10px 15px; border-radius:12px; border:none; background:rgba(255,110,199,0.4); color:#fff; font-weight:600; cursor:pointer; transition:0.3s; }
+    button:hover { background:rgba(255,110,199,0.7); }
+
+    /* Search Input Hidden by default */
+    .search-container { position:relative; display:flex; align-items:center; }
+    .search-container input { padding:8px 12px; border-radius:12px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:0.95rem; backdrop-filter:blur(10px); width:0; opacity:0; transition:0.3s; margin-left:10px; }
+    .search-container input.show { width:180px; opacity:1; margin-left:10px; }
+
+    .search-container .icon { cursor:pointer; font-size:1.2rem; color:#fff; transition:0.3s; }
+    .search-container .icon:hover { color:#ff6ec7; }
+
+    /* Iframe */
+    #iframeContainer { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; padding-top:220px; }
+    iframe { width:90%; height:80%; border:none; border-radius:20px; backdrop-filter:blur(10px); background:rgba(0,0,0,0.3); transition:opacity 0.5s ease-in-out; }
+    iframe.loading { opacity:0; }
+    iframe.loaded { opacity:1; }
+
+    /* Responsive */
+    @media(max-width:768px){
+        .controls { top:70px; flex-direction:column; }
+        iframe { width:95%; height:70%; }
+    }
 </style>
 </head>
 <body>
 
+<!-- Particles Background -->
 <div id="particles-js"></div>
 
-<div id="app" class="flex h-screen w-screen">
-  <!-- Sidebar -->
-  <nav class="bg-[#141222e6] w-18 flex flex-col items-center py-4 border-r border-[#2c2a42] backdrop-blur-lg z-20">
-    <img src="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" class="w-9 h-9 mb-4 rounded-md cursor-default select-none">
-    <button id="tab-games" class="tab-btn text-gray-400 my-2 w-12 h-12 flex items-center justify-center rounded-lg transition" title="Games">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
-    </button>
-    <button id="tab-flarelink" class="tab-btn text-gray-400 my-2 w-12 h-12 flex items-center justify-center rounded-lg transition" title="FlareLink">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path d="M12 2L2 7v8l10 5 10-5V7l-10-5z"/></svg>
-    </button>
-  </nav>
-
-  <main class="flex-1 relative flex flex-col justify-start items-center p-6 overflow-hidden">
-    <!-- Search bar -->
-    <div id="search-bar" class="search-bar fixed top-4 left-1/2 transform -translate-x-1/2 w-[95vw] max-w-[480px] bg-[#1e1932cc] border border-purple-700 rounded-full flex items-center gap-3 px-4 py-2 text-gray-300" style="display:none;">
-      <input id="search-input" type="text" placeholder="Search FlareLink..." class="flex-1 bg-transparent border-none outline-none text-gray-300 font-medium">
-      <button id="clear-search" class="text-gray-300 hover:text-purple-400">&times;</button>
-    </div>
-
-    <!-- Cards grid -->
-    <div id="cards-container" class="cards-grid mt-20 grid grid-cols-auto gap-5 w-full max-w-4xl z-12" style="display:none;"></div>
-
-    <!-- Games iframe -->
-    <iframe id="games-iframe" src="https://nullxiety.com/" title="Games" class="rounded-xl shadow-lg" style="display:none;"></iframe>
-
-    <!-- FlareLink iframe overlay -->
-    <section id="iframe-overlay" class="iframe-overlay fixed inset-0 bg-[#0a0a0ffa] backdrop-blur-xl hidden flex-col z-50">
-      <div class="iframe-header h-12 flex items-center gap-3 px-4 bg-[#1e1432cc] backdrop-blur-lg">
-        <button id="refresh-btn" class="w-9 h-9 rounded-lg bg-[#ffffff1a] hover:bg-[#ffffff40] text-gray-300 transition" title="Refresh">&#x21bb;</button>
-        <button id="close-btn" class="w-9 h-9 rounded-lg bg-[#ffffff1a] hover:bg-[#ffffff40] text-gray-300 transition" title="Close">&times;</button>
-        <div id="iframe-title" class="flex-1 text-gray-300 font-semibold truncate"></div>
-      </div>
-      <iframe id="iframe" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
-    </section>
-  </main>
+<!-- Top Bar -->
+<div class="top-bar">
+    <h1>FlareLink</h1>
+    <nav>
+        <a href="#services">Services</a>
+        <a href="#domains">Domains</a>
+        <a href="#about">About</a>
+    </nav>
 </div>
 
+<!-- Controls -->
+<div class="controls">
+    <!-- Service Dropdown with Search Icon -->
+    <div class="search-container">
+        <select id="serviceDropdown">
+            <option value="xen">Xen OS (*.xen)</option>
+            <option value="nb">Nebula (*.nb)</option>
+            <option value="tb">Terbium OS (*.tb)</option>
+            <option value="ddx">DaydreamX (*.ddx)</option>
+            <option value="lunar">Lunar (*.lunar)</option>
+            <option value="space">Space (*.space)</option>
+        </select>
+        <span class="icon" id="searchToggle">&#128269;</span>
+        <input type="text" id="serviceSearch" placeholder="Search services...">
+    </div>
+
+    <!-- Domain Dropdown -->
+    <select id="domainDropdown">
+        <option>blocksi.lol</option>
+        <option>deltamath.icu</option>
+        <option>desmosgraphing.xyz</option>
+        <option>desmos.lol</option>
+        <option>edpuzzle.icu</option>
+        <option>goguardian.pro</option>
+        <option>googledrive.icu</option>
+        <option>nearpod.lol</option>
+        <option>prodigy.it.com</option>
+        <option>stayinschooleducation.org</option>
+        <option>studentvue.my</option>
+    </select>
+
+    <!-- Generate Button -->
+    <button id="generateBtn">Generate & Open</button>
+</div>
+
+<!-- Iframe -->
+<div id="iframeContainer">
+    <iframe id="linkFrame" class="loading"></iframe>
+</div>
+
+<!-- Particles.js -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
-(() => {
-const tabs = { games: document.getElementById('tab-games'), flarelink: document.getElementById('tab-flarelink') };
-const gamesIframe = document.getElementById('games-iframe');
-const cardsContainer = document.getElementById('cards-container');
-const searchBar = document.getElementById('search-bar');
-const searchInput = document.getElementById('search-input');
-const clearSearchBtn = document.getElementById('clear-search');
-const iframeOverlay = document.getElementById('iframe-overlay');
-const iframe = document.getElementById('iframe');
-const iframeTitle = document.getElementById('iframe-title');
-const closeBtn = document.getElementById('close-btn');
-const refreshBtn = document.getElementById('refresh-btn');
+particlesJS('particles-js', {
+    particles: {
+        number: { value: 80, density: { enable:true, value_area:800 } },
+        color: { value:'#ff6ec7' },
+        shape: { type:'circle' },
+        opacity: { value:0.8, random:true },
+        size: { value:2, random:true },
+        line_linked: { enable:false },
+        move: { enable:true, speed:0.5, direction:'top', out_mode:'out' }
+    },
+    interactivity: { detect_on:'window', events:{ onclick:{ enable:true, mode:'push' } } },
+    retina_detect:true
+});
+</script>
 
-let currentTab = null;
-let currentCard = null;
-let currentIframeUrls = [];
-let currentIndex = 0;
+<script>
+const serviceDropdown = document.getElementById('serviceDropdown');
+const serviceSearch = document.getElementById('serviceSearch');
+const searchToggle = document.getElementById('searchToggle');
+const domainDropdown = document.getElementById('domainDropdown');
+const iframe = document.getElementById('linkFrame');
 
-// FlareLink cards
-const cardsData = [
-  {id:'space', label:'Space', wildcard:'*.space', favicon:null},
-  {id:'ddx', label:'DayDreamX', wildcard:'*.ddx', favicon:null},
-  {id:'tb', label:'Terbium', wildcard:'*.tb', favicon:null},
-  {id:'nb', label:'Nebula', wildcard:'*.nb', favicon:null},
-  {id:'lunar', label:'Lunar', wildcard:'*.lunar', favicon:null},
-  {id:'prodigy', label:'Prodigy', wildcard:null, domains:['prodigy.it.com'], favicon:null},
-  {id:'blocksi', label:'Blocksi', wildcard:null, domains:['blocksi.lol'], favicon:null},
-  {id:'deltamath', label:'Deltamath', wildcard:null, domains:['deltamath.icu'], favicon:null},
-  {id:'desmosgraphing', label:'Desmos Graphing', wildcard:null, domains:['desmosgraphing.xyz'], favicon:null},
-  {id:'desmos', label:'Desmos', wildcard:null, domains:['desmos.lol'], favicon:null},
-  {id:'edpuzzle', label:'Edpuzzle', wildcard:null, domains:['edpuzzle.icu'], favicon:null},
-  {id:'goguardian', label:'GoGuardian', wildcard:null, domains:['goguardian.pro'], favicon:null},
-  {id:'googledrive', label:'Google Drive', wildcard:null, domains:['googledrive.icu'], favicon:null},
-  {id:'nearpod', label:'Nearpod', wildcard:null, domains:['nearpod.lol'], favicon:null},
-  {id:'stayinschool', label:'Stay In School', wildcard:null, domains:['stayinschooleducation.org'], favicon:null},
-  {id:'studentvue', label:'StudentVue', wildcard:null, domains:['studentvue.my'], favicon:null}
-];
+let usedLinks = new Set();
+let autoInterval = 10000; // 10 seconds
 
-const supportedDomains = ['blocksi.lol','deltamath.icu','desmosgraphing.xyz','desmos.lol','edpuzzle.icu','goguardian.pro','googledrive.icu','nearpod.lol','prodigy.it.com','stayinschooleducation.org','studentvue.my'];
-
-// Utility
-function randStr(len=6){let s='';const chars='abcdefghijklmnopqrstuvwxyz0123456789';for(let i=0;i<len;i++) s+=chars.charAt(Math.floor(Math.random()*chars.length)); return s;}
-
-// Generate 5 random URLs per card
-cardsData.forEach(card => {
-  card.urls = [];
-  for(let i=0;i<5;i++){
-    if(card.domains){ card.urls.push(`https://${card.domains[0]}.cdn.cloudflare.net/`); }
-    else { const domain = supportedDomains[Math.floor(Math.random()*supportedDomains.length)]; card.urls.push(`https://${randStr()}.${card.wildcard}.${domain}.cdn.cloudflare.net/`);}
-  }
+// Toggle search box
+searchToggle.addEventListener('click', () => {
+    serviceSearch.classList.toggle('show');
+    serviceSearch.focus();
 });
 
-function renderCards(){
-  cardsContainer.innerHTML='';
-  cardsData.forEach(card => {
-    const div = document.createElement('div');
-    div.className='card';
-    div.tabIndex=0;
-    div.innerHTML=`<img class="favicon mb-2 w-14 h-14 rounded-lg bg-[#222]"/><div class="label font-bold text-center">${card.label}</div>`;
-    div.onclick=()=>openCard(card);
-    div.onkeydown=(e)=>{if(e.key==='Enter'||e.key===' ') openCard(card);}
-    cardsContainer.appendChild(div);
-  });
+// Filter dropdown
+serviceSearch.addEventListener('input', () => {
+    const filter = serviceSearch.value.toLowerCase();
+    Array.from(serviceDropdown.options).forEach(opt => {
+        opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
+    });
+});
+
+// Random string
+function randomStr(len=5){return [...Array(len)].map(_=>'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*36)]).join('');}
+
+// Generate unique link
+function generateLink(){
+    const service = serviceDropdown.value;
+    const domain = domainDropdown.value;
+    let url='';
+    do{
+        const sub = randomStr();
+        url = `${sub}.${service}.${domain}.cdn.cloudflare.net`;
+    } while(usedLinks.has(url));
+    usedLinks.add(url);
+
+    navigator.clipboard.writeText(url).catch(()=>{});
+
+    iframe.classList.remove('loaded'); iframe.classList.add('loading');
+    iframe.src = 'https://'+url;
+    iframe.onload = ()=>{ iframe.classList.remove('loading'); iframe.classList.add('loaded'); };
 }
 
-function openCard(card){
-  currentCard=card;
-  currentIframeUrls = card.urls;
-  currentIndex=0;
-  loadIframe();
-  iframeOverlay.style.display='flex';
-}
-
-function loadIframe(){
-  if(!currentIframeUrls.length) return;
-  iframe.src=currentIframeUrls[currentIndex];
-  iframeTitle.textContent=currentCard.label;
-}
-
-function nextIframe(){
-  currentIndex=(currentIndex+1)%currentIframeUrls.length;
-  loadIframe();
-}
-
-// Tabs
-function setTab(tab){
-  currentTab=tab;
-  tabs.games.classList.remove('text-purple-500'); tabs.flarelink.classList.remove('text-purple-500');
-  gamesIframe.style.display='none'; cardsContainer.style.display='none'; searchBar.style.display='none';
-  if(tab==='games'){ tabs.games.classList.add('text-purple-500'); gamesIframe.style.display='block'; }
-  else if(tab==='flarelink'){ tabs.flarelink.classList.add('text-purple-500'); cardsContainer.style.display='grid'; searchBar.style.display='flex'; }
-}
-
-tabs.games.addEventListener('click',()=>setTab('games'));
-tabs.flarelink.addEventListener('click',()=>setTab('flarelink'));
-closeBtn.addEventListener('click',()=>{iframeOverlay.style.display='none'; iframe.src='';});
-refreshBtn.addEventListener('click',()=>nextIframe());
-searchInput.addEventListener('input',()=>{const q=searchInput.value.toLowerCase();Array.from(cardsContainer.children).forEach(c=>{c.style.display=c.querySelector('.label').textContent.toLowerCase().includes(q)?'':'none';});});
-clearSearchBtn.addEventListener('click',()=>{searchInput.value='';Array.from(cardsContainer.children).forEach(c=>c.style.display='');});
-
-// Init
-renderCards();
-setTab('games');
-
-// Particles.js
-particlesJS('particles-js',{particles:{number:{value:30},color:{value:'#8b5cf6'},shape:{type:'circle'},opacity:{value:0.3,random:true},size:{value:3,random:true},move:{enable:true,speed:1.2,random:true}},interactivity:{detect_on:'canvas',events:{onhover:{enable:false},onclick:{enable:false}}},retina_detect:true});
-})();
+// Auto-generate
+setInterval(generateLink, autoInterval);
+document.getElementById('generateBtn').addEventListener('click', generateLink);
+window.addEventListener('load', generateLink);
 </script>
+
 </body>
 </html>
