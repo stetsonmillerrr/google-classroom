@@ -6,47 +6,49 @@
 <title>FlareLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
-    html, body { height:100%; background:#0a0a0a; overflow:hidden; }
-    #particles-js { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+  html, body { height:100%; background:#0a0a0a; overflow:hidden; }
 
-    /* Top Bar */
-    .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(30,0,60,0.4); backdrop-filter:blur(10px); border-bottom:1px solid rgba(255,255,255,0.1); z-index:100; }
-    .top-bar h1 { color:#ff6ec7; font-size:1.8rem; letter-spacing:1px; }
-    nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
-    nav a:hover { color:#ff6ec7; }
+  /* Particles */
+  #particles-js { position:fixed; width:100%; height:100%; top:0; left:0; z-index:-1; }
 
-    /* Controls Container */
-    .controls { position:fixed; top:80px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(30,0,60,0.25); backdrop-filter:blur(15px); border-radius:15px; z-index:99; transition:all 0.3s; }
-    .controls:hover { background:rgba(30,0,60,0.35); }
+  /* Top Bar */
+  .top-bar { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:15px 30px; background:rgba(20,0,40,0.5); backdrop-filter:blur(15px); border-bottom:1px solid rgba(255,255,255,0.05); z-index:100; transition:0.3s; }
+  .top-bar h1 { color:#ff6ec7; font-size:1.8rem; letter-spacing:1px; }
+  nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
+  nav a:hover { color:#ff6ec7; }
 
-    /* Dropdowns */
-    select { padding:10px 15px; border-radius:12px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:1rem; backdrop-filter:blur(10px); cursor:pointer; transition:0.3s; }
-    select:hover { background:rgba(255,255,255,0.1); }
+  /* Controls */
+  .controls { position:fixed; top:100px; left:50%; transform:translateX(-50%); display:flex; gap:15px; flex-wrap:wrap; padding:20px; background:rgba(20,0,40,0.25); backdrop-filter:blur(20px); border-radius:20px; z-index:99; box-shadow:0 0 20px rgba(255,110,199,0.2); transition:0.3s; }
+  .controls:hover { background:rgba(20,0,40,0.35); }
 
-    /* Button */
-    button { padding:10px 15px; border-radius:12px; border:none; background:rgba(255,110,199,0.4); color:#fff; font-weight:600; cursor:pointer; transition:0.3s; }
-    button:hover { background:rgba(255,110,199,0.7); }
+  /* Glassmorphic Dropdowns */
+  select { padding:12px 18px; border-radius:15px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:1rem; backdrop-filter:blur(15px); cursor:pointer; transition:all 0.3s; outline:none; }
+  select:hover { background:rgba(255,255,255,0.1); }
+  select option { background:#1a0a2a; color:#fff; }
 
-    /* Search Input Hidden by default */
-    .search-container { position:relative; display:flex; align-items:center; }
-    .search-container input { padding:8px 12px; border-radius:12px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:0.95rem; backdrop-filter:blur(10px); width:0; opacity:0; transition:0.3s; margin-left:10px; }
-    .search-container input.show { width:180px; opacity:1; margin-left:10px; }
+  /* Button */
+  button { padding:12px 20px; border-radius:15px; border:none; background:rgba(255,110,199,0.4); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s; box-shadow:0 0 15px rgba(255,110,199,0.2); }
+  button:hover { background:rgba(255,110,199,0.7); }
 
-    .search-container .icon { cursor:pointer; font-size:1.2rem; color:#fff; transition:0.3s; }
-    .search-container .icon:hover { color:#ff6ec7; }
+  /* Search Input Hidden by default */
+  .search-container { position:relative; display:flex; align-items:center; }
+  .search-container input { padding:8px 14px; border-radius:15px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:0.95rem; backdrop-filter:blur(15px); width:0; opacity:0; transition:all 0.3s; margin-left:10px; }
+  .search-container input.show { width:180px; opacity:1; margin-left:10px; }
+  .search-container .icon { cursor:pointer; font-size:1.2rem; color:#fff; transition:0.3s; }
+  .search-container .icon:hover { color:#ff6ec7; }
 
-    /* Iframe */
-    #iframeContainer { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; padding-top:220px; }
-    iframe { width:90%; height:80%; border:none; border-radius:20px; backdrop-filter:blur(10px); background:rgba(0,0,0,0.3); transition:opacity 0.5s ease-in-out; }
-    iframe.loading { opacity:0; }
-    iframe.loaded { opacity:1; }
+  /* Iframe */
+  #iframeContainer { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; padding-top:240px; transition:all 0.3s; }
+  iframe { width:90%; height:80%; border:none; border-radius:25px; backdrop-filter:blur(15px); background:rgba(0,0,0,0.25); transition:opacity 0.5s ease, transform 0.3s ease; }
+  iframe.loading { opacity:0; transform:scale(0.98); }
+  iframe.loaded { opacity:1; transform:scale(1); }
 
-    /* Responsive */
-    @media(max-width:768px){
-        .controls { top:70px; flex-direction:column; }
-        iframe { width:95%; height:70%; }
-    }
+  /* Responsive */
+  @media(max-width:768px){
+      .controls { top:80px; flex-direction:column; align-items:center; }
+      iframe { width:95%; height:70%; }
+  }
 </style>
 </head>
 <body>
@@ -56,69 +58,66 @@
 
 <!-- Top Bar -->
 <div class="top-bar">
-    <h1>FlareLink</h1>
-    <nav>
-        <a href="#services">Services</a>
-        <a href="#domains">Domains</a>
-        <a href="#about">About</a>
-    </nav>
+  <h1>FlareLink</h1>
+  <nav>
+    <a href="#services">Services</a>
+    <a href="#domains">Domains</a>
+    <a href="#about">About</a>
+  </nav>
 </div>
 
 <!-- Controls -->
 <div class="controls">
-    <!-- Service Dropdown with Search Icon -->
-    <div class="search-container">
-        <select id="serviceDropdown">
-            <option value="xen">Xen OS (*.xen)</option>
-            <option value="nb">Nebula (*.nb)</option>
-            <option value="tb">Terbium OS (*.tb)</option>
-            <option value="ddx">DaydreamX (*.ddx)</option>
-            <option value="lunar">Lunar (*.lunar)</option>
-            <option value="space">Space (*.space)</option>
-        </select>
-        <span class="icon" id="searchToggle">&#128269;</span>
-        <input type="text" id="serviceSearch" placeholder="Search services...">
-    </div>
-
-    <!-- Domain Dropdown -->
-    <select id="domainDropdown">
-        <option>blocksi.lol</option>
-        <option>deltamath.icu</option>
-        <option>desmosgraphing.xyz</option>
-        <option>desmos.lol</option>
-        <option>edpuzzle.icu</option>
-        <option>goguardian.pro</option>
-        <option>googledrive.icu</option>
-        <option>nearpod.lol</option>
-        <option>prodigy.it.com</option>
-        <option>stayinschooleducation.org</option>
-        <option>studentvue.my</option>
+  <div class="search-container">
+    <select id="serviceDropdown">
+      <option value="xen">Xen OS (*.xen)</option>
+      <option value="nb">Nebula (*.nb)</option>
+      <option value="tb">Terbium OS (*.tb)</option>
+      <option value="ddx">DaydreamX (*.ddx)</option>
+      <option value="lunar">Lunar (*.lunar)</option>
+      <option value="space">Space (*.space)</option>
     </select>
+    <span class="icon" id="searchToggle">&#128269;</span>
+    <input type="text" id="serviceSearch" placeholder="Search services...">
+  </div>
 
-    <!-- Generate Button -->
-    <button id="generateBtn">Generate & Open</button>
+  <select id="domainDropdown">
+    <option>blocksi.lol</option>
+    <option>deltamath.icu</option>
+    <option>desmosgraphing.xyz</option>
+    <option>desmos.lol</option>
+    <option>edpuzzle.icu</option>
+    <option>goguardian.pro</option>
+    <option>googledrive.icu</option>
+    <option>nearpod.lol</option>
+    <option>prodigy.it.com</option>
+    <option>stayinschooleducation.org</option>
+    <option>studentvue.my</option>
+  </select>
+
+  <button id="generateBtn">Generate & Open</button>
 </div>
 
 <!-- Iframe -->
 <div id="iframeContainer">
-    <iframe id="linkFrame" class="loading"></iframe>
+  <iframe id="linkFrame" class="loading"></iframe>
 </div>
 
 <!-- Particles.js -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
 particlesJS('particles-js', {
-    particles: {
-        number: { value: 80, density: { enable:true, value_area:800 } },
-        color: { value:'#ff6ec7' },
-        shape: { type:'circle' },
-        opacity: { value:0.8, random:true },
-        size: { value:2, random:true },
-        line_linked: { enable:false },
-        move: { enable:true, speed:0.5, direction:'top', out_mode:'out' }
-    },
-    interactivity: { detect_on:'window', events:{ onclick:{ enable:true, mode:'push' } } },
-    retina_detect:true
+  particles: {
+    number: { value:80, density:{enable:true,value_area:800} },
+    color:{value:'#ff6ec7'},
+    shape:{type:'circle'},
+    opacity:{value:0.8, random:true},
+    size:{value:2, random:true},
+    line_linked:{enable:false},
+    move:{enable:true, speed:0.5, direction:'top', out_mode:'out'}
+  },
+  interactivity:{detect_on:'window', events:{onclick:{enable:true, mode:'push'}}},
+  retina_detect:true
 });
 </script>
 
@@ -128,22 +127,21 @@ const serviceSearch = document.getElementById('serviceSearch');
 const searchToggle = document.getElementById('searchToggle');
 const domainDropdown = document.getElementById('domainDropdown');
 const iframe = document.getElementById('linkFrame');
-
 let usedLinks = new Set();
-let autoInterval = 10000; // 10 seconds
+let autoInterval = 10000;
 
 // Toggle search box
 searchToggle.addEventListener('click', () => {
-    serviceSearch.classList.toggle('show');
-    serviceSearch.focus();
+  serviceSearch.classList.toggle('show');
+  serviceSearch.focus();
 });
 
 // Filter dropdown
 serviceSearch.addEventListener('input', () => {
-    const filter = serviceSearch.value.toLowerCase();
-    Array.from(serviceDropdown.options).forEach(opt => {
-        opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
-    });
+  const filter = serviceSearch.value.toLowerCase();
+  Array.from(serviceDropdown.options).forEach(opt => {
+      opt.style.display = opt.text.toLowerCase().includes(filter) ? 'block' : 'none';
+  });
 });
 
 // Random string
@@ -151,20 +149,20 @@ function randomStr(len=5){return [...Array(len)].map(_=>'abcdefghijklmnopqrstuvw
 
 // Generate unique link
 function generateLink(){
-    const service = serviceDropdown.value;
-    const domain = domainDropdown.value;
-    let url='';
-    do{
-        const sub = randomStr();
-        url = `${sub}.${service}.${domain}.cdn.cloudflare.net`;
-    } while(usedLinks.has(url));
-    usedLinks.add(url);
+  const service = serviceDropdown.value;
+  const domain = domainDropdown.value;
+  let url='';
+  do{
+    const sub = randomStr();
+    url = `${sub}.${service}.${domain}.cdn.cloudflare.net`;
+  } while(usedLinks.has(url));
+  usedLinks.add(url);
 
-    navigator.clipboard.writeText(url).catch(()=>{});
+  navigator.clipboard.writeText(url).catch(()=>{});
 
-    iframe.classList.remove('loaded'); iframe.classList.add('loading');
-    iframe.src = 'https://'+url;
-    iframe.onload = ()=>{ iframe.classList.remove('loading'); iframe.classList.add('loaded'); };
+  iframe.classList.remove('loaded'); iframe.classList.add('loading');
+  iframe.src = 'https://'+url;
+  iframe.onload = ()=>{ iframe.classList.remove('loading'); iframe.classList.add('loaded'); };
 }
 
 // Auto-generate
