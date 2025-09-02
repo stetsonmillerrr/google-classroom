@@ -1,155 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FlareLink - Infinite Unblocked Links</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body, html {margin:0;padding:0;height:100%;background:#0a0a0f;font-family:'Inter',sans-serif;color:#eee;overflow:hidden;}
-#app {display:flex;height:100vh;width:100vw;flex-direction:row;}
-nav {background: rgba(20,18,34,0.85); width:72px; display:flex; flex-direction:column; align-items:center; padding:1rem 0; border-right:1px solid #2c2a42; backdrop-filter: blur(15px);}
-nav img.logo {width:36px;height:36px;margin-bottom:1rem;border-radius:8px;cursor:default;user-select:none;}
-main {flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:2rem;}
-.search-bar {position:fixed; top:1rem; left:50%; transform:translateX(-50%); width:min(95vw,480px); background: rgba(30,25,50,0.4); backdrop-filter:blur(14px); border-radius:9999px; border:1px solid #6b21a8; display:flex; align-items:center; padding:0.5rem 1rem; gap:0.75rem; color:#ccc; font-size:1rem; z-index:15;}
-.search-bar:focus-within {border-color:#a78bfa; color:#eee;}
-.search-bar input {flex:1; background:transparent; border:none; color:#eee; font-size:1rem; outline:none; font-weight:500;}
-.search-bar button {background:transparent; border:none; color:#ccc; cursor:pointer; font-size:1.15rem; transition:color 0.2s ease;}
-.search-bar button:hover {color:#a78bfa;}
-.cards-grid {margin-top:6rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1.5rem; width:100%; max-width:1024px; z-index:12;}
-.card {background: rgba(255 255 255 / 0.05); border-radius:1rem; padding:1.25rem; box-shadow:0 0 10px rgb(135 85 239 / 0.25); backdrop-filter:blur(16px); cursor:pointer; user-select:none; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: all 0.3s ease; position:relative;}
-.card:hover {background: rgba(255 255 255 / 0.15); box-shadow: 0 0 20px #8b5cf6aa; transform: translateY(-3px);}
-.card .favicon {width:56px;height:56px;margin-bottom:0.8rem;border-radius:14px;background:#222;object-fit:contain;filter:drop-shadow(0 0 6px #7c3aedaa);transition: filter 0.3s;}
-.card .label {font-weight:600;font-size:1.1rem;text-align:center;color:#ddd;user-select:none;}
-.iframe-overlay {position:fixed;top:0;left:0;right:0;bottom:0;background: rgba(10,10,15,0.98); backdrop-filter: blur(18px); display:flex; flex-direction:column; z-index:50;}
-.iframe-header {height:48px; background: rgba(30,20,50,0.85); backdrop-filter:blur(20px); display:flex; align-items:center; padding:0 1rem; gap:0.75rem; user-select:none;}
-.iframe-header button {border:none; background: rgba(255 255 255 / 0.1); border-radius:8px; width:36px; height:36px; cursor:pointer; color:#ddd; font-size:1.2rem; transition:background-color 0.25s ease;}
-.iframe-header button:hover {background: rgba(255 255 255 / 0.25);}
-.iframe-header .title {flex:1;color:#ccc;font-weight:600;font-size:1.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-iframe {flex:1;border:none;width:100%;background:#0a0a0f;}
-#particles-js {position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;}
-::-webkit-scrollbar {display:none;} scrollbar-width:none;
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlareLink - Infinite Cloudflare Links</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-50 font-sans">
 
-<div id="particles-js"></div>
+  <header class="bg-blue-600 text-white p-6 text-center shadow-md">
+    <h1 class="text-3xl font-bold">FlareLink</h1>
+    <p class="mt-2">Generate infinite unblocked links instantly 🌐✨</p>
+  </header>
 
-<div id="app">
-  <nav aria-label="Sidebar">
-    <img src="https://storage.googleapis.com/a1aa/image/53f27051-c4bf-41e5-eab6-ee4e83df519e.jpg" alt="Logo" class="logo" draggable="false" />
-  </nav>
+  <main class="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
 
-  <main>
-    <div class="search-bar" role="search">
-      <input type="text" placeholder="Search FlareLink..." aria-label="Search FlareLink" id="search-input" autocomplete="off" spellcheck="false" />
-      <button aria-label="Search" id="search-btn"><i class="fas fa-search"></i></button>
+    <!-- Service Selector -->
+    <div class="mb-6">
+      <label for="service" class="block mb-2 font-semibold">Select Service:</label>
+      <select id="service" class="w-full p-2 border rounded-md">
+        <option value="xen">Xen OS (*.xen)</option>
+        <option value="nb">Nebula (*.nb)</option>
+        <option value="tb">Terbium OS (*.tb)</option>
+        <option value="ddx">DaydreamX (*.ddx)</option>
+        <option value="lunar">Lunar (*.lunar)</option>
+        <option value="space">Space (*.space)</option>
+      </select>
     </div>
-    <div class="cards-grid" id="cards-container" aria-live="polite" aria-relevant="additions removals"></div>
+
+    <!-- Domain Selector -->
+    <div class="mb-6">
+      <label for="domain" class="block mb-2 font-semibold">Select Domain:</label>
+      <select id="domain" class="w-full p-2 border rounded-md">
+        <option value="blocksi.lol">blocksi.lol</option>
+        <option value="deltamath.icu">deltamath.icu</option>
+        <option value="desmosgraphing.xyz">desmosgraphing.xyz</option>
+        <option value="desmos.lol">desmos.lol</option>
+        <option value="edpuzzle.icu">edpuzzle.icu</option>
+        <option value="goguardian.pro">goguardian.pro</option>
+        <option value="googledrive.icu">googledrive.icu</option>
+        <option value="nearpod.lol">nearpod.lol</option>
+        <option value="prodigy.it.com">prodigy.it.com</option>
+        <option value="stayinschooleducation.org">stayinschooleducation.org</option>
+        <option value="studentvue.my">studentvue.my</option>
+      </select>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="text-center mb-6">
+      <button id="generateBtn" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">Generate Link</button>
+    </div>
+
+    <!-- Output -->
+    <div id="output" class="p-4 bg-gray-100 border rounded-md text-center font-mono text-blue-800 break-all hidden">
+      Your generated link will appear here
+    </div>
+
   </main>
-</div>
 
-<div class="iframe-overlay" id="iframe-overlay" hidden>
-  <div class="iframe-header">
-    <button id="close-btn" aria-label="Close iframe"><i class="fas fa-times"></i></button>
-    <button id="refresh-btn" aria-label="Refresh iframe"><i class="fas fa-redo"></i></button>
-    <div class="title" id="iframe-title" title=""></div>
-  </div>
-  <iframe id="iframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
-</div>
+  <footer class="mt-10 text-center text-gray-500 text-sm">
+    FlareLink &copy; 2025 — Powered by Cloudflare CDN
+  </footer>
 
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    const serviceMap = {
+      xen: "*.xen",
+      nb: "*.nb",
+      tb: "*.tb",
+      ddx: "*.ddx",
+      lunar: "*.lunar",
+      space: "*.space"
+    };
 
-<script>
-(() => {
-  const cardsContainer = document.getElementById('cards-container');
-  const iframeOverlay = document.getElementById('iframe-overlay');
-  const iframe = document.getElementById('iframe');
-  const iframeTitle = document.getElementById('iframe-title');
-  const closeBtn = document.getElementById('close-btn');
-  const refreshBtn = document.getElementById('refresh-btn');
-  const searchInput = document.getElementById('search-input');
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      const service = document.getElementById('service').value;
+      const domain = document.getElementById('domain').value;
 
-  let currentCard = null;
-  let currentUrl = '';
+      let wildcard = serviceMap[service] || "";
+      let link = wildcard && domain
+        ? `${wildcard}.${domain}.cdn.cloudflare.net`
+        : `${domain}.cdn.cloudflare.net`;
 
-  // Services with full URLs
-  const services = [
-    {id:'space', label:'Space', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz','https://desmos.lol','https://edpuzzle.icu']},
-    {id:'daydreamx', label:'DaydreamX', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz']},
-    {id:'terbium', label:'Terbium OS', urls:['https://blocksi.lol','https://deltamath.icu','https://desmosgraphing.xyz']},
-    {id:'nebula', label:'Nebula', urls:['https://desmos.lol','https://edpuzzle.icu','https://nearpod.lol']},
-    {id:'xen', label:'Xen OS', urls:['https://goguardian.pro','https://googledrive.icu','https://stayinschooleducation.org']},
-    {id:'chatgpt', label:'ChatGPT', urls:['https://chat.openai.com']}
-  ];
-
-  const randomPick = arr => arr[Math.floor(Math.random()*arr.length)];
-
-  const renderCards = async () => {
-    cardsContainer.innerHTML = '';
-    for(const service of services){
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.setAttribute('role','button');
-      card.setAttribute('tabindex','0');
-
-      const img = document.createElement('img');
-      img.className = 'favicon';
-      img.alt = `${service.label} favicon`;
-      img.src = 'https://via.placeholder.com/64?text=?';
-      card.appendChild(img);
-
-      const label = document.createElement('div');
-      label.className = 'label';
-      label.textContent = service.label;
-      card.appendChild(label);
-
-      card.addEventListener('click',()=>openCard(service));
-      card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.click(); } });
-
-      cardsContainer.appendChild(card);
-
-      // fetch favicon from a random full URL
-      const url = randomPick(service.urls);
-      const domain = (new URL(url)).hostname;
-      img.src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
-    }
-  };
-
-  const openCard = (service) => {
-    const url = randomPick(service.urls);
-    currentCard = service;
-    currentUrl = url;
-    iframe.src = url; // iframe loads full URL
-    iframeOverlay.hidden = false;
-    iframeTitle.textContent = url;
-    iframeTitle.title = url;
-  };
-
-  closeBtn.addEventListener('click',()=>{iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null;});
-  refreshBtn.addEventListener('click',()=>{ if(currentCard) openCard(currentCard); });
-  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !iframeOverlay.hidden){ iframe.src='about:blank'; iframeOverlay.hidden=true; currentCard=null; } });
-
-  searchInput.addEventListener('input',()=>{
-    const filter=searchInput.value.toLowerCase().trim();
-    [...cardsContainer.children].forEach(card=>{
-      const label = card.querySelector('.label').textContent.toLowerCase();
-      card.style.display = label.includes(filter)?'':'none';
+      const output = document.getElementById('output');
+      output.textContent = link;
+      output.classList.remove('hidden');
     });
-  });
-
-  // particles
-  particlesJS('particles-js',{
-    "particles":{"number":{"value":45,"density":{"enable":true,"value_area":900}},"color":{"value":"#8b5cf6"},"shape":{"type":"circle"},"opacity":{"value":0.2,"random":true},"size":{"value":4,"random":true},"move":{"enable":true,"speed":1.2,"direction":"none","random":true,"straight":false,"out_mode":"bounce","bounce":true}},
-    "interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":false},"onclick":{"enable":false}}},
-    "retina_detect":true
-  });
-
-  renderCards();
-})();
-</script>
+  </script>
 
 </body>
 </html>
