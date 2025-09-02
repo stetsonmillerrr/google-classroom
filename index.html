@@ -1,942 +1,629 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Home</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FlareLink + Games</title>
+<link rel="icon" href="https://daydreamx.pro/favicon.ico" />
 <style>
-/* General font & body setup */
-body {
-  font-family: "Google Sans", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  background-color: #f8fafc;
-  font-weight: 600; /* slightly bolder base font */
-}
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    background: #000;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+  }
 
-/* Sidebar scrollable */
-aside {
-  height: 100vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex-shrink: 0;
-  font-weight: 705; /* slightly bolder text */
-}
+  /* Particles container covers whole background */
+  #particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: #000;
+  }
 
-/* Sidebar elements */
-.category-list {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
-  opacity: 0.1;
-  margin-top: 0;
-}
-.category-list.open {
-  opacity: 1;
-  margin-top: 0.25rem;
-  max-height: 510px;
-}
-.category-header {
-  font-weight: 600; 
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-  padding-left: 0.75rem;
-  color: #555;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.enrolled-item {
-  padding-left: 0.5rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  transition: background 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.875rem;
-  font-weight: 500; /* slightly bolder */
-}
-.enrolled-item:hover {
-  background-color: #e3f2fd;
-}
+  /* Wrapper flex container */
+  .container {
+    display: flex;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
 
-/* Favicon styles */
-.favicon-img, .favicon-letter {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600; /* slightly heavier */
-  color: #000;
-  background: #cfd8dc;
-}
+  /* Sidebar styles */
+  aside.sidebar {
+    width: 260px;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+  }
 
-/* Shimmer skeleton loader */
-@keyframes shimmer {
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-}
-.skeleton::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 4s infinite;
-}
+  aside.sidebar header {
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    user-select: none;
+  }
 
-/* Disable text selection */
-body, body * {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .tabs button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 1rem 0;
+    color: #ddd;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.25s ease;
+    user-select: none;
+    border-bottom: 3px solid transparent;
+  }
+  .tabs button.active,
+  .tabs button:hover {
+    color: #7c3aed;
+    border-bottom-color: #7c3aed;
+  }
 
-/* Prevent text/image dragging */
-img, a {
-  pointer-events: auto;
-  -webkit-user-drag: none;
-  user-drag: none;
-}
+  /* Search Bar */
+  .search-bar {
+    display: flex;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.05);
+    color: #eee;
+    outline: none;
+    transition: background 0.2s ease;
+  }
+  .search-bar input::placeholder {
+    color: #aaa;
+  }
+  .search-bar input:focus {
+    background: rgba(124, 58, 237, 0.15);
+  }
+  .search-bar button {
+    margin-left: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .search-bar button:hover {
+    color: #7c3aed;
+  }
 
-/* Active link highlight */
-.active-link {
-  background-color: #d2e3fc;
-  color: #1967d2;
-  font-weight: 600; 
-}
+  /* Cards grid */
+  .cards-grid {
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 12px;
+    overflow-y: auto;
+    height: calc(100vh - 130px);
+  }
+  .card {
+    background: rgba(124, 58, 237, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.15s ease;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
+    user-select: none;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .card:hover,
+  .card:focus {
+    background: rgba(124, 58, 237, 0.3);
+    transform: translateY(-3px);
+    outline: none;
+  }
+  .card img.favicon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.6rem;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,0.6));
+  }
+  .card .label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #eee;
+    user-select: none;
+  }
 
-     #monitor-status {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        font-size: 16px;
-        line-height: 16px;
-        width: 16px;
-        height: 16px;
-        text-align: center;
-        color: rgba(255, 255, 255, 0.33); /* 67% transparent */
-        z-index: 2500;
-        cursor: default;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-    }
-    #monitor-status.alert {
-        color: rgba(0, 255, 0, 0.33); /* Green dot, 67% transparent */
-    }
-    #monitor-status.safe {
-        color: rgba(255, 0, 0, 0.33); /* Red dot, 67% transparent */
-    }
-    #monitor-custom-id-input {
-        position: fixed;
-        bottom: 30px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.33); /* 67% transparent */
-        color: rgba(255, 255, 255, 0.33);
-        padding: 5px;
-        border-radius: 5px;
-        display: none;
-        z-index: 2500;
-        user-select: auto;
-        -webkit-user-select: auto;
-        -moz-user-select: auto;
-        -ms-user-select: auto;
-    }
-    #monitor-debug-log {
-        position: fixed;
-        bottom: 70px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.33); /* 67% transparent */
-        color: rgba(255, 255, 255, 0.33);
-        padding: 5px;
-        border-radius: 5px;
-        display: none;
-        z-index: 2500;
-        max-height: 200px;
-        overflow-y: auto;
-        font-size: 12px;
-        width: 300px;
-    }
-    #monitor-custom-id-input input {
-        width: 200px;
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.33); /* 67% transparent */
-        border: 1px solid rgba(255, 255, 255, 0.33);
-    }
-    #monitor-custom-id-input button {
-        background: rgba(255, 68, 68, 0.33); /* 67% transparent */
-        color: rgba(255, 255, 255, 0.33);
-        border: none;
-        padding: 5px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-    #monitor-custom-id-input button:hover {
-        background: rgba(255, 68, 68, 0.5);
-    }
+  /* Main content area */
+  main.content {
+    flex: 1;
+    position: relative;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+  }
 
-/* Sidebar hover scale effect */
-.sidebar-scale {
-  transform: scale(1.05);
-  transform-origin: top left;
-}
+  /* Games iframe */
+  iframe#games-iframe {
+    flex: 1;
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
 
-/* Iframe overlay always in front visually, but invisible to pointer/interaction */
-#iframeOverlay {
-  display: none;
-  position: absolute;      /* keep its original positioning */
-  top: -1px;            /* header height */
-  left: 16.5rem;           /* sidebar width */
-  right: 0;
-  bottom: 0;
-  z-index: 2000;           /* above everything else */
-  background: white;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  overflow: hidden;
+  /* Iframe overlay */
+  .iframe-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+  }
+  .iframe-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    background: rgba(20, 0, 40, 0.5);
+    border-bottom: 1px solid rgba(124, 58, 237, 0.4);
+  }
+  .iframe-header button {
+    background: transparent;
+    border: none;
+    color: #eee;
+    font-size: 1.4rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+  .iframe-header button:hover {
+    color: #7c3aed;
+  }
+  .iframe-header .title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #ddd;
+    user-select: none;
+    flex: 1;
+  }
+  .iframe-overlay iframe {
+    flex: 1;
+    border: none;
+    width: 100%;
+    height: 100%;
+    background: #000;
+  }
 
-  /* THIS makes scripts ignore the iframe visually, only see what's behind */
-  pointer-events: none;
-}
-#iframeOverlay iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  pointer-events: auto; /* iframe still interactable if clicked manually */
-}
-
-
-/* Iframe toggle button */
-#iframeToggleBtn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background: #1967d2;
-  color: white;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-  z-index: 2100; /* above iframe */
-  font-size: 16px;
-  user-select: none;
-  display: none;
-}
-#iframeToggleBtn:active {
-  cursor: grabbing;
-}
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(124, 58, 237, 0.7);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 58, 237, 0.9);
+  }
 </style>
 </head>
-<body class="bg-[#f8fafc] min-h-screen flex">
+<body>
 
-<!-- Sidebar -->
-<aside class="flex flex-col w-64 bg-white border-r border-gray-200 relative z-10 sidebar-scale">
-  <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-    <button aria-label="Menu" class="text-gray-700 text-xl"><i class="fas fa-bars"></i></button>
-    <img alt="Google Classroom icon" class="w-6 h-6 ml-2" src="https://www.gstatic.com/classroom/ic_product_classroom_144.png">
-    <span class="text-gray-800 text-base font-normal select-none ml-2">Classroom</span>
-  </header>
-  <nav class="flex flex-col mt-4 px-2 space-y-1">
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#d2e3fc] text-[#1967d2] text-sm font-medium select-none" href="#"><i class="fas fa-home text-sm"></i> Home</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-calendar-alt text-sm"></i> Calendar</a>
-    <button id="enrolledBtn" aria-expanded="false" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none w-full" type="button">
-      <i class="fas fa-graduation-cap text-sm"></i> Enrolled
-      <i id="enrolledChevron" class="fas fa-chevron-down ml-auto text-xs transition-transform duration-200" style="transform: rotate(-90deg);"></i>
-    </button>
-    <div id="enrolledList" class="flex flex-col space-y-1 mt-1" style="display:none;">
-      <div class="category">
-        <div class="category-header">Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
-        <div class="category-list">
-          <a id="nullLink" data-url="https://nullxiety.com/" class="enrolled-item"></a>
-          <a id="totallyLink" data-url="https://weslack.com/" class="enrolled-item"></a>
-          <a id="scienceLink" data-url="https://totallyscience.app/" class="enrolled-item"></a>
-          <a id="gnLink" data-url="https://gn-math.github.io/" class="enrolled-item"></a>
-          <a id="englishLink" data-url="https://www.julios.games/home" class="enrolled-item"></a>
-        </div>
+<div id="particles-js"></div>
+
+<div class="container" role="application">
+  <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+    <header>FlareLink</header>
+    <nav class="tabs" role="tablist">
+      <button id="tab-games" role="tab" aria-selected="false" tabindex="0" aria-controls="games-iframe">Games</button>
+      <button id="tab-flarelink" role="tab" aria-selected="false" tabindex="-1" aria-controls="cards-container">FlareLink</button>
+    </nav>
+    <div class="search-bar" id="search-bar" style="display:none;">
+      <input id="search-input" type="search" placeholder="Search..." aria-label="Search FlareLink cards" autocomplete="off" />
+      <button id="clear-search" aria-label="Clear search">&times;</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div id="cards-container" class="cards-grid" role="list" aria-live="polite" aria-atomic="true" style="display:none;"></div>
+    <iframe id="games-iframe" src="https://nullxiety.com/" title="Games" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" style="display:none;"></iframe>
+
+    <section class="iframe-overlay" id="iframe-overlay" hidden role="dialog" aria-modal="true" aria-label="FlareLink site viewer">
+      <div class="iframe-header">
+        <button id="refresh-btn" aria-label="Refresh iframe" title="Refresh iframe">&#x21bb;</button>
+        <button id="close-btn" aria-label="Close iframe" title="Close iframe">&times;</button>
+        <div class="title" id="iframe-title" aria-live="polite" aria-atomic="true"></div>
       </div>
-      <div class="category">
-        <div class="category-header">Browser+Games <i class="fas fa-chevron-down text-xs" style="transform: rotate(-90deg);"></i></div>
-        <div class="category-list">
-          <a id="browserLink" data-url="https://best-force-734.nowgg.me/" class="enrolled-item"></a>
-          <a id="spaceLink" data-url="https://erbytes.host2go.net/" class="enrolled-item"></a>
-          <a id="randomLink" data-url="https://study.info.north-kazakhstan.su/" class="enrolled-item"></a>
-          <a id="utopia2Link" data-url="https://meta-games-proxies.crabdance.com/" class="enrolled-item"></a>
-          <a id="utopia3Link" data-url="https://bombbombbombiran.ruhezeiter.ch/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://classroom.google.com.my.to/" class="enrolled-item"></a>
-          <a id="utopiaLink" data-url="https://apply.freediddy.info/" class="enrolled-item"></a>
-        </div>
-      </div>
-    </div>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="far fa-folder text-sm"></i> Archived classes</a>
-    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 text-sm font-normal hover:bg-gray-100 select-none" href="#"><i class="fas fa-cog text-sm"></i> Settings<span class="text-xs font-normal ml-auto">›</span></a>
-  </nav>
-</aside>
-
-<!-- Main -->
-<main class="flex-1 p-6 overflow-auto">
-  <header class="flex items-center justify-end gap-6 mb-6">
-    <button aria-label="Create" class="flex items-center justify-center w-8 h-8 text-gray-700 hover:bg-gray-200 rounded-full transition-colors duration-200">
-      <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-    </button>
-    <button aria-label="Apps" class="text-gray-700 font-light hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center">
-      <svg aria-hidden="true" class="w-4 h-4" fill="#5f6368" viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="12" cy="4.5" r="2.5"/><circle cx="19.5" cy="4.5" r="2.5"/><circle cx="4.5" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="12" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/></svg>
-    </button>
-    <button id="profileBtn" aria-label="User profile" class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold select-none cursor-pointer" title="Click to change profile color/letter">
-      <span id="profileLetter" class="text-sm leading-none"> </span>
-    </button>
-  </header>
-
-  <section aria-label="Classroom cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    <script>
-      for(let i=0;i<5;i++){
-        document.write(`<article class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col justify-between min-h-[180px]">
-          <div class="flex justify-between items-start mb-4">
-            <div class="space-y-2 w-3/4">
-              <div class="h-3 skeleton w-2/3"></div>
-              <div class="h-3 skeleton w-1/2"></div>
-            </div>
-            <div class="rounded-full bg-gray-200 w-12 h-12 flex-shrink-0"></div>
-          </div>
-          <hr class="border-gray-200 mb-3">
-          <!-- votes section removed -->
-        </article>`);
-      }
-    </script>
-  </section>
-</main>
-
-<div id="monitor-status">🔴</div>
-<div id="monitor-custom-id-input">
-    <input type="text" id="monitor-custom-ext-id" placeholder="Enter custom extension ID">
-    <button onclick="monitorAddCustomId()">Add</button>
-</div>
-<div id="monitor-debug-log"></div>
-
-<div id="iframeOverlay"><iframe src="" allowfullscreen allow="fullscreen"></iframe></div>
-<div id="iframeToggleBtn" title="Show/Hide iframe">⇅</div>
-
-<div id="wikiModal" class="fixed inset-0 z-[1200] hidden items-center justify-center">
-  <div id="wikiOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div id="wikiBox" class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">🌐 Web Proxy 🌐</h2>
-      <button id="closeWiki" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-    </div>
-    <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Name</span>
-        <select id="filter-name" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="">All</option>
-        </select>
-      </label>
-      <label class="flex flex-col w-full md:w-1/2">
-        <span class="text-sm font-semibold mb-1">Filter by Date</span>
-        <select id="filter-date" class="rounded border-gray-300 p-2 focus:ring-blue-500">
-          <option value="today">Today</option>
-          <option value="yesterday">Yesterday</option>
-          <option value="last7">Last 7 Days</option>
-          <option value="thisMonth">This Month</option>
-          <option value="lastMonth">Last Month</option>
-          <option value="thisYear">This Year</option>
-          <option value="all" selected>All Time</option>
-        </select>
-      </label>
-    </div>
-    <div id="results" class="space-y-3 max-h-[50vh] overflow-y-auto"></div>
-  </div>
+      <iframe id="iframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+    </section>
+  </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!-- Particles.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
 <script>
-const enrolledBtn=document.getElementById("enrolledBtn");
-const enrolledList=document.getElementById("enrolledList");
-const enrolledChevron=document.getElementById("enrolledChevron");
-const iframeOverlay=document.getElementById("iframeOverlay");
-const iframeEl=iframeOverlay.querySelector("iframe");
-const iframeToggleBtn=document.getElementById("iframeToggleBtn");
-const profileBtn=document.getElementById("profileBtn");
-const profileLetter=document.getElementById("profileLetter");
+(() => {
+  const tabs = {
+    games: document.getElementById('tab-games'),
+    flarelink: document.getElementById('tab-flarelink'),
+  };
+  const gamesIframe = document.getElementById('games-iframe');
+  const cardsContainer = document.getElementById('cards-container');
+  const searchBar = document.getElementById('search-bar');
+  const searchInput = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
+  const iframeOverlay = document.getElementById('iframe-overlay');
+  const iframe = document.getElementById('iframe');
+  const iframeTitle = document.getElementById('iframe-title');
+  const closeBtn = document.getElementById('close-btn');
+  const refreshBtn = document.getElementById('refresh-btn');
 
-// Select the "+" button at the top
-const createBtn = document.querySelector('button[aria-label="Create"]');
+  // FlareLink cards data
+  const cardsData = [
+    {
+      id: 'space',
+      label: 'Space',
+      wildcard: '*.space',
+      favicon: 'https://googleslides.global.ssl.fastly.net/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'daydreamx',
+      label: 'DayDreamX',
+      wildcard: '*.ddx',
+      favicon: 'https://daydreamx.pro/assets/imgs/logo.png',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'terbium',
+      label: 'Terbium OS',
+      wildcard: '*.tb',
+      favicon: 'https://terbium-46q.pages.dev/favicon.ico',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'nebulapro',
+      label: 'Nebula Pro',
+      wildcard: '*.nb',
+      favicon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Nebula_Hubble_2008-04-15.jpg/120px-Nebula_Hubble_2008-04-15.jpg',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'lunar',
+      label: 'Lunar',
+      wildcard: '*.lunar',
+      favicon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/120px-FullMoon2010.jpg',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+    {
+      id: 'daydreamx-alt',
+      label: 'DayDreamX Alt',
+      wildcard: '*.ddx',
+      favicon: 'https://daydreamx.pro/assets/imgs/logo.png',
+      baseUrl: 'cdn.cloudflare.net',
+    },
+  ];
 
-// Toggle Minnit chat iframe
-function toggleMinnitIframe() {
-  if (iframeOverlay.style.display === "block" && iframeEl.src.includes("minnit.chat")) {
-    // Just hide (don't unload)
-    iframeOverlay.style.display = "none";
-  } else {
-    // Show Minnit chat
-    iframeOverlay.style.display = "block";
-    iframeEl.src = "https://organizations.minnit.chat/878547462864938/c/Main?embed&transparent";
-    iframeToggleBtn.style.display = "none"; // hide the ⇅ for this iframe
-    setEnrolled(false);
-    document.querySelectorAll(".enrolled-item").forEach(l => l.classList.remove("active-link"));
+  // Supported domains list
+  const domains = [
+    'blocksi.lol',
+    'deltamath.icu',
+    'desmosgraphing.xyz',
+    'desmos.lol',
+    'edpuzzle.icu',
+    'goguardian.pro',
+    'googledrive.icu',
+    'nearpod.lol',
+    'prodigy.it.com',
+    'stayinschooleducation.org',
+    'studentvue.my'
+  ];
+
+  let currentTab = null;
+  let currentIframeUrl = null;
+  let usageOrder = [];
+
+  // Save/load last tab
+  function saveLastTab(tab) {
+    localStorage.setItem('lastTab', tab);
   }
-}
-
-// Attach to "+"
-createBtn.addEventListener("click", toggleMinnitIframe);
-
-  
-const supabase = window.supabase.createClient(
-  'https://ylbeucokkfotgghbveuv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsYmV1Y29ra2ZvdGdnaGJ2ZXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MjU5MjksImV4cCI6MjA2MDAwMTkyOX0.EM52Z8YVA4xuCnNPLrAuweJq652QAPa3AjxjNRIrxE8'
-);
-
-const userId = localStorage.getItem('userId') || ('user_' + Math.random().toString(36).substr(2,9));
-localStorage.setItem('userId', userId);
-
-// Toggle enrolled
-function setEnrolled(open){
-  enrolledList.style.display=open?"flex":"none";
-  enrolledBtn.setAttribute("aria-expanded",open);
-  enrolledChevron.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-}
-enrolledBtn.addEventListener("click",()=>{setEnrolled(enrolledList.style.display==="none");});
-
-// Profile persistence
-const savedLetter=localStorage.getItem("profileLetter");
-const savedColor=localStorage.getItem("profileColor");
-if(savedLetter) profileLetter.textContent=savedLetter;
-if(savedColor) profileBtn.style.backgroundColor=savedColor;
-
-// Category expand/collapse
-document.querySelectorAll('.category-header').forEach(h=>{
-  const list=h.nextElementSibling;
-  const icon=h.querySelector('i');
-  icon.style.transform="rotate(-90deg)";
-  h.addEventListener('click',()=>{
-    const open=list.classList.toggle('open');
-    icon.style.transform=open?"rotate(0deg)":"rotate(-90deg)";
-  });
-});
-
-// Iframe open
-function openIframe(linkEl,url){
-  iframeOverlay.style.display="block";
-  iframeEl.src=url;
-  iframeToggleBtn.style.display="flex";
-  setEnrolled(false);
-  document.querySelectorAll(".enrolled-item").forEach(l=>l.classList.remove("active-link"));
-  linkEl.classList.add("active-link");
-}
-
-// Smart favicon
-function hashColor(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);const colors=["#ffd700","#f9d9c5","#e0e0e0","#add8e6","#cce0ff","#ffcce0","#d2e3fc"];return colors[Math.abs(h)%colors.length];}
-async function smartFavicon(url,link){
-  let domain;
-  try{domain=new URL(url).origin;}catch{ return;}
-  const img=document.createElement("img");
-  img.className="favicon-img";
-  img.alt="favicon";
-  const trySources=[`https://www.google.com/s2/favicons?domain=${domain}&sz=32`, `${domain}/favicon.ico`];
-  try {
-    const resp=await fetch(url,{mode:"cors"});
-    const html=await resp.text();
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(html,"text/html");
-    const icons=[...doc.querySelectorAll("link[rel*='icon']")];
-    if(icons.length){
-      const href=icons[0].getAttribute("href");
-      if(href){const abs=new URL(href,domain).href;trySources.unshift(abs);}
-    }
-  } catch(e){}
-  let i=0;
-  function tryNext(){
-    if(i>=trySources.length){
-      const fallback=document.createElement("span");
-      fallback.textContent=new URL(url).hostname.charAt(0).toUpperCase();
-      fallback.className="favicon-letter";
-      fallback.style.backgroundColor=hashColor(url);
-      link.querySelector("img, span")?.remove();
-      link.prepend(fallback);
-      return;
-    }
-    img.src=trySources[i++];
+  function loadLastTab() {
+    return localStorage.getItem('lastTab');
   }
-  img.onload=()=>{if(img.naturalWidth<16) tryNext(); else{link.querySelector("img, span")?.remove(); link.prepend(img);}};
-  img.onerror=tryNext;
-  tryNext();
-}
 
-// Load enrolled links and restore order after all items exist
-async function loadEnrolledItems() {
-  const links = document.querySelectorAll(".enrolled-item");
-
-  for (const link of links) {
-    const url = link.dataset.url;
-    link.textContent = " " + (new URL(url).hostname.replace(/^www\./, ""));
-    await smartFavicon(url, link);
-
-    if (url.includes("julios.games")) {
-      if (!link.querySelector("i")) {
-        const icon = document.createElement("i");
-        icon.className = "fas fa-external-link-alt ml-auto text-xs";
-        link.append(icon);
-      }
+  // Save/load usage order for cards
+  function saveUsageOrder() {
+    localStorage.setItem('usageOrder', JSON.stringify(usageOrder));
+  }
+  function loadUsageOrder() {
+    const data = localStorage.getItem('usageOrder');
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
     }
+    return [];
+  }
 
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      const categoryList = link.parentElement;
+  // Generate random string for subdomain
+  function randomString(length = 7) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for(let i=0; i<length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
 
-      // Move clicked link to the top
-      categoryList.prepend(link);
+  // Generate unique URL avoiding repeats
+  function generateUniqueUrl(card) {
+    let url = '';
+    let tries = 0;
+    do {
+      const domain = domains[Math.floor(Math.random() * domains.length)];
+      const subdomain = randomString(7);
+      url = `https://${subdomain}.${card.wildcard.substring(2)}.${domain}.${card.baseUrl}`;
+      tries++;
+      if(tries > 50) break; // avoid infinite loop in extreme cases
+    } while (usageOrder.includes(url));
+    usageOrder.unshift(url);
+    if(usageOrder.length > 50) usageOrder.pop();
+    saveUsageOrder();
+    return url;
+  }
 
-      // Save new order in localStorage
-      const ids = Array.from(categoryList.querySelectorAll(".enrolled-item")).map(l => l.id);
-      localStorage.setItem(`order_${categoryList.parentElement.querySelector(".category-header").textContent}`, JSON.stringify(ids));
+  // Render cards with favicon and label, and themed background
+  function renderCards() {
+    // Load usage order to sort cards accordingly (most recent first)
+    usageOrder = loadUsageOrder();
 
-      if (url.includes("julios.games")) {
-        window.open(url, "_blank");
-      } else {
-        openIframe(link, url);
-      }
+    // Sort cards based on usage order: cards with recent URLs first, otherwise default order
+    const cardsSorted = [...cardsData].sort((a,b) => {
+      const aIdx = usageOrder.findIndex(u => u.includes(a.wildcard.substring(2)));
+      const bIdx = usageOrder.findIndex(u => u.includes(b.wildcard.substring(2)));
+      if(aIdx === -1 && bIdx === -1) return 0;
+      if(aIdx === -1) return 1;
+      if(bIdx === -1) return -1;
+      return aIdx - bIdx;
     });
-  }
 
-  // Restore saved order AFTER all links are populated
-  document.querySelectorAll(".category").forEach(cat => {
-    const header = cat.querySelector(".category-header").textContent;
-    const list = cat.querySelector(".category-list");
-    const savedOrder = JSON.parse(localStorage.getItem(`order_${header}`) || "[]");
-    if (savedOrder.length) {
-      savedOrder.forEach(id => {
-        const el = list.querySelector(`#${id}`);
-        if (el) list.appendChild(el);
+    cardsContainer.innerHTML = '';
+    cardsSorted.forEach(card => {
+      const cardEl = document.createElement('button');
+      cardEl.className = 'card';
+      cardEl.setAttribute('role', 'listitem');
+      cardEl.setAttribute('aria-label', `Open ${card.label}`);
+      cardEl.tabIndex = 0;
+
+      const img = document.createElement('img');
+      img.className = 'favicon';
+      img.alt = `${card.label} favicon`;
+      img.src = card.favicon;
+      img.onerror = () => {
+        img.src = 'https://via.placeholder.com/44?text=?';
+      };
+
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = card.label;
+
+      cardEl.appendChild(img);
+      cardEl.appendChild(label);
+
+      cardEl.addEventListener('click', () => {
+        openIframe(card);
       });
-    }
-  });
-}
 
-// Initialize enrolled links
-loadEnrolledItems();
-
-  
-// Toggle iframe
-iframeToggleBtn.addEventListener("click",()=>{iframeOverlay.style.display=iframeOverlay.style.display==="none"?"block":"none";});
-
-// Draggable iframe
-let isDragging=false,dx=0,dy=0;
-iframeToggleBtn.addEventListener("mousedown",e=>{isDragging=true;dx=e.clientX-iframeToggleBtn.offsetLeft;dy=e.clientY-iframeToggleBtn.offsetTop;iframeToggleBtn.style.cursor="grabbing";});
-document.addEventListener("mousemove",e=>{if(!isDragging)return;iframeToggleBtn.style.left=`${e.clientX-dx}px`;iframeToggleBtn.style.top=`${e.clientY-dy}px`;});
-document.addEventListener("mouseup",()=>{isDragging=false;iframeToggleBtn.style.cursor="grab";});
-
-// WIKI-LINKS FETCH (votes removed, everything else intact)
-const wikiModal = document.getElementById('wikiModal');
-const wikiBox = document.getElementById('wikiBox');
-const wikiOverlay = document.getElementById('wikiOverlay');
-const closeWiki = document.getElementById('closeWiki');
-const archivedBtn = [...document.querySelectorAll("a")].find(el => el.textContent.includes("Archived classes"));
-let page = 0, pageSize = 5, currentFilter = { name: '', range: 'all' }, totalLinks = 0;
-
-archivedBtn.addEventListener('click', () => {
-  wikiModal.classList.remove('hidden');
-  setTimeout(() => wikiBox.classList.add('scale-100', 'opacity-100'), 10);
-  loadNames();
-  applyFilters();
-});
-closeWiki.addEventListener('click', closeModal);
-wikiOverlay.addEventListener('click', closeModal);
-function closeModal() { wikiBox.classList.remove('scale-100','opacity-0'); setTimeout(()=>wikiModal.classList.add('hidden'),200); }
-
-document.getElementById('filter-name').addEventListener('change', applyFilters);
-document.getElementById('filter-date').addEventListener('change', applyFilters);
-
-async function loadNames() {
-  const { data } = await supabase.from('link_names').select('name');
-  const select = document.getElementById('filter-name');
-  select.innerHTML = `<option value="">All</option>`;
-  data?.forEach(d => { const opt = document.createElement('option'); opt.value=d.name; opt.textContent=d.name; select.appendChild(opt); });
-}
-
-function getDateRange(rangeType) {
-  const now=new Date(), start=new Date(), end=new Date();
-  switch(rangeType){
-    case 'today': start.setHours(0,0,0,0); return {start,end:now};
-    case 'yesterday': start.setDate(start.getDate()-1); end.setDate(end.getDate()-1); start.setHours(0,0,0,0); end.setHours(23,59,59,999); return {start,end};
-    case 'last7': start.setDate(start.getDate()-6); return {start,end:now};
-    case 'thisMonth': start.setDate(1); return {start,end:now};
-    case 'lastMonth': start.setMonth(start.getMonth()-1); start.setDate(1); end.setMonth(start.getMonth()); end.setDate(0); end.setHours(23,59,59,999); return {start,end};
-    case 'thisYear': start.setMonth(0,1); start.setHours(0,0,0,0); return {start,end:now};
-    default: return null;
-  }
-}
-
-async function applyFilters() { page=0; currentFilter.name=document.getElementById('filter-name').value; currentFilter.range=document.getElementById('filter-date').value; await countTotalLinks(); await fetchLinks(); }
-
-async function countTotalLinks() {
-  let query = supabase.from('links').select('*', { count: 'exact', head: true });
-  if(currentFilter.name) query = query.eq('name', currentFilter.name);
-  const range=getDateRange(currentFilter.range);
-  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-  const { count }=await query; totalLinks=count||0;
-}
-
-async function fetchLinks() {
-  const container=document.getElementById('results');
-  container.innerHTML='';
-  let query=supabase.from('links').select('*').order('date',{ascending:false}).range(page*pageSize,(page+1)*pageSize-1);
-  if(currentFilter.name) query=query.eq('name',currentFilter.name);
-  const range=getDateRange(currentFilter.range);
-  if(range) query=query.gte('date', range.start.toISOString().split('T')[0]).lte('date', range.end.toISOString().split('T')[0]);
-  const { data }=await query;
-  if(!data||data.length===0){container.innerHTML=`<div class="text-center text-gray-500 py-4">⚠️ No links found.</div>`;return;}
-
-  for(const link of data){
-    const div=document.createElement('div');
-    div.className='p-3 rounded-xl border hover:bg-gray-50 flex flex-col gap-1';
-    div.innerHTML=`
-      <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline break-all font-medium">${link.name}</a>
-      <span class="text-gray-500 text-xs break-all">${link.url}</span>
-      <span class="text-gray-400 text-xs">${new Date(link.date).toLocaleDateString()}</span>
-    `;
-    container.appendChild(div);
-  }
-}
-</script>
-<!-- Login / Sign-Up Modal -->
-<div id="authModal" class="fixed inset-0 z-[1300] hidden items-center justify-center">
-  <div id="authOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div class="relative bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 transform scale-95 opacity-0 transition-all duration-300">
-    <div class="flex justify-between items-center border-b pb-3 mb-4">
-      <h2 id="authTitle" class="text-lg font-semibold text-gray-800">Login</h2>
-      <button id="closeAuthModal" class="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-    </div>
-    <div class="flex flex-col gap-4">
-      <input id="authEmail" type="email" placeholder="Email" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <input id="authPassword" type="password" placeholder="Password" class="border rounded px-3 py-2 w-full focus:ring-blue-500">
-      <button id="authActionBtn" class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">Login</button>
-      <span id="authMessage" class="text-red-500 text-sm"></span>
-      <p class="text-sm text-gray-600 mt-2">
-        <span id="toggleAuth" class="text-blue-600 hover:underline cursor-pointer">Don't have an account? Sign Up</span>
-      </p>
-    </div>
-  </div>
-</div>
-
-<script>
-// AUTH MODAL SCRIPT
-const authModal = document.getElementById('authModal');
-const authOverlay = document.getElementById('authOverlay');
-const closeAuthModal = document.getElementById('closeAuthModal');
-const authTitle = document.getElementById('authTitle');
-const authEmail = document.getElementById('authEmail');
-const authPassword = document.getElementById('authPassword');
-const authActionBtn = document.getElementById('authActionBtn');
-const authMessage = document.getElementById('authMessage');
-const toggleAuth = document.getElementById('toggleAuth');
-
-let isLogin = true; // Toggle between login and signup
-
-function openAuthModal() {
-  authModal.classList.remove('hidden');
-  setTimeout(() => authModal.querySelector('div.relative').classList.add('scale-100','opacity-100'), 10);
-}
-
-function closeAuth() {
-  const modalContent = authModal.querySelector('div.relative');
-  modalContent.classList.remove('scale-100','opacity-0');
-  setTimeout(() => authModal.classList.add('hidden'), 200);
-  authMessage.textContent = '';
-  authEmail.value = '';
-  authPassword.value = '';
-}
-
-// Open modal on double-click profile button
-profileBtn.addEventListener('dblclick', openAuthModal);
-closeAuthModal.addEventListener('click', closeAuth);
-authOverlay.addEventListener('click', closeAuth);
-
-// Toggle Login / Sign-Up
-toggleAuth.addEventListener('click', () => {
-  isLogin = !isLogin;
-  if (isLogin) {
-    authTitle.textContent = 'Login';
-    authActionBtn.textContent = 'Login';
-    toggleAuth.textContent = "Don't have an account? Sign Up";
-  } else {
-    authTitle.textContent = 'Sign Up';
-    authActionBtn.textContent = 'Sign Up';
-    toggleAuth.textContent = "Already have an account? Login";
-  }
-  authMessage.textContent = '';
-});
-
-// Handle Auth (Login / Sign-Up)
-authActionBtn.addEventListener('click', async () => {
-  const email = authEmail.value.trim();
-  const password = authPassword.value.trim();
-
-  if (!email || !password) {
-    authMessage.textContent = 'Please enter email and password';
-    return;
-  }
-
-  if (isLogin) {
-    // LOGIN
-    const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) authMessage.textContent = error.message;
-    else { authMessage.textContent = 'Logged in successfully!'; closeAuth(); console.log('User:', user); }
-  } else {
-    // SIGN-UP
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) authMessage.textContent = error.message;
-    else { 
-      authMessage.textContent = 'Account created! Please check your email to confirm.';
-      authEmail.value = '';
-      authPassword.value = '';
-    }
-  }
-});
-<script>
-    const monitorStatusDiv = document.getElementById('monitor-status');
-    const monitorCustomInputDiv = document.getElementById('monitor-custom-id-input');
-    const monitorDebugLog = document.getElementById('monitor-debug-log');
-    let monitorCustomExtIds = [];
-    let lastScreenCheck = 0;
-    const screenCheckInterval = 60000; // 1 minute
-    let clickCount = 0;
-    let clickTimeout;
-    let verboseLogging = false;
-
-    // Toggle input (double click) or debug log (triple click)
-    monitorStatusDiv.addEventListener('click', () => {
-        clickCount++;
-        if (clickCount === 2) {
-            clearTimeout(clickTimeout);
-            monitorCustomInputDiv.style.display = monitorCustomInputDiv.style.display === 'none' ? 'block' : 'none';
-            clickCount = 0;
-        } else if (clickCount === 3) {
-            clearTimeout(clickTimeout);
-            verboseLogging = !verboseLogging;
-            monitorDebugLog.style.display = verboseLogging ? 'block' : 'none';
-            monitorLog(`Verbose logging ${verboseLogging ? 'enabled' : 'disabled'}`, true);
-            clickCount = 0;
-        } else {
-            clickTimeout = setTimeout(() => {
-                clickCount = 0;
-            }, 300);
-        }
+      cardsContainer.appendChild(cardEl);
     });
+  }
 
-    function monitorLog(message, force = false) {
-        if (!verboseLogging && !force) return;
-        const timestamp = new Date().toLocaleTimeString();
-        monitorDebugLog.innerHTML += `[${timestamp}] ${message}<br>`;
-        monitorDebugLog.scrollTop = monitorDebugLog.scrollHeight;
+  // Open iframe overlay with generated url
+  function openIframe(card) {
+    currentIframeUrl = generateUniqueUrl(card);
+    iframe.src = currentIframeUrl;
+    iframeTitle.textContent = card.label;
+    iframeOverlay.hidden = false;
+    iframe.focus();
+
+    // Save usage to reorder cards
+    usageOrder.unshift(currentIframeUrl);
+    if (usageOrder.length > 50) usageOrder.pop();
+    saveUsageOrder();
+    renderCards();
+  }
+
+  // Tab switching logic
+  function setActiveTab(tabId) {
+    if (currentTab === tabId) return;
+    currentTab = tabId;
+
+    if (tabId === 'games') {
+      tabs.games.setAttribute('aria-selected', 'true');
+      tabs.games.tabIndex = 0;
+      tabs.flarelink.setAttribute('aria-selected', 'false');
+      tabs.flarelink.tabIndex = -1;
+      gamesIframe.style.display = 'block';
+      cardsContainer.style.display = 'none';
+      searchBar.style.display = 'none';
+      iframeOverlay.hidden = true;
+      iframe.src = '';
+    } else if (tabId === 'flarelink') {
+      tabs.flarelink.setAttribute('aria-selected', 'true');
+      tabs.flarelink.tabIndex = 0;
+      tabs.games.setAttribute('aria-selected', 'false');
+      tabs.games.tabIndex = -1;
+      gamesIframe.style.display = 'none';
+      cardsContainer.style.display = 'grid';
+      searchBar.style.display = 'flex';
+      iframeOverlay.hidden = true;
+      iframe.src = '';
     }
+    saveLastTab(tabId);
+  }
 
-    function monitorAddCustomId() {
-        const id = document.getElementById('monitor-custom-ext-id').value.trim();
-        if (id) {
-            monitorCustomExtIds.push(id);
-            monitorLog(`Added custom extension ID: ${id}`, true);
-            monitorCheck();
+  // Filter cards based on search input
+  function filterCards(query) {
+    const q = query.trim().toLowerCase();
+    const cards = cardsContainer.children;
+    for (const cardEl of cards) {
+      const label = cardEl.querySelector('.label').textContent.toLowerCase();
+      if (label.includes(q)) {
+        cardEl.style.display = '';
+      } else {
+        cardEl.style.display = 'none';
+      }
+    }
+  }
+
+  // Close iframe overlay
+  closeBtn.addEventListener('click', () => {
+    iframeOverlay.hidden = true;
+    iframe.src = '';
+  });
+
+  // Refresh iframe with new unique URL for same card
+  refreshBtn.addEventListener('click', () => {
+    if (!currentIframeUrl) return;
+    // Find the card for current iframe url
+    const matchedCard = cardsData.find(card => currentIframeUrl.includes(card.wildcard.substring(2)));
+    if (!matchedCard) return;
+    currentIframeUrl = generateUniqueUrl(matchedCard);
+    iframe.src = currentIframeUrl;
+    iframeTitle.textContent = matchedCard.label;
+
+    usageOrder.unshift(currentIframeUrl);
+    if (usageOrder.length > 50) usageOrder.pop();
+    saveUsageOrder();
+    renderCards();
+  });
+
+  // Search bar event
+  searchInput.addEventListener('input', () => {
+    filterCards(searchInput.value);
+  });
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    filterCards('');
+    searchInput.focus();
+  });
+
+  // Tabs event listeners
+  tabs.games.addEventListener('click', () => setActiveTab('games'));
+  tabs.flarelink.addEventListener('click', () => setActiveTab('flarelink'));
+
+  // Initialize
+  renderCards();
+  const savedTab = loadLastTab();
+  setActiveTab(savedTab === 'games' ? 'games' : 'flarelink');
+
+  // Initialize particles.js with smooth purple-blue style like before
+  particlesJS('particles-js', {
+    "particles": {
+      "number": {
+        "value": 60,
+        "density": {
+          "enable": true,
+          "value_area": 800
         }
-    }
-
-    function monitorSetStatus(isWatching) {
-        monitorStatusDiv.textContent = isWatching ? '🟢' : '🔴';
-        monitorStatusDiv.className = isWatching ? 'alert' : 'safe';
-    }
-
-    async function monitorCheck() {
-        let isMonitorDetected = false;
-        const extensionIds = [
-            'nmmhkkegccagdldgiimedpiccmgmieda', // GoGuardian
-            'pjjejpcmcgmgakpcbenpfilnkbpccgdm', // GoGuardian License
-            'haldlgldplgnggkjaafhelgiaglafanh', // Securly
-            'jiapfmfagmoafgbkaekfkgbndghfgmkn', // Lightspeed
-            'kmpjlilnemjciohjckjadmgmjdjljach', // LanSchool
-            'jmimcbpnibdeiakbligmlgbgbcglcjbc', // Impero
-            ...monitorCustomExtIds
-        ];
-        const monitorDomains = [
-            'goguardian.com',
-            'api.goguardian.com',
-            'ext.goguardian.com',
-            'securly.com',
-            'api.securly.com',
-            'lightspeed.app',
-            'filter.lightspeedsystems.com',
-            'lanschool.com',
-            'impero.us',
-            'client.impero.io'
-        ];
-
-        try {
-            // Extension Probing
-            for (const id of extensionIds) {
-                if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
-                    try {
-                        const response = await new Promise((resolve) => {
-                            chrome.runtime.sendMessage(id, {}, resolve);
-                        });
-                        if (response !== undefined) {
-                            isMonitorDetected = true;
-                            monitorLog(`Extension detected: ${id}`, true);
-                            break;
-                        }
-                    } catch (e) {
-                        monitorLog(`Extension check failed for ${id}: ${e.message}`);
-                    }
-                }
-            }
-
-            // Network Probes
-            for (const domain of monitorDomains) {
-                try {
-                    const response = await fetch(`https://${domain}`, { 
-                        method: 'HEAD', 
-                        mode: 'no-cors',
-                        cache: 'no-store'
-                    });
-                    if (response) {
-                        isMonitorDetected = true;
-                        monitorLog(`Network activity to ${domain}`, true);
-                        break;
-                    }
-                } catch (e) {
-                    monitorLog(`Network check failed for ${domain}: ${e.message}`);
-                }
-            }
-
-            // WebDriver/Automation
-            if (navigator.webdriver || 
-                window.document.documentElement.getAttribute('webdriver') || 
-                navigator.userAgent.includes('HeadlessChrome') || 
-                monitorDomains.some(domain => navigator.userAgent.includes(domain))) {
-                isMonitorDetected = true;
-                monitorLog('WebDriver or monitoring UA detected', true);
-            }
-
-            // Resource Monitoring
-            if (performance && performance.memory && performance.memory.usedJSHeapSize > 150000000) {
-                isMonitorDetected = true;
-                monitorLog('High memory usage detected', true);
-            }
-
-            // WebSocket Interceptor
-            const originalWebSocket = window.WebSocket;
-            window.WebSocket = function(...args) {
-                const wsUrl = args[0].toLowerCase();
-                if (monitorDomains.some(domain => wsUrl.includes(domain)) || wsUrl.includes('ggws')) {
-                    isMonitorDetected = true;
-                    monitorLog(`WebSocket to ${wsUrl}`, true);
-                }
-                return new originalWebSocket(...args);
-            };
-
-            // DOM Mutation Observer
-            const observer = new MutationObserver((mutations) => {
-                for (const mutation of mutations) {
-                    if (mutation.addedNodes.length) {
-                        for (const node of mutation.addedNodes) {
-                            if ((node.src && monitorDomains.some(domain => node.src.includes(domain))) || 
-                                (node.id && /gg-|monitor|securly|lightspeed|lanschool|impero/i.test(node.id)) || 
-                                (node.className && /goguardian|monitor|securly|lightspeed|lanschool|impero/i.test(node.className))) {
-                                isMonitorDetected = true;
-                                monitorLog('Suspicious DOM element detected', true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-
-            // PerformanceObserver for Network
-            if ('PerformanceObserver' in window) {
-                const netObserver = new PerformanceObserver((list) => {
-                    for (const entry of list.getEntries()) {
-                        if (monitorDomains.some(domain => entry.name.toLowerCase().includes(domain)) || 
-                            entry.initiatorType === 'fetch' && /api\.gg|securly|lightspeed|impero/i.test(entry.name)) {
-                            isMonitorDetected = true;
-                            monitorLog(`Network resource detected: ${entry.name}`, true);
-                        }
-                    }
-                });
-                netObserver.observe({ type: 'resource', buffered: true });
-            }
-
-            // Enterprise Policy Check
-            if (chrome && chrome.enterprise && chrome.enterprise.deviceAttributes) {
-                isMonitorDetected = true;
-                monitorLog('Enterprise policy detected', true);
-            }
-
-            // Screen Capture Detection (Throttled)
-            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia && Date.now() - lastScreenCheck > screenCheckInterval) {
-                lastScreenCheck = Date.now();
-                try {
-                    await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    monitorLog('Screen sharing allowed unexpectedly');
-                } catch (err) {
-                    if (err.name === 'NotAllowedError' || err.message.includes('permission')) {
-                        isMonitorDetected = true;
-                        monitorLog('Screen sharing permission denied - monitoring likely', true);
-                    } else {
-                        monitorLog(`Screen sharing check failed: ${err.message}`);
-                    }
-                }
-            }
-
-            // Prompt Suppression
-            navigator.mediaDevices.getDisplayMedia = async function() {
-                monitorLog('Intercepted screen-sharing request', true);
-                throw new Error('NotAllowedError: User denied screen sharing');
-            };
-
-        } catch (e) {
-            monitorLog(`Error in check: ${e.message}`);
+      },
+      "color": {
+        "value": ["#7c3aed", "#4c51bf", "#3b82f6"]
+      },
+      "shape": {
+        "type": "circle",
+        "stroke": { "width": 0, "color": "#000000" }
+      },
+      "opacity": {
+        "value": 0.35,
+        "random": true,
+        "anim": {
+          "enable": true,
+          "speed": 1,
+          "opacity_min": 0.15,
+          "sync": false
         }
+      },
+      "size": {
+        "value": 4,
+        "random": true,
+        "anim": {
+          "enable": false
+        }
+      },
+      "line_linked": {
+        "enable": true,
+        "distance": 140,
+        "color": "#7c3aed",
+        "opacity": 0.3,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 1.2,
+        "direction": "none",
+        "random": false,
+        "straight": false,
+        "out_mode": "bounce",
+        "bounce": true,
+        "attract": { "enable": false }
+      }
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": { "enable": true, "mode": "grab" },
+        "onclick": { "enable": true, "mode": "push" },
+        "resize": true
+      },
+      "modes": {
+        "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } },
+        "push": { "particles_nb": 4 }
+      }
+    },
+    "retina_detect": true
+  });
 
-        monitorSetStatus(isMonitorDetected);
-    }
-
-    // Initial and Periodic Checks
-    monitorCheck();
-    setInterval(monitorCheck, 3000);
-
-    // Cleanup
-    window.onunload = () => {
-        if (observer) observer.disconnect();
-        if (netObserver) netObserver.disconnect();
-    };
+})();
 </script>
+
+</body>
 </html>
